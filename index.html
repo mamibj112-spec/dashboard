@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="theme-color" content="#080b10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="국장 대시보드">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>국장 대시보드 · 3월 24일</title>
+<style>
+:root{--bg:#080b10;--card:#0f1318;--card2:#151a22;--border:rgba(255,255,255,.08);
+--up:#00e896;--dn:#ff4060;--blue:#4da6ff;--gold:#ffc940;--orange:#ff8c3a;
+--purple:#a78bfa;--t1:#f0f4ff;--t2:#b8ccee;--t3:#6a80aa}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+font-size:13px;max-width:480px;margin:0 auto;padding-bottom:32px}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+.header{padding:16px 16px 0;display:flex;justify-content:space-between;align-items:flex-end}
+.header-title{font-size:11px;color:var(--t3);letter-spacing:.5px;text-transform:uppercase}
+.header-date{font-size:16px;font-weight:700}
+.header-day{font-size:11px;color:var(--t3);margin-top:2px}
+.header-right{text-align:right;font-size:11px;color:var(--t3)}
+.tab-nav{display:flex;margin:12px 0 0;border-bottom:1px solid var(--border);
+position:sticky;top:0;background:var(--bg);z-index:10;padding:0 4px}
+.tab-btn{flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;
+color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:var(--t1);border-bottom-color:var(--blue);font-weight:600}
+.tab-panel{display:none;padding:0 12px}.tab-panel.active{display:block}
+.section{margin-top:16px}
+.section-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-left:2px}
+.banner{padding:12px 14px;border-radius:10px;border-left:3px solid;margin-top:12px;line-height:1.5;font-size:12.5px}
+.banner.up{background:rgba(0,232,150,.08);border-color:var(--up)}
+.banner.dn{background:rgba(255,64,96,.09);border-color:var(--dn)}
+.banner.orange{background:rgba(255,140,58,.08);border-color:var(--orange)}
+.banner.blue{background:rgba(77,166,255,.08);border-color:var(--blue)}
+.banner.hot{background:rgba(255,64,96,.09);border-color:var(--gold)}
+.banner strong{font-weight:700}
+.index-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.idx-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px}
+.idx-name{font-size:11px;color:var(--t3);margin-bottom:4px}
+.idx-val{font-size:20px;font-weight:700}.idx-chg{font-size:12px;margin-top:3px}
+.up-txt{color:var(--up)}.dn-txt{color:var(--dn)}.neu-txt{color:var(--t2)}
+.macro-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 12px}
+.macro-name{font-size:10px;color:var(--t3);margin-bottom:3px}
+.macro-val{font-size:15px;font-weight:700}.macro-chg{font-size:11px;margin-top:2px}
+.supply-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+.supply-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.supply-row:last-child{margin-bottom:0}
+.supply-label{font-size:11px;color:var(--t2);width:44px;flex-shrink:0}
+.supply-bar-wrap{flex:1;position:relative;height:20px;background:var(--card2);border-radius:4px}
+.supply-bar{position:absolute;top:0;bottom:0;border-radius:4px;display:flex;align-items:center}
+.supply-bar.buy{left:50%;background:rgba(0,232,150,.25)}
+.supply-bar.sell{right:50%;background:rgba(255,64,96,.25);justify-content:flex-end}
+.supply-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border)}
+.supply-amt{font-size:10px;font-weight:600;padding:0 5px;white-space:nowrap}
+.supply-amt.buy{color:var(--up)}.supply-amt.sell{color:var(--dn)}
+.supply-sub{font-size:10px;color:var(--t3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.news-item{background:var(--card);border-radius:8px;padding:11px 12px;margin-bottom:6px;border-left:3px solid var(--border)}
+.news-badge{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin-bottom:4px;font-weight:600}
+.nb-red{background:rgba(255,64,96,.15);color:#ff6080}.nb-blue{background:rgba(77,166,255,.15);color:var(--blue)}
+.nb-green{background:rgba(0,232,150,.15);color:var(--up)}.nb-gold{background:rgba(255,201,64,.15);color:var(--gold)}
+.nb-orange{background:rgba(255,140,58,.15);color:var(--orange)}.nb-purple{background:rgba(167,139,250,.15);color:var(--purple)}
+.news-title{font-size:12.5px;font-weight:600;line-height:1.4}
+.news-title a{color:var(--t1)}.news-title a:hover{color:var(--blue);text-decoration:none}
+.news-meta{font-size:10px;color:var(--t3);margin-top:4px}
+.apt-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
+.apt-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.apt-name{font-size:15px;font-weight:700}.apt-info{font-size:10px;color:var(--t3);margin-top:3px}
+.apt-status{font-size:9px;padding:3px 7px;border-radius:4px;font-weight:600;flex-shrink:0}
+.status-remodel{background:rgba(167,139,250,.15);color:var(--purple)}
+.status-normal{background:rgba(77,166,255,.12);color:var(--blue)}
+.apt-table{width:100%;border-collapse:collapse}
+.apt-table th{font-size:10px;color:var(--t3);font-weight:400;padding:5px 6px;text-align:right;border-bottom:1px solid var(--border)}
+.apt-table th:first-child{text-align:left}
+.apt-table td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
+.apt-table td:not(:first-child){text-align:right}
+.apt-table tr:last-child td{border-bottom:none}
+.remodel-steps{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.remodel-label{font-size:10px;color:var(--t3);margin-bottom:6px}
+.step-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px}
+.step-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.step-text{font-size:11px;line-height:1.4}
+.step-done .step-dot{background:var(--up)}.step-done .step-text{color:var(--t3)}
+.step-current .step-dot{background:var(--gold)}.step-current .step-text{color:var(--gold);font-weight:600}
+.step-todo .step-dot{background:var(--border)}.step-todo .step-text{color:var(--t3)}
+.invest-point{margin-top:10px;padding:8px 10px;background:var(--card2);border-radius:6px;font-size:11px;color:var(--t2);line-height:1.5}
+.warn{color:var(--gold);font-size:10px}
+.footer-note{font-size:10px;color:var(--t3);text-align:center;padding:16px 0 4px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">국장 데일리 대시보드</div>
+    <div class="header-date">2026년 3월 24일 화요일</div>
+    <div class="header-day">장 마감 기준</div>
+  </div>
+  <div class="header-right">22:17 생성<br>자동 업데이트</div>
+</div>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="sw('dom',this)">📈 국내</button>
+  <button class="tab-btn" onclick="sw('us',this)">🇺🇸 해외</button>
+  <button class="tab-btn" onclick="sw('re',this)">🏠 부동산</button>
+  <button class="tab-btn" onclick="sw('hot',this)">🔥 핫이슈</button>
+</nav>
+
+<!-- ===== 국내 탭 ===== -->
+<div id="tab-dom" class="tab-panel active">
+
+  <div class="section">
+    <div class="banner up">
+      <strong>📈 오늘 시황</strong><br>
+      코스피 <span class="up-txt">5,553.92</span> <span class="up-txt">▲ 148.17 (2.74%)</span> &nbsp;|&nbsp;
+      코스닥 <span class="up-txt">1,121.44</span> <span class="up-txt">▲ 24.55 (2.24%)</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">국내 지수</div>
+    <div class="index-grid">
+      <div class="idx-card">
+        <div class="idx-name">코스피</div>
+        <div class="idx-val"><span class="up-txt">5,553.92</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 148.17 (2.74%)</span></div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">코스닥</div>
+        <div class="idx-val"><span class="up-txt">1,121.44</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 24.55 (2.24%)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">매크로 지표</div>
+    <div class="macro-grid">
+      <div class="macro-card">
+        <div class="macro-name">USD/KRW</div>
+        <div class="macro-val"><span class="up-txt">1,498.5원</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 5.7 (0.38%)</span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">브렌트유</div>
+        <div class="macro-val"><span class="up-txt">$103.0</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $3.09 (3.09%)</span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">WTI</div>
+        <div class="macro-val"><span class="up-txt">$91.9</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $3.79 (4.30%)</span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">미 10년물</div>
+        <div class="macro-val"><span class="dn-txt">4.39%</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.06%p</span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">금 선물</div>
+        <div class="macro-val"><span class="dn-txt">$4,373</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $30.90 (0.70%)</span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">달러 인덱스</div>
+        <div class="macro-val"><span class="dn-txt">99.39</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.44 (0.44%)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">코스피 수급 <span class="warn">⚠ 자동 조회 실패 — 실시간 앱 확인</span></div>
+    <div class="supply-wrap">
+      <div class="supply-row">
+      <div class="supply-label">외국인</div>
+      <div class="supply-bar-wrap">
+        <div class="supply-center"></div>
+        <div style="font-size:10px;color:var(--t3);padding:3px 8px;">실시간 앱 확인 <span class="warn">⚠</span></div>
+      </div></div>
+      <div class="supply-row">
+      <div class="supply-label">기관</div>
+      <div class="supply-bar-wrap">
+        <div class="supply-center"></div>
+        <div style="font-size:10px;color:var(--t3);padding:3px 8px;">실시간 앱 확인 <span class="warn">⚠</span></div>
+      </div></div>
+      <div class="supply-row">
+      <div class="supply-label">개인</div>
+      <div class="supply-bar-wrap">
+        <div class="supply-center"></div>
+        <div style="font-size:10px;color:var(--t3);padding:3px 8px;">실시간 앱 확인 <span class="warn">⚠</span></div>
+      </div></div>
+      <div class="supply-sub">코스닥 수급 · 선물 포지션은 실시간 앱 확인</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">국내 뉴스</div>
+    <div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260324032051003" target="_blank">서울 영등포구 문래동 더샵프리엘라 1순위 청약 89대 1(종합)</a></div>
+  <div class="news-meta">연합뉴스 · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260324185900002" target="_blank">재경부 신임 국제경제관리관에 문지성 개발금융국장</a></div>
+  <div class="news-meta">연합뉴스 · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260324149800008" target="_blank">외국인 이달 코스피 시장서 22조 투매…역대 최대 순매도 눈앞</a></div>
+  <div class="news-meta">연합뉴스 · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260324168551003" target="_blank">고려아연 주총서 최윤범 회장 경영권 수성…MBK는 영향력 확대(종합)</a></div>
+  <div class="news-meta">연합뉴스 · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260324174900008" target="_blank">아이즈비전 "관계사 지티에프홀딩스 주식 261억원에 추가취득"</a></div>
+  <div class="news-meta">연합뉴스 · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260324174200002" target="_blank">에너지 절감에 금융권도 동참…車 5부제 어기면 벌금도</a></div>
+  <div class="news-meta">연합뉴스 · 3월 24일</div>
+</div>
+  </div>
+
+</div>
+
+<!-- ===== 해외 탭 ===== -->
+<div id="tab-us" class="tab-panel">
+
+  <div class="section">
+    <div class="banner up">
+      <strong>🌐 해외 시황</strong><br>
+      S&amp;P500 <span class="up-txt">6,581.00</span> <span class="up-txt">▲ 74.52 (1.15%)</span> &nbsp;|&nbsp;
+      나스닥 <span class="up-txt">24,188.59</span> <span class="up-txt">▲ 290.44 (1.22%)</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">해외 주요 지수</div>
+    <div class="index-grid">
+      <div class="idx-card">
+        <div class="idx-name">S&amp;P 500</div>
+        <div class="idx-val"><span class="up-txt">6,581.00</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 74.52 (1.15%)</span></div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">나스닥 100</div>
+        <div class="idx-val"><span class="up-txt">24,188.59</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 290.44 (1.22%)</span></div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">다우존스</div>
+        <div class="idx-val"><span class="up-txt">46,208.47</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 631.00 (1.38%)</span></div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">닛케이 225</div>
+        <div class="idx-val"><span class="up-txt">52,252.28</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 736.79 (1.43%)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">글로벌 매크로</div>
+    <div class="macro-grid">
+      <div class="macro-card">
+        <div class="macro-name">미 10년물</div>
+        <div class="macro-val"><span class="dn-txt">4.39%</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.06%p</span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">달러 인덱스</div>
+        <div class="macro-val"><span class="dn-txt">99.39</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.44 (0.44%)</span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">브렌트유</div>
+        <div class="macro-val"><span class="up-txt">$103.0</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $3.09 (3.09%)</span></div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">금 선물</div>
+        <div class="macro-val"><span class="dn-txt">$4,373</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $30.90 (0.70%)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">해외 뉴스</div>
+    <div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/24/moodys-private-credit-fund-kkr-future-standard-junk.html" target="_blank">Moody's cuts rating on private credit fund run by KKR and Future Standard t…</a></div>
+  <div class="news-meta">CNBC · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/24/oil-prices-today-wti-brent-middle-east-iran-war.html" target="_blank">Oil rises with Brent climbing back above $100 as optimism fades over Iran w…</a></div>
+  <div class="news-meta">CNBC · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/24/gap-google-gemini-checkout-ai-platform.html" target="_blank">Gap says it will launch checkout within Google's Gemini, in an AI first fro…</a></div>
+  <div class="news-meta">CNBC · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/24/ev-battery-startup-sion-power-defense-drones.html" target="_blank">EV battery startup pivots to defense industry amid Iran war, weak electric …</a></div>
+  <div class="news-meta">CNBC · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/24/amazon-zoox-robotaxi-rides-austin-miami.html" target="_blank">Amazon's Zoox to debut robotaxis in Austin, Miami later this year as it awa…</a></div>
+  <div class="news-meta">CNBC · 3월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/24/united-airlines-premium-seats.html" target="_blank">United ditches more economy seats to make room for bigger premium cabins wi…</a></div>
+  <div class="news-meta">CNBC · 3월 24일</div>
+</div>
+  </div>
+
+</div>
+
+<!-- ===== 부동산 탭 ===== -->
+<div id="tab-re" class="tab-panel">
+
+  <div class="section">
+    <div class="banner orange">
+      <strong>🏠 송파구 단지 시세 트래커</strong><br>
+      거여4단지 · 문정시영 최신 시세 및 리모델링 현황
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">거여4단지</div>
+    <div class="apt-card">
+      <div class="apt-header">
+        <div>
+          <div class="apt-name">거여4단지</div>
+          <div class="apt-info">거여동 · 5호선 거여역 도보 6분 · 546세대 · 1997년</div>
+        </div>
+        <div class="apt-status status-normal">투기지역</div>
+      </div>
+      <table class="apt-table">
+        <thead><tr><th>평형</th><th>실거래 (2025.11)</th><th>KB시세</th></tr></thead>
+        <tbody>
+          <tr><td><strong>17평</strong> 49㎡</td><td>8억4,790만</td><td style="color:var(--t3)">하위 8억5천</td></tr>
+          <tr><td><strong>21평</strong> 59㎡</td><td>10억4,000만</td><td style="color:var(--t3)">상위 9억2천</td></tr>
+          <tr><td><strong>26평</strong> 72㎡</td><td>8억9,000만</td><td style="color:var(--t3)">평균 8억9천</td></tr>
+        </tbody>
+      </table>
+      <div class="invest-point">
+        📍 1년 상승률 +3.81% · 거여역 도보권 · 재건축 인근 단지<br>
+        송파구 평균 대비 저평가 (평당 3,992만 vs 구 평균 6,909만)<br>
+        <span class="warn">⚠ 최신 실거래가는 호갱노노·KB부동산에서 확인</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">문정시영</div>
+    <div class="apt-card">
+      <div class="apt-header">
+        <div>
+          <div class="apt-name">문정시영</div>
+          <div class="apt-info">문정동 · 개롱역~거여역 사이 · 1,316세대 · 1989년</div>
+        </div>
+        <div class="apt-status status-remodel">리모델링</div>
+      </div>
+      <table class="apt-table">
+        <thead><tr><th>평형</th><th>실거래 (2025 하반기)</th><th>현재 호가</th></tr></thead>
+        <tbody>
+          <tr><td><strong>12평</strong> 25㎡</td><td>4억7,270만</td><td style="color:var(--orange)">6억</td></tr>
+          <tr><td><strong>16평</strong> 35㎡</td><td>5억8,100만</td><td style="color:var(--orange)">7억 중반</td></tr>
+          <tr><td><strong>18평</strong> 39㎡</td><td>7억5,705만</td><td style="color:var(--orange)">9억 초반</td></tr>
+          <tr><td><strong>22평</strong> 46㎡</td><td>9억5,850만</td><td style="color:var(--orange)">10억 초반</td></tr>
+        </tbody>
+      </table>
+      <div class="remodel-steps">
+        <div class="remodel-label">리모델링 진행 — 포스코이앤씨 · 더샵 골든하임</div>
+        <div class="step-row step-done"><div class="step-dot"></div>
+          <div class="step-text">조합설립 · 시공사 선정 · 안전진단 · 교통영향평가 · 도시건축위 사전자문 완료</div></div>
+        <div class="step-row step-current"><div class="step-dot"></div>
+          <div class="step-text">건축심의 + 안전성검토 진행 중 (2026년 중반 결론 예상)</div></div>
+        <div class="step-row step-todo"><div class="step-dot"></div>
+          <div class="step-text">사업계획승인 → 1,316 → 1,440세대 (+124가구)</div></div>
+      </div>
+      <div class="invest-point">
+        📍 강남3구 소형 최저가 · 더샵 브랜드 예정 · 18평 프리미엄↑<br>
+        16·18평 시세 격차 1.5억 확대 · 문정동 전체 개발 기대감<br>
+        <span class="warn">⚠ 최신 실거래가는 호갱노노·직방에서 확인</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">부동산 뉴스</div>
+    <div style="color:var(--t3);font-size:12px;padding:12px 0;">뉴스를 불러오는 중...</div>
+  </div>
+
+</div>
+
+<!-- ===== 핫이슈 탭 ===== -->
+<div id="tab-hot" class="tab-panel">
+
+  <div class="section">
+    <div class="banner hot">
+      <strong>🔥 오늘의 핫이슈</strong><br>
+      주요 뉴스와 시장 이슈를 확인하세요.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">핫이슈 뉴스</div>
+    <div style="color:var(--t3);font-size:12px;padding:12px 0;">뉴스를 불러오는 중...</div>
+  </div>
+
+</div>
+
+<div class="footer-note">
+  2026년 3월 24일 화요일 · 22:17 생성<br>
+  <span class="warn">⚠</span> 수급 데이터 자동 조회 / 부동산 시세는 직접 확인 권장
+</div>
+
+<script>
+function sw(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

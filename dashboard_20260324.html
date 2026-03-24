@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>국장 데일리 대시보드 2026년 3월 24일</title>
+<style>
+:root {
+  --bg: #080b10;
+  --card: #0f1318;
+  --card2: #151a22;
+  --border: rgba(255,255,255,.08);
+  --up: #00e896;
+  --dn: #ff4060;
+  --blue: #4da6ff;
+  --gold: #ffc940;
+  --orange: #ff8c3a;
+  --purple: #a78bfa;
+  --t1: #f0f4ff;
+  --t2: #b8ccee;
+  --t3: #6a80aa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--t1);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  font-size: 13px;
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: 24px;
+}
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* HEADER */
+.header {
+  padding: 16px 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.header-title { font-size: 11px; color: var(--t3); letter-spacing: .5px; text-transform: uppercase; }
+.header-date { font-size: 16px; font-weight: 700; color: var(--t1); line-height: 1.2; }
+.header-day { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.header-right { text-align: right; font-size: 11px; color: var(--t3); }
+
+/* TABS */
+.tab-nav {
+  display: flex;
+  margin: 12px 0 0;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+  padding: 0 4px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px 4px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--t3);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.tab-btn.active {
+  color: var(--t1);
+  border-bottom-color: var(--blue);
+  font-weight: 600;
+}
+
+/* TAB PANELS */
+.tab-panel { display: none; padding: 0 12px; }
+.tab-panel.active { display: block; }
+
+/* SECTION */
+.section { margin-top: 16px; }
+.section-label {
+  font-size: 10px;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  padding-left: 2px;
+}
+
+/* BANNER */
+.banner {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border-left: 3px solid;
+  margin-top: 12px;
+  line-height: 1.5;
+  font-size: 12.5px;
+}
+.banner.up { background: rgba(0,232,150,.08); border-color: var(--up); }
+.banner.dn { background: rgba(255,64,96,.09); border-color: var(--dn); }
+.banner.orange { background: rgba(255,140,58,.08); border-color: var(--orange); }
+.banner.blue { background: rgba(77,166,255,.08); border-color: var(--blue); }
+.banner.hot { background: rgba(255,64,96,.09); border-color: var(--gold); }
+.banner strong { font-weight: 700; }
+
+/* INDEX CARDS */
+.index-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.idx-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.idx-name { font-size: 11px; color: var(--t3); margin-bottom: 4px; }
+.idx-val { font-size: 20px; font-weight: 700; }
+.idx-chg { font-size: 12px; margin-top: 3px; }
+.up-txt { color: var(--up); }
+.dn-txt { color: var(--dn); }
+.neu-txt { color: var(--t2); }
+
+/* MACRO GRID */
+.macro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.macro-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 12px;
+}
+.macro-name { font-size: 10px; color: var(--t3); margin-bottom: 3px; }
+.macro-val { font-size: 15px; font-weight: 700; }
+.macro-chg { font-size: 11px; margin-top: 2px; }
+.macro-reason { font-size: 10px; color: var(--t3); margin-top: 4px; line-height: 1.4; }
+
+/* SUPPLY BAR CHART */
+.supply-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.supply-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.supply-row:last-child { margin-bottom: 0; }
+.supply-label { font-size: 11px; color: var(--t2); width: 44px; flex-shrink: 0; }
+.supply-bar-wrap { flex: 1; position: relative; height: 20px; background: var(--card2); border-radius: 4px; overflow: visible; }
+.supply-bar {
+  position: absolute;
+  top: 0; bottom: 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+.supply-bar.buy { left: 50%; background: rgba(0,232,150,.25); }
+.supply-bar.sell { right: 50%; background: rgba(255,64,96,.25); justify-content: flex-end; }
+.supply-center { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border); }
+.supply-amt { font-size: 10px; font-weight: 600; padding: 0 5px; white-space: nowrap; }
+.supply-amt.buy { color: var(--up); }
+.supply-amt.sell { color: var(--dn); }
+.supply-sub { font-size: 10px; color: var(--t3); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+
+/* SECTOR */
+.sector-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.sector-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.sector-row:last-child { margin-bottom: 0; }
+.sector-name { font-size: 11px; color: var(--t2); width: 68px; flex-shrink: 0; }
+.sector-bar-wrap { flex: 1; height: 16px; background: var(--card2); border-radius: 4px; overflow: hidden; position: relative; }
+.sector-bar {
+  height: 100%;
+  border-radius: 4px;
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+}
+.sector-bar.up-bar { left: 0; background: rgba(0,232,150,.3); }
+.sector-bar.dn-bar { right: 0; background: rgba(255,64,96,.3); }
+.sector-pct { font-size: 11px; font-weight: 600; width: 44px; text-align: right; flex-shrink: 0; }
+
+/* FEATURED */
+.feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.feat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+.feat-badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.badge-up { background: rgba(0,232,150,.15); color: var(--up); }
+.badge-dn { background: rgba(255,64,96,.15); color: var(--dn); }
+.badge-gold { background: rgba(255,201,64,.15); color: var(--gold); }
+.feat-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.feat-detail { font-size: 10px; color: var(--t3); line-height: 1.4; }
+
+/* THEME TAGS */
+.theme-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.theme-tag {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 11px;
+  font-size: 11px;
+  color: var(--t2);
+}
+.theme-tag.hot { border-color: rgba(255,64,96,.4); color: #ff8090; }
+.theme-tag.hot2 { border-color: rgba(255,201,64,.3); color: var(--gold); }
+.theme-tag.hot3 { border-color: rgba(0,232,150,.3); color: var(--up); }
+
+/* STOCK TABLE */
+.stock-table { width: 100%; border-collapse: collapse; }
+.stock-table th {
+  font-size: 10px;
+  color: var(--t3);
+  font-weight: 400;
+  padding: 6px 6px;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+.stock-table th:first-child { text-align: left; }
+.stock-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  font-size: 12px;
+}
+.stock-table td:not(:first-child) { text-align: right; }
+.stock-table tr:last-child td { border-bottom: none; }
+.stock-num { font-size: 10px; color: var(--t3); margin-right: 4px; }
+
+/* NEWS */
+.news-list { display: flex; flex-direction: column; gap: 1px; }
+.news-item {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 11px 12px;
+  margin-bottom: 6px;
+  border-left: 3px solid var(--border);
+}
+.news-item:hover { border-left-color: var(--blue); }
+.news-badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.nb-red { background: rgba(255,64,96,.15); color: #ff6080; }
+.nb-blue { background: rgba(77,166,255,.15); color: var(--blue); }
+.nb-green { background: rgba(0,232,150,.15); color: var(--up); }
+.nb-gold { background: rgba(255,201,64,.15); color: var(--gold); }
+.nb-purple { background: rgba(167,139,250,.15); color: var(--purple); }
+.nb-orange { background: rgba(255,140,58,.15); color: var(--orange); }
+.news-title { font-size: 12.5px; font-weight: 600; line-height: 1.4; color: var(--t1); }
+.news-title a { color: var(--t1); }
+.news-title a:hover { color: var(--blue); text-decoration: none; }
+.news-meta { font-size: 10px; color: var(--t3); margin-top: 4px; }
+
+/* CALENDAR */
+.cal-list { display: flex; flex-direction: column; gap: 6px; }
+.cal-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 9px 12px;
+  background: var(--card);
+  border-radius: 8px;
+}
+.cal-date {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue);
+  min-width: 42px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.cal-content { font-size: 12px; color: var(--t2); line-height: 1.4; }
+.cal-content strong { color: var(--t1); }
+
+/* REAL ESTATE */
+.apt-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.apt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.apt-name { font-size: 15px; font-weight: 700; }
+.apt-info { font-size: 10px; color: var(--t3); margin-top: 3px; }
+.apt-status {
+  font-size: 9px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.status-remodel { background: rgba(167,139,250,.15); color: var(--purple); }
+.status-normal { background: rgba(77,166,255,.12); color: var(--blue); }
+.apt-table { width: 100%; border-collapse: collapse; }
+.apt-table th {
+  font-size: 10px;
+  color: var(--t3);
+  font-weight: 400;
+  padding: 5px 6px;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+.apt-table th:first-child { text-align: left; }
+.apt-table td {
+  padding: 7px 6px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  font-size: 11px;
+}
+.apt-table td:not(:first-child) { text-align: right; }
+.apt-table tr:last-child td { border-bottom: none; }
+.remodel-steps { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+.remodel-label { font-size: 10px; color: var(--t3); margin-bottom: 6px; }
+.step-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.step-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.step-text { font-size: 11px; color: var(--t2); }
+.step-done .step-dot { background: var(--up); }
+.step-done .step-text { color: var(--t3); }
+.step-current .step-dot { background: var(--gold); }
+.step-current .step-text { color: var(--gold); font-weight: 600; }
+.step-todo .step-dot { background: var(--border); }
+.step-todo .step-text { color: var(--t3); }
+.invest-point {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--card2);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--t2);
+  line-height: 1.5;
+}
+
+/* RE METRICS */
+.re-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.re-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 12px;
+}
+.re-label { font-size: 10px; color: var(--t3); margin-bottom: 4px; }
+.re-val { font-size: 14px; font-weight: 700; color: var(--orange); }
+.re-sub { font-size: 10px; color: var(--t3); margin-top: 3px; }
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 18px; }
+.timeline::before { content: ''; position: absolute; left: 5px; top: 0; bottom: 0; width: 1px; background: var(--border); }
+.tl-item { position: relative; margin-bottom: 10px; }
+.tl-item::before { content: ''; position: absolute; left: -16px; top: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
+.tl-time { font-size: 10px; color: var(--t3); margin-bottom: 2px; }
+.tl-text { font-size: 12px; color: var(--t2); line-height: 1.4; }
+.tl-text strong { color: var(--t1); }
+
+/* WARN */
+.warn { color: var(--gold); font-size: 10px; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* FOOTER NOTE */
+.footer-note { font-size: 10px; color: var(--t3); text-align: center; padding: 16px 0 4px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">국장 데일리 대시보드</div>
+    <div class="header-date">2026년 3월 24일 화요일</div>
+    <div class="header-day">장 마감 기준</div>
+  </div>
+  <div class="header-right">
+    트럼프 이란 협상<br>
+    코스피 강세 마감
+  </div>
+</div>
+
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('dom')">📈 국내</button>
+  <button class="tab-btn" onclick="switchTab('us')">🇺🇸 해외</button>
+  <button class="tab-btn" onclick="switchTab('re')">🏠 부동산</button>
+  <button class="tab-btn" onclick="switchTab('hot')">🔥 핫이슈</button>
+</nav>
+
+<!-- ===== TAB: 국내 ===== -->
+<div id="tab-dom" class="tab-panel active">
+
+  <!-- 시황 배너 -->
+  <div class="section">
+    <div class="banner up">
+      <strong>이란 협상 기대 + 뉴욕 급등에 코스피 급락분 만회·강세 마감</strong><br>
+      외국인 2조 순매도 속에도 개인·기관이 받아내며 코스피 +2.74% 종료. 장 중 5,300선까지 밀렸으나 트럼프 이란 협상 기대에 5,500선 위로 복귀.
+    </div>
+  </div>
+
+  <!-- 지수 카드 -->
+  <div class="section">
+    <div class="section-label">국내 지수</div>
+    <div class="index-grid">
+      <div class="idx-card">
+        <div class="idx-name">코스피</div>
+        <div class="idx-val up-txt">5,553</div>
+        <div class="idx-chg up-txt">▲ 148.17 (+2.74%)</div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">코스닥</div>
+        <div class="idx-val up-txt">1,121</div>
+        <div class="idx-chg up-txt">▲ 24.55 (+2.24%)</div>
+      </div>
+    </div>
+    <div style="margin-top:8px; background:var(--card); border:1px solid rgba(255,64,96,.25); border-radius:8px; padding:9px 12px;">
+      <span style="font-size:10px; color:#ff8090; font-weight:600;">⚡ 전일(3월 23일) 매도 사이드카 발동</span>
+      <span style="font-size:10px; color:var(--t3);"> — 오늘 급락분 전량 만회 강세</span>
+    </div>
+  </div>
+
+  <!-- 매크로 -->
+  <div class="section">
+    <div class="section-label">매크로 지표</div>
+    <div class="macro-grid">
+      <div class="macro-card">
+        <div class="macro-name">USD/KRW</div>
+        <div class="macro-val neu-txt">~1,510원 <span class="warn">⚠</span></div>
+        <div class="macro-chg dn-txt">▲ 고환율 지속</div>
+        <div class="macro-reason">장중 1,502~1,517원 범위. 이란 리스크·에너지 수입 부담으로 달러 수요↑</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">브렌트유</div>
+        <div class="macro-val neu-txt">$100↓ <span class="warn">⚠</span></div>
+        <div class="macro-chg dn-txt">▼ 10%+ 급락</div>
+        <div class="macro-reason">트럼프 이란 발전소 5일 공격유예 발표 → 유가 100달러 이하 복귀</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">WTI</div>
+        <div class="macro-val neu-txt">장중 변동 <span class="warn">⚠</span></div>
+        <div class="macro-chg dn-txt">▼ 동반 급락</div>
+        <div class="macro-reason">브렌트유 동조. 협상 기대감에 중동 리스크 프리미엄 일부 해소</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">미 10년물</div>
+        <div class="macro-val dn-txt">4.38%</div>
+        <div class="macro-chg dn-txt">▲ 급등</div>
+        <div class="macro-reason">유가 인플레 우려 → 연준 금리인하 기대 약화, 2025년 7월 이후 최고</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">금 선물</div>
+        <div class="macro-val dn-txt">~$4,500 <span class="warn">⚠</span></div>
+        <div class="macro-chg dn-txt">▼ 8일 연속 약세</div>
+        <div class="macro-reason">달러 강세·금리 상승 압력이 안전자산 수요 상회. 전고점 대비 밀림</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">달러 인덱스</div>
+        <div class="macro-val dn-txt">99.58</div>
+        <div class="macro-chg dn-txt">▲ 강세</div>
+        <div class="macro-reason">인플레 우려 + 안전자산 달러 수요. 주요 통화 대비 강세 지속</div>
+      </div>
+      <div class="macro-card" style="grid-column: span 2;">
+        <div class="macro-name">한국은행 기준금리</div>
+        <div class="macro-val neu-txt">2.50% <span style="font-size:11px; color:var(--t3); font-weight:400;">동결</span></div>
+        <div class="macro-reason">물가 목표 수준 근접 유지. 차기 총재(신현송) 지명 → 매파 성향 주목</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 수급 -->
+  <div class="section">
+    <div class="section-label">코스피 수급</div>
+    <div class="supply-wrap">
+      <div class="supply-row">
+        <div class="supply-label">외국인</div>
+        <div class="supply-bar-wrap">
+          <div class="supply-center"></div>
+          <div class="supply-bar sell" style="width:100%;">
+            <span class="supply-amt sell">▼ 1조9,792억</span>
+          </div>
+        </div>
+      </div>
+      <div class="supply-row">
+        <div class="supply-label">기관</div>
+        <div class="supply-bar-wrap">
+          <div class="supply-center"></div>
+          <div class="supply-bar buy" style="width:49%;">
+            <span class="supply-amt buy">▲ 9,674억</span>
+          </div>
+        </div>
+      </div>
+      <div class="supply-row">
+        <div class="supply-label">개인</div>
+        <div class="supply-bar-wrap">
+          <div class="supply-center"></div>
+          <div class="supply-bar buy" style="width:37%;">
+            <span class="supply-amt buy">▲ 7,230억</span>
+          </div>
+        </div>
+      </div>
+      <div class="supply-sub">
+        코스닥: 외국인 +1,670억 · 기관 +219억 · 개인 -1,591억 &nbsp;|&nbsp; 외인 선물 포지션: <span class="warn">⚠ 실시간 앱 확인</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹터 -->
+  <div class="section">
+    <div class="section-label">섹터 동향 <span class="warn">⚠ 추정</span></div>
+    <div class="sector-wrap">
+      <div class="sector-row">
+        <div class="sector-name">방산·항공</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:80%;"></div>
+        </div>
+        <div class="sector-pct up-txt">+강세</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">바이오</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:55%;"></div>
+        </div>
+        <div class="sector-pct up-txt">+강세</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">조선·중공업</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:48%;"></div>
+        </div>
+        <div class="sector-pct up-txt">+상승</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">금융·보험</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:30%;"></div>
+        </div>
+        <div class="sector-pct up-txt">+소폭</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">반도체</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar dn-bar" style="width:40%;"></div>
+        </div>
+        <div class="sector-pct dn-txt">-약세</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">정유·화학</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar dn-bar" style="width:35%;"></div>
+        </div>
+        <div class="sector-pct dn-txt">-혼조</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">건설·부동산</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar dn-bar" style="width:25%;"></div>
+        </div>
+        <div class="sector-pct dn-txt">-소폭</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 특징주 -->
+  <div class="section">
+    <div class="section-label">당일 특징주</div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div><span class="feat-badge badge-up">급등</span></div>
+        <div class="feat-name">두산에너빌리티</div>
+        <div class="feat-detail">+2.92% / 원전·방산 수혜<br>이란 전쟁 관련주</div>
+      </div>
+      <div class="feat-card">
+        <div><span class="feat-badge badge-up">강세</span></div>
+        <div class="feat-name">삼성바이오로직스</div>
+        <div class="feat-detail">+1.01% / 바이오 대표주<br>수급 방어 종목</div>
+      </div>
+      <div class="feat-card">
+        <div><span class="feat-badge badge-up">강세</span></div>
+        <div class="feat-name">LG에너지솔루션</div>
+        <div class="feat-detail">+0.94% / 2차전지<br>외국인 매도 속 선방</div>
+      </div>
+      <div class="feat-card">
+        <div><span class="feat-badge badge-dn">약세</span></div>
+        <div class="feat-name">삼성전자·하이닉스</div>
+        <div class="feat-detail">이란發 반도체 소재<br>공급망 불안 우려</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 테마 -->
+  <div class="section">
+    <div class="section-label">핫 테마</div>
+    <div class="theme-wrap">
+      <span class="theme-tag hot">이란전쟁 관련주</span>
+      <span class="theme-tag hot2">방산·항공</span>
+      <span class="theme-tag hot2">유가 급락 수혜</span>
+      <span class="theme-tag hot3">바이오·제약</span>
+      <span class="theme-tag hot3">조선</span>
+      <span class="theme-tag">반도체 공급망</span>
+      <span class="theme-tag">한은 총재 교체</span>
+    </div>
+  </div>
+
+  <!-- 시총 상위 -->
+  <div class="section">
+    <div class="section-label">시총 상위 종목</div>
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:4px 10px 6px;">
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th>종목</th>
+            <th>등락률</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="stock-num">1</span>삼성전자</td>
+            <td class="dn-txt">▼ 약세</td>
+            <td style="font-size:10px; color:var(--t3);">공급망 우려</td>
+          </tr>
+          <tr>
+            <td><span class="stock-num">2</span>SK하이닉스</td>
+            <td class="dn-txt">▼ 약세</td>
+            <td style="font-size:10px; color:var(--t3);">반도체 소재↓</td>
+          </tr>
+          <tr>
+            <td><span class="stock-num">3</span>삼성바이오</td>
+            <td class="up-txt">▲ +1.01%</td>
+            <td style="font-size:10px; color:var(--t3);">방어 강세</td>
+          </tr>
+          <tr>
+            <td><span class="stock-num">4</span>LG에너솔</td>
+            <td class="up-txt">▲ +0.94%</td>
+            <td style="font-size:10px; color:var(--t3);">선방</td>
+          </tr>
+          <tr>
+            <td><span class="stock-num">5</span>두산에너빌</td>
+            <td class="up-txt">▲ +2.92%</td>
+            <td style="font-size:10px; color:var(--t3);">방산 수혜</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="font-size:10px; color:var(--t3); margin-top:6px; padding-top:6px; border-top:1px solid var(--border);">
+        <span class="warn">⚠</span> 전체 시총 순위는 실시간 앱에서 확인
+      </div>
+    </div>
+  </div>
+
+  <!-- 국내 뉴스 -->
+  <div class="section">
+    <div class="section-label">국내 주요 뉴스</div>
+    <div class="news-list">
+      <div class="news-item">
+        <div><span class="news-badge nb-green">증시마감</span></div>
+        <div class="news-title">
+          <a href="https://www.mt.co.kr/stock/2026/03/24/2026032415473396866" target="_blank">
+            2조 판 외인, 개인·기관이 받았다…코스피 급락분 만회, 강세 마감
+          </a>
+        </div>
+        <div class="news-meta">머니투데이 · 3월 24일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-red">중동</span></div>
+        <div class="news-title">
+          <a href="https://www.mt.co.kr/stock/2026/03/23/2026032308531921212" target="_blank">
+            코스피 매도 사이드카…"이란 초토화" 으름장에 퍼렇게 질린 K증시
+          </a>
+        </div>
+        <div class="news-meta">머니투데이 · 3월 23일 (전일)</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-blue">한국은행</span></div>
+        <div class="news-title">
+          차기 한국은행 총재 신현송 지명 — 매파 성향, 금융안정 중시
+        </div>
+        <div class="news-meta">경제지 공동 · 3월 24일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-red">반도체</span></div>
+        <div class="news-title">
+          이란發 반도체 소재 공급 불안 확대…삼성·SK 초비상
+        </div>
+        <div class="news-meta">국내 경제지 · 3월 24일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-blue">환율</span></div>
+        <div class="news-title">
+          원달러 환율, 상방 압력 지속…중동 불안·달러 강세 이중고
+        </div>
+        <div class="news-meta">국내 경제지 · 3월 24일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-gold">실적전망</span></div>
+        <div class="news-title">
+          삼성전자·SK하이닉스 1Q 합산 영업이익 70조 전망…AI 반도체 호황
+        </div>
+        <div class="news-meta">국내 경제지 · 3월 24일</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 향후 일정 -->
+  <div class="section">
+    <div class="section-label">향후 일정</div>
+    <div class="cal-list">
+      <div class="cal-item">
+        <div class="cal-date">3월 27일</div>
+        <div class="cal-content"><strong>트럼프 이란 협상 5일 기한</strong> — 공격유예 만료, 협상 결과 주목</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">3월 말</div>
+        <div class="cal-content"><strong>1분기 실적 프리뷰</strong> — 삼성전자·SK하이닉스 영업이익 발표 임박</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">4월</div>
+        <div class="cal-content"><strong>한국은행 총재 교체</strong> — 신현송 취임 시 통화정책 방향 변화 주시</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- END TAB: 국내 -->
+
+
+<!-- ===== TAB: 해외 ===== -->
+<div id="tab-us" class="tab-panel">
+
+  <!-- 시황 배너 -->
+  <div class="section">
+    <div class="banner blue">
+      <strong>트럼프 이란 폭격 유예 선언 → 뉴욕 3대 지수 일제 급등</strong><br>
+      S&P500 +1.15%, 다우 +631pt. 유가 10%+ 급락. 중동 협상 기대감에 위험 선호 심리 회복.
+    </div>
+  </div>
+
+  <!-- 해외 지수 -->
+  <div class="section">
+    <div class="section-label">해외 주요 지수 (3월 23일 미국 마감)</div>
+    <div class="index-grid">
+      <div class="idx-card">
+        <div class="idx-name">S&amp;P 500</div>
+        <div class="idx-val up-txt">6,581</div>
+        <div class="idx-chg up-txt">▲ +1.15%</div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">나스닥 100</div>
+        <div class="idx-val up-txt">21,946</div>
+        <div class="idx-chg up-txt">▲ +1.38%</div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">다우존스</div>
+        <div class="idx-val up-txt">46,208</div>
+        <div class="idx-chg up-txt">▲ +631pt (+1.38%)</div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">닛케이 225</div>
+        <div class="idx-val neu-txt" style="font-size:14px;">장중 변동 <span class="warn">⚠</span></div>
+        <div class="idx-chg" style="font-size:10px; color:var(--t3);">실시간 앱 확인</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 글로벌 매크로 -->
+  <div class="section">
+    <div class="section-label">글로벌 매크로</div>
+    <div class="macro-grid">
+      <div class="macro-card">
+        <div class="macro-name">미 10년물 금리</div>
+        <div class="macro-val dn-txt">4.38%</div>
+        <div class="macro-chg dn-txt">▲ 2025.7월 이후 최고</div>
+        <div class="macro-reason">유가 인플레 → 연준 금리인하 기대 후퇴</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">달러 인덱스</div>
+        <div class="macro-val dn-txt">99.58</div>
+        <div class="macro-chg dn-txt">▲ 강세</div>
+        <div class="macro-reason">안전자산 수요 + 인플레 우려</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">브렌트유</div>
+        <div class="macro-val neu-txt">$100↓ <span class="warn">⚠</span></div>
+        <div class="macro-chg up-txt">▼ 10%+ 급락</div>
+        <div class="macro-reason">트럼프 5일 공격유예 발표로 리스크 프리미엄 급감</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">금 선물</div>
+        <div class="macro-val dn-txt">~$4,500 <span class="warn">⚠</span></div>
+        <div class="macro-chg dn-txt">▼ 8일 연속 하락</div>
+        <div class="macro-reason">달러·금리 상승 압력이 안전자산 수요 압도</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 해외 섹터 -->
+  <div class="section">
+    <div class="section-label">미국 섹터 동향 (3월 23일) <span class="warn">⚠ 추정</span></div>
+    <div class="sector-wrap">
+      <div class="sector-row">
+        <div class="sector-name">에너지</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar dn-bar" style="width:70%;"></div>
+        </div>
+        <div class="sector-pct dn-txt">-하락</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">항공우주·방산</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:65%;"></div>
+        </div>
+        <div class="sector-pct up-txt">+강세</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">테크·AI</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:60%;"></div>
+        </div>
+        <div class="sector-pct up-txt">+상승</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">금융</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:45%;"></div>
+        </div>
+        <div class="sector-pct up-txt">+상승</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">소비재</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:35%;"></div>
+        </div>
+        <div class="sector-pct up-txt">+소폭</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 해외 주요 종목 -->
+  <div class="section">
+    <div class="section-label">해외 주요 종목 (3월 23일 마감)</div>
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:4px 10px 6px;">
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th>종목</th>
+            <th>등락</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>테슬라</td>
+            <td class="up-txt">▲ 강세</td>
+            <td style="font-size:10px; color:var(--t3);">트럼프 발언 수혜</td>
+          </tr>
+          <tr>
+            <td>엔비디아</td>
+            <td class="up-txt">▲ 강세</td>
+            <td style="font-size:10px; color:var(--t3);">AI 수요 지속</td>
+          </tr>
+          <tr>
+            <td>엑손모빌</td>
+            <td class="dn-txt">▼ 약세</td>
+            <td style="font-size:10px; color:var(--t3);">유가 급락 직격</td>
+          </tr>
+          <tr>
+            <td>록히드마틴</td>
+            <td class="up-txt">▲ 강세</td>
+            <td style="font-size:10px; color:var(--t3);">방산 수혜</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="font-size:10px; color:var(--t3); margin-top:6px; padding-top:6px; border-top:1px solid var(--border);">
+        <span class="warn">⚠</span> 정확한 가격은 실시간 앱 확인
+      </div>
+    </div>
+  </div>
+
+  <!-- 해외 뉴스 -->
+  <div class="section">
+    <div class="section-label">해외 주요 뉴스</div>
+    <div class="news-list">
+      <div class="news-item">
+        <div><span class="news-badge nb-red">중동</span></div>
+        <div class="news-title">
+          <a href="https://www.mt.co.kr/world/2026/03/23/2026032321320086386" target="_blank">
+            트럼프, 이란 발전소 공격 전격 보류…"이란, 간절히 합의 원해"
+          </a>
+        </div>
+        <div class="news-meta">머니투데이 · 3월 23일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-green">미국증시</span></div>
+        <div class="news-title">
+          <a href="https://247wallst.com/investing/2026/03/23/stock-market-live-march-23-2026-sp-500-spy-soars-on-trump-announcement/" target="_blank">
+            Stock Market Live March 23: S&amp;P 500 Soars on Trump Announcement
+          </a>
+        </div>
+        <div class="news-meta">247 Wall St. · 3월 23일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-blue">CNBC</span></div>
+        <div class="news-title">
+          <a href="https://www.cnbc.com/2026/03/23/stock-market-today-live-updates.html" target="_blank">
+            S&amp;P 500 futures pull back after Monday's rally as oil prices rebound
+          </a>
+        </div>
+        <div class="news-meta">CNBC · 3월 23일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-red">중동</span></div>
+        <div class="news-title">
+          <a href="https://www.newdaily.co.kr/site/data/html/2026/03/23/2026032300397.html" target="_blank">
+            [속보] 트럼프 "이란 발전소·에너지시설 5일간 공격중단 지시"
+          </a>
+        </div>
+        <div class="news-meta">뉴데일리 · 3월 23일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-blue">유가</span></div>
+        <div class="news-title">
+          <a href="https://www.vietnam.vn/en/gia-xang-dau-the-gioi-ngay-24-3-2026-dau-brent-tang-manh-len-muc-103-67-usd-thung" target="_blank">
+            World oil prices on March 24, 2026: Brent crude movements
+          </a>
+        </div>
+        <div class="news-meta">Vietnam.vn · 3월 24일</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 실적 발표 일정 -->
+  <div class="section">
+    <div class="section-label">향후 실적·일정</div>
+    <div class="cal-list">
+      <div class="cal-item">
+        <div class="cal-date">3월 27일</div>
+        <div class="cal-content"><strong>트럼프-이란 협상 기한</strong> — 5일 유예 만료, 군사 행동 재개 여부</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">4월 초</div>
+        <div class="cal-content"><strong>미국 1Q 실적 시즌 시작</strong> — 빅테크·금융사 순차 발표</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">4월 FOMC</div>
+        <div class="cal-content"><strong>연준 회의</strong> — 고유가·인플레 속 금리 동결 가능성 높음</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- END TAB: 해외 -->
+
+
+<!-- ===== TAB: 부동산 ===== -->
+<div id="tab-re" class="tab-panel">
+
+  <!-- 배너 -->
+  <div class="section">
+    <div class="banner orange">
+      <strong>3월 전국 입주 물량 65% 급감…공급 부족 속 수도권 상승 지속</strong><br>
+      3월 전국 아파트 입주 9,597가구로 전년 대비 -65%. 서울 공시가격 +18% → 세금 부담 급증. 수도권 매매가 안정적 상승세.
+    </div>
+  </div>
+
+  <!-- 핵심 지표 -->
+  <div class="section">
+    <div class="section-label">부동산 핵심 지표</div>
+    <div class="re-grid">
+      <div class="re-card">
+        <div class="re-label">전국 아파트 매매 (3월 2주)</div>
+        <div class="re-val">+0.04%</div>
+        <div class="re-sub">안정적 상승 지속</div>
+      </div>
+      <div class="re-card">
+        <div class="re-label">전국 아파트 전세 (3월 2주)</div>
+        <div class="re-val">+0.09%</div>
+        <div class="re-sub">전세 오름세 지속</div>
+      </div>
+      <div class="re-card">
+        <div class="re-label">서울 공시가격 (2026)</div>
+        <div class="re-val">+18%↑</div>
+        <div class="re-sub">전국 평균 +9.16%</div>
+      </div>
+      <div class="re-card">
+        <div class="re-label">3월 전국 입주 물량</div>
+        <div class="re-val" style="color:var(--dn);">9,597가구</div>
+        <div class="re-sub">전년 比 -65% 급감</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 지역별 바차트 -->
+  <div class="section">
+    <div class="section-label">지역별 아파트 매매 동향 (3월 2주)</div>
+    <div class="sector-wrap">
+      <div class="sector-row">
+        <div class="sector-name">서울</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:70%;"></div>
+        </div>
+        <div class="sector-pct up-txt" style="color:var(--orange);">상승</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">경기</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:65%; background:rgba(255,140,58,.25);"></div>
+        </div>
+        <div class="sector-pct" style="color:var(--orange);">+0.10%</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">인천</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:40%; background:rgba(255,140,58,.2);"></div>
+        </div>
+        <div class="sector-pct" style="color:var(--orange);">소폭↑</div>
+      </div>
+      <div class="sector-row">
+        <div class="sector-name">지방</div>
+        <div class="sector-bar-wrap">
+          <div class="sector-bar up-bar" style="width:15%; background:rgba(255,140,58,.1);"></div>
+        </div>
+        <div class="sector-pct" style="color:var(--t3);">정체</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 거여4단지 -->
+  <div class="section">
+    <div class="section-label">송파구 단지 시세 트래커</div>
+    <div class="apt-card">
+      <div class="apt-header">
+        <div>
+          <div class="apt-name">거여4단지</div>
+          <div class="apt-info">거여동 · 5호선 거여역 도보 6분 · 546세대 · 1997년</div>
+        </div>
+        <div class="apt-status status-normal">투기지역</div>
+      </div>
+      <table class="apt-table">
+        <thead>
+          <tr>
+            <th>평형</th>
+            <th>실거래 (2025.11)</th>
+            <th>KB시세</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>17평</strong> 49㎡</td>
+            <td>평균 8억4,790만</td>
+            <td style="color:var(--t3);">하위 8억5천</td>
+          </tr>
+          <tr>
+            <td><strong>21평</strong> 59㎡</td>
+            <td>10억4,000만</td>
+            <td style="color:var(--t3);">상위 9억2천</td>
+          </tr>
+          <tr>
+            <td><strong>26평</strong> 72㎡</td>
+            <td>8억9,000만</td>
+            <td style="color:var(--t3);">평균 8억9천</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="invest-point">
+        📍 1년 상승률 +3.81% · 거여역 도보권 · 재건축 인근<br>
+        송파구 평균 대비 저평가 (평당 3,992만 vs 구 평균 6,909만)<br>
+        <span class="warn">⚠ 2026년 3월 최신 실거래 업데이트 필요</span>
+      </div>
+    </div>
+
+    <!-- 문정시영 -->
+    <div class="apt-card">
+      <div class="apt-header">
+        <div>
+          <div class="apt-name">문정시영</div>
+          <div class="apt-info">문정동 · 개롱역~거여역 사이 · 1,316세대 · 1989년</div>
+        </div>
+        <div class="apt-status status-remodel">리모델링</div>
+      </div>
+      <table class="apt-table">
+        <thead>
+          <tr>
+            <th>평형</th>
+            <th>실거래 (2025 하반기)</th>
+            <th>현재 호가</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>12평</strong> 25㎡</td>
+            <td>4억7,270만</td>
+            <td style="color:var(--orange);">6억</td>
+          </tr>
+          <tr>
+            <td><strong>16평</strong> 35㎡</td>
+            <td>5억8,100만</td>
+            <td style="color:var(--orange);">7억 중반</td>
+          </tr>
+          <tr>
+            <td><strong>18평</strong> 39㎡</td>
+            <td>7억5,705만</td>
+            <td style="color:var(--orange);">9억 초반</td>
+          </tr>
+          <tr>
+            <td><strong>22평</strong> 46㎡</td>
+            <td>9억5,850만</td>
+            <td style="color:var(--orange);">10억 초반</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="remodel-steps">
+        <div class="remodel-label">리모델링 진행 현황 — 포스코이앤씨 · 더샵 골든하임</div>
+        <div class="step-row step-done">
+          <div class="step-dot"></div>
+          <div class="step-text">조합설립(2019) · 시공사 선정 · 안전진단 · 교통영향평가 · 도시건축위원회 사전자문 완료</div>
+        </div>
+        <div class="step-row step-current">
+          <div class="step-dot"></div>
+          <div class="step-text">건축심의 + 1차 안전성검토 진행 중 (2026년 중반 결론 예상)</div>
+        </div>
+        <div class="step-row step-todo">
+          <div class="step-dot"></div>
+          <div class="step-text">사업계획승인 → 1,316세대 → 1,440세대 (+124가구)</div>
+        </div>
+        <div class="step-row step-todo">
+          <div class="step-dot"></div>
+          <div class="step-text">평형 확장: 12평→32㎡ / 16평→44㎡ / 18평→49·54㎡ / 22평→57·59㎡</div>
+        </div>
+      </div>
+
+      <div class="invest-point">
+        📍 강남3구 소형 최저가 진입 단지 · 더샵 브랜드 적용 예정<br>
+        16·18평 시세 격차 1.5억 확대 중 → 18평 프리미엄↑<br>
+        주변 문정래미안도 리모델링 논의 → 문정동 전체 개발 기대감<br>
+        <span class="warn">⚠ 2026년 3월 최신 실거래 업데이트 필요</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 부동산 뉴스 -->
+  <div class="section">
+    <div class="section-label">부동산 뉴스</div>
+    <div class="news-list">
+      <div class="news-item" style="border-left-color:var(--orange);">
+        <div><span class="news-badge nb-orange">입주물량</span></div>
+        <div class="news-title">
+          <a href="https://biz.heraldcorp.com/article/10679947" target="_blank">
+            3월 전국 아파트 1만가구 입주…1년 전보다 65% 감소
+          </a>
+        </div>
+        <div class="news-meta">헤럴드경제 · 3월</div>
+      </div>
+      <div class="news-item" style="border-left-color:var(--orange);">
+        <div><span class="news-badge nb-orange">공시가격</span></div>
+        <div class="news-title">
+          <a href="https://mhb-blog.com/2026-apartment-price-check/" target="_blank">
+            2026 아파트 공시가격 조회 — 서울 +18%, 내 세금 결정짓는 3월 핵심 일정
+          </a>
+        </div>
+        <div class="news-meta">부동산 블로그 · 3월</div>
+      </div>
+      <div class="news-item" style="border-left-color:var(--orange);">
+        <div><span class="news-badge nb-orange">시세동향</span></div>
+        <div class="news-title">
+          <a href="https://www.jjmagazin.com/news/articleView.html?idxno=55836" target="_blank">
+            2026년 3월 2주 주간 아파트 매매가격 동향 — 전국 +0.04%, 경기 +0.10%
+          </a>
+        </div>
+        <div class="news-meta">한국부동산원 · 3월 2주</div>
+      </div>
+      <div class="news-item" style="border-left-color:var(--orange);">
+        <div><span class="news-badge nb-orange">전망</span></div>
+        <div class="news-title">
+          <a href="https://www.kfenews.co.kr/news/articleView.html?idxno=652280" target="_blank">
+            2026년 수도권 주택시장 '상승세' 이어갈까…공급 제약 속 아파트 강세 전망
+          </a>
+        </div>
+        <div class="news-meta">한국금융경제신문 · 3월</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 부동산 일정 -->
+  <div class="section">
+    <div class="section-label">향후 부동산 일정</div>
+    <div class="cal-list">
+      <div class="cal-item">
+        <div class="cal-date">3월 말</div>
+        <div class="cal-content"><strong>2026 공시가격 열람 기간</strong> — 의견 제출 기한 확인 필요</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">2026년 중반</div>
+        <div class="cal-content"><strong>문정시영 건축심의 결론</strong> — 1차 안전성검토 완료 예정</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">4월~</div>
+        <div class="cal-content"><strong>수도권 입주 물량 회복 여부</strong> — 공급 감소 지속 시 가격 추가 상승 압력</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- END TAB: 부동산 -->
+
+
+<!-- ===== TAB: 핫이슈 ===== -->
+<div id="tab-hot" class="tab-panel">
+
+  <!-- 배너 -->
+  <div class="section">
+    <div class="banner hot">
+      <strong>트럼프 이란 협상 D-3 · 유가 급락 · 코스피 대반등</strong><br>
+      3월 23일 트럼프 5일 공격유예 선언으로 글로벌 시장 급격 반전. 이란 측은 협상 부인. 3월 27일 기한이 핵심 변수.
+    </div>
+  </div>
+
+  <!-- 핫 키워드 -->
+  <div class="section">
+    <div class="section-label">오늘의 핫 키워드</div>
+    <div class="theme-wrap">
+      <span class="theme-tag hot">트럼프-이란 협상</span>
+      <span class="theme-tag hot">유가 급락 -10%</span>
+      <span class="theme-tag hot2">코스피 대반등</span>
+      <span class="theme-tag hot2">공포탐욕 8 극단적공포</span>
+      <span class="theme-tag hot3">외인 2조 매도</span>
+      <span class="theme-tag">한은 총재 교체</span>
+      <span class="theme-tag">달러인덱스 99</span>
+      <span class="theme-tag">금 8일 연속 하락</span>
+    </div>
+  </div>
+
+  <!-- 타임라인 -->
+  <div class="section">
+    <div class="section-label">오늘의 주요 타임라인</div>
+    <div style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:14px;">
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-time">3월 23일 새벽</div>
+          <div class="tl-text"><strong>트럼프 "이란 발전소 5일 공격유예"</strong> 발표 — 글로벌 위험자산 반등 시작</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-time">3월 23일 뉴욕 마감</div>
+          <div class="tl-text"><strong>S&amp;P500 +1.15%, 다우 +631pt</strong> — 유가 -10%+ 동반 급락</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-time">3월 24일 장 초</div>
+          <div class="tl-text"><strong>코스피 5,300선 급락</strong> — 매도 압력 지속, 불안 심리 잔존</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-time">3월 24일 장중</div>
+          <div class="tl-text"><strong>개인·기관 저가 매수 유입</strong> — 외인 2조 매도 흡수</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-time">3월 24일 마감</div>
+          <div class="tl-text"><strong>코스피 5,553 (+2.74%) 강세 마감</strong> — 급락분 전량 만회</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-time">3월 27일 (예정)</div>
+          <div class="tl-text"><strong>트럼프 이란 공격유예 만료</strong> — 협상 타결 or 군사 행동 재개 분기점</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 핫이슈 뉴스 -->
+  <div class="section">
+    <div class="section-label">핫이슈 뉴스</div>
+    <div class="news-list">
+      <div class="news-item">
+        <div><span class="news-badge nb-red">긴급</span></div>
+        <div class="news-title">
+          <a href="https://www.mt.co.kr/world/2026/03/23/2026032321320086386" target="_blank">
+            트럼프, 이란 발전소 공격 전격 보류…"이란, 간절히 합의 원해"
+          </a>
+        </div>
+        <div class="news-meta">머니투데이 · 3월 23일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-gold">암호화폐</span></div>
+        <div class="news-title">
+          <a href="https://www.nestree.io/crypto-fear-greed-index-8-market-briefing-march-2026/" target="_blank">
+            공포탐욕지수 8 · 극단적 공포 46일 연속…오늘 시장 브리핑
+          </a>
+        </div>
+        <div class="news-meta">Nestree · 3월 24일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-red">지정학</span></div>
+        <div class="news-title">
+          <a href="https://www.itinsight.kr/news/439664" target="_blank">
+            트럼프 중동 정책을 둘러싼 글로벌 시각 충돌과 한국 경제의 대응
+          </a>
+        </div>
+        <div class="news-meta">아이티인사이트 · 3월 24일</div>
+      </div>
+      <div class="news-item">
+        <div><span class="news-badge nb-blue">외교</span></div>
+        <div class="news-title">
+          <a href="https://www.etoday.co.kr/news/view/2568442" target="_blank">
+            트럼프 "이란과 이번 주 내내 협의…5일간 발전소 등 폭격 유예"
+          </a>
+        </div>
+        <div class="news-meta">이투데이 · 3월 23일</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 핫이슈 향후 일정 -->
+  <div class="section">
+    <div class="section-label">향후 핵심 일정</div>
+    <div class="cal-list">
+      <div class="cal-item" style="border-left:2px solid var(--dn); border-radius:8px;">
+        <div class="cal-date" style="color:var(--dn);">3월 27일</div>
+        <div class="cal-content"><strong>트럼프 이란 공격유예 만료</strong> — 협상 타결 실패 시 군사 행동 재개 가능</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">3월 말</div>
+        <div class="cal-content"><strong>미국 PCE 물가 발표</strong> — 유가 급등 반영 여부, 인플레 지속 확인</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">4월</div>
+        <div class="cal-content"><strong>FOMC 회의</strong> — 고유가·고금리 딜레마 속 연준 결정 주목</div>
+      </div>
+      <div class="cal-item">
+        <div class="cal-date">4월</div>
+        <div class="cal-content"><strong>한국 1분기 GDP 속보치</strong> — 전쟁 여파 성장 둔화 확인 전망</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- END TAB: 핫이슈 -->
+
+<!-- FOOTER -->
+<div class="footer-note">
+  데이터 기준: 2026년 3월 24일 장 마감<br>
+  <span class="warn">⚠ 표시 항목은 추정값 또는 실시간 앱 확인 필요</span><br>
+  미국 지수: 3월 23일(현지) 마감 기준
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+</script>
+
+</body>
+</html>

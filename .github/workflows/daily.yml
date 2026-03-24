@@ -1,0 +1,37 @@
+name: 매일 대시보드 자동 업데이트
+
+on:
+  schedule:
+    # 평일 오후 4시 30분 KST (07:30 UTC) — 장 마감 후
+    - cron: '30 7 * * 1-5'
+  workflow_dispatch:  # 수동 실행 버튼
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+
+      - name: 대시보드 생성
+        run: python generate.py
+
+      - name: 변경사항 커밋 & 푸시
+        run: |
+          git config user.name "Dashboard Bot"
+          git config user.email "bot@dashboard.local"
+          git add index.html icon-192.png icon-512.png || true
+          git diff --staged --quiet || git commit -m "대시보드 업데이트 $(TZ='Asia/Seoul' date '+%Y년 %m월 %d일 %H:%M')"
+          git push
