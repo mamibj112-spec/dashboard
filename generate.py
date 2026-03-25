@@ -72,43 +72,30 @@ def fetch_market():
 # ── 수급 데이터 ────────────────────────────────────────────────────────────────
 
 def fetch_supply():
-    """Naver Finance 코스피 수급 데이터 (실패 시 None 반환)"""
+    """pykrx를 사용한 코스피 수급 데이터 (실패 시 None 반환)"""
     try:
-        from bs4 import BeautifulSoup
-        url = "https://finance.naver.com/sise/sise_index_investor.nhn?code=KOSPI"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Accept-Language": "ko-KR,ko;q=0.9",
-            "Referer": "https://finance.naver.com/"
-        }
-        r = requests.get(url, headers=headers, timeout=10)
-        r.encoding = 'euc-kr'
-        soup = BeautifulSoup(r.text, 'html.parser')
+        from pykrx import stock
+        from datetime import timedelta
 
-        result = {}
-        tables = soup.find_all('table')
-        for table in tables:
-            rows = table.find_all('tr')
-            for row in rows:
-                cells = row.find_all('td')
-                if len(cells) < 2:
-                    continue
-                label = cells[0].get_text(strip=True)
-                val_str = cells[1].get_text(strip=True).replace(',', '').replace(' ', '')
-                try:
-                    val = int(val_str)
-                except:
-                    continue
-                if '개인' in label:
-                    result['individual'] = val
-                elif '외국인' in label and 'institution' not in result:
-                    result['foreign'] = val
-                elif '기관계' in label or ('기관' in label and 'institution' not in result):
-                    result['institution'] = val
+        dt = now_kst()
+        eok = 100_000_000  # 1억
 
-        if len(result) >= 2:
-            print(f"  수급 데이터 수집 완료: {result}")
-            return result
+        for delta in range(5):
+            d = dt - timedelta(days=delta)
+            ds = d.strftime('%Y%m%d')
+            try:
+                df = stock.get_market_trading_value_by_investor(ds, ds, "KOSPI")
+                if df is None or df.empty:
+                    continue
+                result = {
+                    'foreign':     int(df.loc['외국인합계', '순매수'] / eok),
+                    'institution': int(df.loc['기관합계',   '순매수'] / eok),
+                    'individual':  int(df.loc['개인',       '순매수'] / eok),
+                }
+                print(f"  수급 데이터 수집 완료 ({ds}): {result}")
+                return result
+            except (KeyError, Exception):
+                continue
         return None
     except Exception as e:
         print(f"  수급 데이터 오류: {e}")
@@ -157,17 +144,17 @@ def supply_bar(val, label):
 RSS_FEEDS = {
     'domestic': [
         ('연합뉴스', 'https://www.yna.co.kr/rss/economy.xml'),
-        ('연합인포맥스', 'https://news.einfomax.co.kr/rss/allList.xml'),
+        ('한국경제', 'https://www.hankyung.com/feed/economy'),
     ],
     'international': [
-        ('Reuters', 'https://feeds.reuters.com/reuters/businessNews'),
-        ('CNBC', 'https://www.cnbc.com/id/100003114/device/rss/rss.html'),
+        ('CNBC', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114'),
     ],
     'realestate': [
-        ('연합뉴스', 'https://www.yna.co.kr/rss/realestate.xml'),
+        ('한국경제', 'https://www.hankyung.com/feed/realestate'),
     ],
     'hot': [
-        ('연합뉴스', 'https://www.yna.co.kr/rss/headlines.xml'),
+        ('한국경제', 'https://www.hankyung.com/feed/economy'),
+        ('CNBC', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114'),
     ],
 }
 
