@@ -69,75 +69,6 @@ def fetch_market():
             data[name] = {'val': None, 'chg': None, 'pct': None, 'ok': False}
     return data
 
-# ── 수급 데이터 ────────────────────────────────────────────────────────────────
-
-def fetch_supply():
-    """pykrx를 사용한 코스피 수급 데이터 (실패 시 None 반환)"""
-    try:
-        from pykrx import stock
-        from datetime import timedelta
-
-        dt = now_kst()
-        eok = 100_000_000  # 1억
-
-        for delta in range(5):
-            d = dt - timedelta(days=delta)
-            ds = d.strftime('%Y%m%d')
-            try:
-                df = stock.get_market_trading_value_by_investor(ds, ds, "KOSPI")
-                if df is None or df.empty:
-                    continue
-                result = {
-                    'foreign':     int(df.loc['외국인합계', '순매수'] / eok),
-                    'institution': int(df.loc['기관합계',   '순매수'] / eok),
-                    'individual':  int(df.loc['개인',       '순매수'] / eok),
-                }
-                print(f"  수급 데이터 수집 완료 ({ds}): {result}")
-                return result
-            except (KeyError, Exception):
-                continue
-        return None
-    except Exception as e:
-        print(f"  수급 데이터 오류: {e}")
-        return None
-
-def fmt_supply(val):
-    if val is None:
-        return 'N/A'
-    av = abs(val)
-    if av >= 10000:
-        return f"{val/10000:.1f}조"
-    return f"{val:,}억"
-
-def supply_bar(val, label):
-    if val is None:
-        return f'''<div class="supply-row">
-      <div class="supply-label">{label}</div>
-      <div class="supply-bar-wrap">
-        <div class="supply-center"></div>
-        <div style="font-size:10px;color:var(--t3);padding:3px 8px;">실시간 앱 확인 <span class="warn">⚠</span></div>
-      </div></div>'''
-    is_buy = val >= 0
-    pct = min(abs(val) / 20000 * 100, 100)
-    amt = fmt_supply(val)
-    if is_buy:
-        return f'''<div class="supply-row">
-      <div class="supply-label">{label}</div>
-      <div class="supply-bar-wrap">
-        <div class="supply-center"></div>
-        <div class="supply-bar buy" style="width:{pct:.0f}%;">
-          <span class="supply-amt buy">▲ {amt}</span>
-        </div>
-      </div></div>'''
-    else:
-        return f'''<div class="supply-row">
-      <div class="supply-label">{label}</div>
-      <div class="supply-bar-wrap">
-        <div class="supply-center"></div>
-        <div class="supply-bar sell" style="width:{pct:.0f}%;">
-          <span class="supply-amt sell">▼ {fmt_supply(abs(val))}</span>
-        </div>
-      </div></div>'''
 
 # ── 뉴스 ──────────────────────────────────────────────────────────────────────
 
@@ -187,7 +118,7 @@ def fetch_news():
 
 # ── 시황 요약 ──────────────────────────────────────────────────────────────────
 
-def build_dom_summary(market, supply):
+def build_dom_summary(market):
     """국내 시황 핵심 요약 문장 생성"""
     points = []
 
@@ -223,16 +154,6 @@ def build_dom_summary(market, supply):
             points.append(f'원화 {word}')
 
     # 수급
-    if supply:
-        foreign = supply.get('foreign', 0)
-        institution = supply.get('institution', 0)
-        if abs(foreign) >= 1000:
-            word = '순매수' if foreign > 0 else '순매도'
-            points.append(f'외국인 {abs(foreign):,}억 {word}')
-        if abs(institution) >= 1000:
-            word = '순매수' if institution > 0 else '순매도'
-            points.append(f'기관 {abs(institution):,}억 {word}')
-
     # 유가
     brent_pct = d(market, 'brent').get('pct') or 0
     if abs(brent_pct) >= 2.0:
@@ -422,18 +343,6 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 12px}
 .macro-name{font-size:10px;color:var(--t3);margin-bottom:3px}
 .macro-val{font-size:15px;font-weight:700}.macro-chg{font-size:11px;margin-top:2px}
-.supply-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
-.supply-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.supply-row:last-child{margin-bottom:0}
-.supply-label{font-size:11px;color:var(--t2);width:44px;flex-shrink:0}
-.supply-bar-wrap{flex:1;position:relative;height:20px;background:var(--card2);border-radius:4px}
-.supply-bar{position:absolute;top:0;bottom:0;border-radius:4px;display:flex;align-items:center}
-.supply-bar.buy{left:50%;background:rgba(0,232,150,.25)}
-.supply-bar.sell{right:50%;background:rgba(255,64,96,.25);justify-content:flex-end}
-.supply-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border)}
-.supply-amt{font-size:10px;font-weight:600;padding:0 5px;white-space:nowrap}
-.supply-amt.buy{color:var(--up)}.supply-amt.sell{color:var(--dn)}
-.supply-sub{font-size:10px;color:var(--t3);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
 .news-item{background:var(--card);border-radius:8px;padding:11px 12px;margin-bottom:6px;border-left:3px solid var(--border)}
 .news-badge{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin-bottom:4px;font-weight:600}
 .nb-red{background:rgba(255,64,96,.15);color:#ff6080}.nb-blue{background:rgba(77,166,255,.15);color:var(--blue)}
@@ -469,7 +378,7 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
-def generate_html(market, supply, news, dt):
+def generate_html(market, news, dt):
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
 
@@ -484,7 +393,7 @@ def generate_html(market, supply, news, dt):
     sp500_pct = d(market, 'sp500').get('pct') or 0
     us_cls = 'up' if sp500_pct >= 0 else 'dn'
 
-    dom_summary = build_dom_summary(market, supply)
+    dom_summary = build_dom_summary(market)
     us_summary  = build_us_summary(market)
 
     dom_news = news_html(news.get('domestic', []), 'nb-blue', '국내')
@@ -492,16 +401,6 @@ def generate_html(market, supply, news, dt):
     re_news  = news_html(news.get('realestate', []),  'nb-orange', '부동산', 'var(--orange)')
     hot_news = news_html(news.get('hot', []),          'nb-red',  '이슈')
 
-    if supply:
-        sb_foreign = supply_bar(supply.get('foreign'), '외국인')
-        sb_inst    = supply_bar(supply.get('institution'), '기관')
-        sb_indiv   = supply_bar(supply.get('individual'), '개인')
-        supply_note = ''
-    else:
-        sb_foreign = supply_bar(None, '외국인')
-        sb_inst    = supply_bar(None, '기관')
-        sb_indiv   = supply_bar(None, '개인')
-        supply_note = '<span class="warn">⚠ 자동 조회 실패 — 실시간 앱 확인</span>'
 
     return f"""<!DOCTYPE html>
 <html lang="ko">
@@ -599,15 +498,7 @@ def generate_html(market, supply, news, dt):
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">코스피 수급 {supply_note}</div>
-    <div class="supply-wrap">
-      {sb_foreign}
-      {sb_inst}
-      {sb_indiv}
-      <div class="supply-sub">코스닥 수급 · 선물 포지션은 실시간 앱 확인</div>
-    </div>
-  </div>
+
 
   <div class="section">
     <div class="section-label">국내 뉴스</div>
@@ -834,10 +725,9 @@ def main():
     print(f"대시보드 생성 중: {korean_date(dt)}")
 
     market = fetch_market()
-    supply = fetch_supply()
     news   = fetch_news()
 
-    html = generate_html(market, supply, news, dt)
+    html = generate_html(market, news, dt)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
