@@ -185,6 +185,116 @@ def fetch_news():
         news[cat] = items[:7]
     return news
 
+# ── 시황 요약 ──────────────────────────────────────────────────────────────────
+
+def build_dom_summary(market, supply):
+    """국내 시황 핵심 요약 문장 생성"""
+    points = []
+
+    kospi_pct = d(market, 'kospi').get('pct') or 0
+    kosdaq_pct = d(market, 'kosdaq').get('pct') or 0
+    usdkrw_pct = d(market, 'usdkrw').get('pct') or 0
+    usdkrw_val = d(market, 'usdkrw').get('val')
+
+    # 코스피 움직임
+    if abs(kospi_pct) >= 2.0:
+        word = '급등' if kospi_pct > 0 else '급락'
+        points.append(f'코스피 {abs(kospi_pct):.1f}% {word}')
+    elif abs(kospi_pct) >= 1.0:
+        word = '상승' if kospi_pct > 0 else '하락'
+        points.append(f'코스피 {abs(kospi_pct):.1f}% {word}')
+    else:
+        points.append('코스피 보합권')
+
+    # 코스닥 괴리
+    gap = kosdaq_pct - kospi_pct
+    if abs(gap) >= 1.0:
+        if gap > 0:
+            points.append('코스닥 상대 강세')
+        else:
+            points.append('코스닥 상대 약세')
+
+    # 환율
+    if usdkrw_val and usdkrw_pct:
+        if usdkrw_val >= 1450:
+            points.append(f'원/달러 {usdkrw_val:,.0f}원 고환율 부담')
+        elif abs(usdkrw_pct) >= 0.5:
+            word = '약세(환율 상승)' if usdkrw_pct > 0 else '강세(환율 하락)'
+            points.append(f'원화 {word}')
+
+    # 수급
+    if supply:
+        foreign = supply.get('foreign', 0)
+        institution = supply.get('institution', 0)
+        if abs(foreign) >= 1000:
+            word = '순매수' if foreign > 0 else '순매도'
+            points.append(f'외국인 {abs(foreign):,}억 {word}')
+        if abs(institution) >= 1000:
+            word = '순매수' if institution > 0 else '순매도'
+            points.append(f'기관 {abs(institution):,}억 {word}')
+
+    # 유가
+    brent_pct = d(market, 'brent').get('pct') or 0
+    if abs(brent_pct) >= 2.0:
+        word = '급등' if brent_pct > 0 else '급락'
+        points.append(f'브렌트유 {abs(brent_pct):.1f}% {word}')
+
+    return ' · '.join(points) if points else '시장 데이터 수집 중'
+
+
+def build_us_summary(market):
+    """해외 시황 핵심 요약 문장 생성"""
+    points = []
+
+    sp500_pct  = d(market, 'sp500').get('pct') or 0
+    nasdaq_pct = d(market, 'nasdaq').get('pct') or 0
+    tnx_val    = d(market, 'tnx').get('val')
+    tnx_chg    = d(market, 'tnx').get('chg') or 0
+    dxy_pct    = d(market, 'dxy').get('pct') or 0
+    gold_pct   = d(market, 'gold').get('pct') or 0
+    nikkei_pct = d(market, 'nikkei').get('pct') or 0
+
+    # S&P500
+    if abs(sp500_pct) >= 2.0:
+        word = '급등' if sp500_pct > 0 else '급락'
+        points.append(f'S&P500 {abs(sp500_pct):.1f}% {word}')
+    elif abs(sp500_pct) >= 1.0:
+        word = '상승' if sp500_pct > 0 else '하락'
+        points.append(f'S&P500 {abs(sp500_pct):.1f}% {word}')
+    else:
+        points.append('S&P500 보합')
+
+    # 나스닥 괴리
+    gap = nasdaq_pct - sp500_pct
+    if abs(gap) >= 1.0:
+        word = '강세' if gap > 0 else '약세'
+        points.append(f'나스닥 상대 {word} (기술주 {"주도" if gap > 0 else "부진"})')
+
+    # 미 10년물
+    if tnx_val and abs(tnx_chg) >= 0.05:
+        word = '상승' if tnx_chg > 0 else '하락'
+        points.append(f'미 10년물 {tnx_val:.2f}%({word})')
+    elif tnx_val and tnx_val >= 4.5:
+        points.append(f'미 10년물 {tnx_val:.2f}% 고금리')
+
+    # 달러 인덱스
+    if abs(dxy_pct) >= 0.5:
+        word = '강세' if dxy_pct > 0 else '약세'
+        points.append(f'달러 {word}')
+
+    # 금
+    if abs(gold_pct) >= 1.0:
+        word = '상승' if gold_pct > 0 else '하락'
+        points.append(f'금 {abs(gold_pct):.1f}% {word}')
+
+    # 닛케이
+    if abs(nikkei_pct) >= 1.5:
+        word = '급등' if nikkei_pct > 0 else '급락'
+        points.append(f'닛케이 {abs(nikkei_pct):.1f}% {word}')
+
+    return ' · '.join(points) if points else '시장 데이터 수집 중'
+
+
 # ── 표시 헬퍼 ─────────────────────────────────────────────────────────────────
 
 def d(market, name):
@@ -374,6 +484,9 @@ def generate_html(market, supply, news, dt):
     sp500_pct = d(market, 'sp500').get('pct') or 0
     us_cls = 'up' if sp500_pct >= 0 else 'dn'
 
+    dom_summary = build_dom_summary(market, supply)
+    us_summary  = build_us_summary(market)
+
     dom_news = news_html(news.get('domestic', []), 'nb-blue', '국내')
     int_news = news_html(news.get('international', []), 'nb-blue', '해외')
     re_news  = news_html(news.get('realestate', []),  'nb-orange', '부동산', 'var(--orange)')
@@ -429,7 +542,8 @@ def generate_html(market, supply, news, dt):
     <div class="banner {dom_cls}">
       <strong>{dom_ico} 오늘 시황</strong><br>
       코스피 {vdisp(market,'kospi')} {cdisp(market,'kospi')} &nbsp;|&nbsp;
-      코스닥 {vdisp(market,'kosdaq')} {cdisp(market,'kosdaq')}
+      코스닥 {vdisp(market,'kosdaq')} {cdisp(market,'kosdaq')}<br>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">{dom_summary}</span>
     </div>
   </div>
 
@@ -509,7 +623,8 @@ def generate_html(market, supply, news, dt):
     <div class="banner {us_cls}">
       <strong>🌐 해외 시황</strong><br>
       S&amp;P500 {vdisp(market,'sp500')} {cdisp(market,'sp500')} &nbsp;|&nbsp;
-      나스닥 {vdisp(market,'nasdaq')} {cdisp(market,'nasdaq')}
+      나스닥 {vdisp(market,'nasdaq')} {cdisp(market,'nasdaq')}<br>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">{us_summary}</span>
     </div>
   </div>
 
