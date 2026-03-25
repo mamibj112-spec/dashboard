@@ -44,6 +44,7 @@ TICKERS = {
     'gold':   'GC=F',
     'tnx':    '^TNX',
     'dxy':    'DX-Y.NYB',
+    'btc':    'BTC-USD',
 }
 
 def fetch_market():
@@ -68,6 +69,308 @@ def fetch_market():
             print(f"  [{name}] 오류: {e}")
             data[name] = {'val': None, 'chg': None, 'pct': None, 'ok': False}
     return data
+
+
+# ── 주도주 & 시장 체감 ─────────────────────────────────────────────────────────
+
+def fetch_market_stocks():
+    """FinanceDataReader로 주도주/체감 데이터 수집"""
+    try:
+        import FinanceDataReader as fdr
+        import pandas as pd
+
+        print("  주도주/체감 데이터 수집 중...")
+        kospi  = fdr.StockListing('KOSPI')
+        kosdaq = fdr.StockListing('KOSDAQ')
+        all_s  = pd.concat([kospi, kosdaq], ignore_index=True)
+
+        # 유효 데이터만
+        all_s = all_s.dropna(subset=['Amount', 'ChagesRatio', 'Close', 'Name'])
+        all_s = all_s[(all_s['Close'] > 0) & (all_s['Amount'] > 0)]
+
+        # 시장 체감 온도
+        up   = int((all_s['ChagesRatio'] > 0).sum())
+        down = int((all_s['ChagesRatio'] < 0).sum())
+        flat = int((all_s['ChagesRatio'] == 0).sum())
+
+        # 거래대금 상위 5
+        top_amt = all_s.nlargest(5, 'Amount')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+
+        # 상승률 상위 5 (상한가 30% 초과 제외)
+        gainers = all_s[(all_s['ChagesRatio'] > 0) & (all_s['ChagesRatio'] <= 30)]
+        top_gain = gainers.nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+
+        print(f"  주도주 수집 완료: 상승 {up} / 하락 {down}")
+        return {'breadth': {'up': up, 'down': down, 'flat': flat},
+                'top_amt': top_amt, 'top_gain': top_gain}
+    except Exception as e:
+        print(f"  주도주 오류: {e}")
+        return None
+
+
+def fetch_usdkrw_week():
+    """USD/KRW 최근 7일 종가 리스트 반환"""
+    try:
+        t = yf.Ticker('KRW=X')
+        hist = t.history(period='14d', auto_adjust=True)
+        hist = hist.dropna(subset=['Close'])
+        closes = [round(float(v), 0) for v in hist['Close'].tail(7).tolist()]
+        if len(closes) < 2:
+            return None
+        print(f"  환율 추이 수집 완료: {closes}")
+        return closes
+    except Exception as e:
+        print(f"  환율 추이 오류: {e}")
+        return None
+
+
+def calc_fear_greed(market, stocks):
+    """한국 시장 데이터 기반 공포/탐욕 지수 계산 (0~100)"""
+    components = []
+    # 1. 시장 폭: 상승종목 / (상승+하락) (50%)
+    if stocks:
+        breadth = stocks.get('breadth', {})
+        up   = breadth.get('up', 0)
+        down = breadth.get('down', 0)
+        total = up + down
+        if total > 0:
+            components.append((up / total * 100, 0.5))
+    # 2. 코스피 모멘텀 (30%): 0% → 50, ±5% → 100/0
+    kospi_pct  = d(market, 'kospi').get('pct') or 0
+    components.append((min(max(50 + kospi_pct * 10, 0), 100), 0.3))
+    # 3. 코스닥 상대강도 (20%): 코스닥-코스피 괴리
+    kosdaq_pct = d(market, 'kosdaq').get('pct') or 0
+    rel = kosdaq_pct - kospi_pct
+    components.append((min(max(50 + rel * 10, 0), 100), 0.2))
+    if not components:
+        return 50
+    total_w = sum(w for _, w in components)
+    score   = sum(s * w for s, w in components) / total_w
+    return int(round(min(max(score, 0), 100)))
+
+
+MACRO_HISTORY_TICKERS = {
+    'usdkrw': 'KRW=X',
+    'brent':  'BZ=F',
+    'wti':    'CL=F',
+    'tnx':    '^TNX',
+    'gold':   'GC=F',
+    'dxy':    'DX-Y.NYB',
+    'btc':    'BTC-USD',
+}
+
+def fetch_macro_history():
+    """매크로 지표 최근 7일 종가 데이터"""
+    print("매크로 추이 데이터 수집 중...")
+    result = {}
+    for key, sym in MACRO_HISTORY_TICKERS.items():
+        try:
+            t = yf.Ticker(sym)
+            hist = t.history(period='14d', auto_adjust=True)
+            hist = hist.dropna(subset=['Close'])
+            closes = [round(float(v), 4) for v in hist['Close'].tail(7).tolist()]
+            if len(closes) >= 2:
+                result[key] = closes
+        except Exception as e:
+            print(f"  [{key}] 추이 오류: {e}")
+    return result
+
+
+def fear_greed_html(value=62):
+    """공포/탐욕 반원 게이지 카드 HTML"""
+    import math
+    if value <= 25:
+        color = '#3b82f6'; label = '극공포'
+    elif value <= 45:
+        color = '#60a5fa'; label = '공포'
+    elif value <= 55:
+        color = '#a3a3a3'; label = '중립'
+    elif value <= 75:
+        color = '#f97316'; label = '탐욕'
+    else:
+        color = '#ef4444'; label = '극탐욕'
+    angle = math.pi * (1 - value / 100)
+    nx = round(60 + 50 * math.cos(angle), 1)
+    ny = round(60 - 50 * math.sin(angle), 1)
+    return f'''<div style="background:var(--card);border-radius:10px;padding:10px 12px;">
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">국내 공포/탐욕</div>
+      <svg viewBox="0 0 120 65" style="width:100%;display:block;overflow:visible;">
+        <path d="M 10 60 A 50 50 0 0 1 24.6 24.6" fill="none" stroke="#3b82f6" stroke-width="10" stroke-linecap="butt"/>
+        <path d="M 24.6 24.6 A 50 50 0 0 1 52.2 10.6" fill="none" stroke="#60a5fa" stroke-width="10" stroke-linecap="butt"/>
+        <path d="M 52.2 10.6 A 50 50 0 0 1 67.8 10.6" fill="none" stroke="#a3a3a3" stroke-width="10" stroke-linecap="butt"/>
+        <path d="M 67.8 10.6 A 50 50 0 0 1 95.4 24.6" fill="none" stroke="#f97316" stroke-width="10" stroke-linecap="butt"/>
+        <path d="M 95.4 24.6 A 50 50 0 0 1 110 60" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="butt"/>
+        <line x1="60" y1="60" x2="{nx}" y2="{ny}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="60" cy="60" r="3.5" fill="#fff"/>
+      </svg>
+      <div style="text-align:center;margin-top:2px;">
+        <span style="font-size:18px;font-weight:700;color:{color};">{value}</span>
+        <span style="font-size:11px;color:{color};font-weight:600;margin-left:4px;">{label}</span>
+      </div>
+    </div>'''
+
+
+def stocks_html(rows):
+    if not rows:
+        return '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>'
+    out = ''
+    for r in rows:
+        name = str(r.get('Name', ''))[:10]
+        pct  = float(r.get('ChagesRatio', 0) or 0)
+        amt  = r.get('Amount', 0) or 0
+        mkt  = str(r.get('Market', ''))
+        cls  = 'up-txt' if pct >= 0 else 'dn-txt'
+        sign = '▲' if pct >= 0 else '▼'
+        amt_str = f"{amt/100000000:.0f}억" if amt >= 100000000 else f"{amt/100000000:.1f}억"
+        mkt_badge = '<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span>' if 'KOSDAQ' in mkt else ''
+        out += f'''<div class="stock-row">
+  <div class="stock-name">{name}{mkt_badge}</div>
+  <div class="stock-right">
+    <span class="{cls}">{sign}{abs(pct):.1f}%</span>
+    <span class="stock-amt">{amt_str}</span>
+  </div>
+</div>'''
+    return out
+
+
+# ── AI 브리핑 ──────────────────────────────────────────────────────────────────
+
+def fetch_ai_briefing(market, news):
+    """Gemini API로 오늘 장 AI 브리핑 생성"""
+    import os
+    api_key = os.environ.get('GEMINI_API_KEY', '')
+    if not api_key:
+        print("  GEMINI_API_KEY 없음, AI 브리핑 스킵")
+        return None
+    try:
+        print("  AI 브리핑 생성 중...")
+
+        def mv(name):
+            item = d(market, name)
+            v, pct = item.get('val'), item.get('pct') or 0
+            if v is None: return 'N/A'
+            sign = '▲' if pct >= 0 else '▼'
+            return f"{v:,.2f} ({sign}{abs(pct):.2f}%)"
+
+        headlines = []
+        for cat in ['domestic', 'hot', 'international']:
+            for item in news.get(cat, [])[:4]:
+                headlines.append(item['title'])
+
+        prompt = f"""오늘 한국 주식시장 데이터 (장 마감 기준):
+- 코스피: {mv('kospi')}
+- 코스닥: {mv('kosdaq')}
+- 나스닥: {mv('nasdaq')}
+- S&P500: {mv('sp500')}
+- USD/KRW: {mv('usdkrw')}
+- 미 10년물 금리: {mv('tnx')}
+- 브렌트유: {mv('brent')}
+- 비트코인: {mv('btc')}
+
+오늘 주요 뉴스 제목:
+{chr(10).join(f"- {h}" for h in headlines[:12])}
+
+위 데이터를 분석해서 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
+{{
+  "briefing": ["한 줄 (25자 이내, 이모지 포함)", "두 줄", "세 줄"],
+  "hot_sector": "오늘 가장 뜨거웠던 섹터/테마 1-2개 (이모지 포함, 뉴스 기반 추론)",
+  "supply_summary": "오늘 수급의 핵심 주체 한 줄 (뉴스 기반 추론, 25자 이내)"
+}}"""
+
+        resp = requests.post(
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}',
+            json={'contents': [{'parts': [{'text': prompt}]}],
+                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 512}},
+            timeout=20
+        )
+        resp.raise_for_status()
+        text = resp.json()['candidates'][0]['content']['parts'][0]['text'].strip()
+        # JSON 파싱
+        import json, re
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            data = json.loads(m.group(0))
+            print(f"  AI 브리핑 완료")
+            return data
+        return None
+    except Exception as e:
+        print(f"  AI 브리핑 오류: {e}")
+        return None
+
+
+# ── 캘린더 ─────────────────────────────────────────────────────────────────────
+
+# FOMC 2026 (발표일 기준)
+# BOK 금통위 2026 (발표일 기준)
+# 미국 CPI 2026 (발표일 기준, BLS 공식 일정)
+CALENDAR_EVENTS = [
+    # FOMC
+    ('🇺🇸 FOMC 금리결정', '2026-01-29'),
+    ('🇺🇸 FOMC 금리결정', '2026-03-19'),
+    ('🇺🇸 FOMC 금리결정', '2026-05-07'),
+    ('🇺🇸 FOMC 금리결정', '2026-06-18'),
+    ('🇺🇸 FOMC 금리결정', '2026-07-30'),
+    ('🇺🇸 FOMC 금리결정', '2026-09-17'),
+    ('🇺🇸 FOMC 금리결정', '2026-10-29'),
+    ('🇺🇸 FOMC 금리결정', '2026-12-10'),
+    # 미국 CPI (BLS 공식 발표일)
+    ('🇺🇸 미국 CPI 발표', '2026-01-14'),
+    ('🇺🇸 미국 CPI 발표', '2026-02-11'),
+    ('🇺🇸 미국 CPI 발표', '2026-03-11'),
+    ('🇺🇸 미국 CPI 발표', '2026-04-10'),
+    ('🇺🇸 미국 CPI 발표', '2026-05-13'),
+    ('🇺🇸 미국 CPI 발표', '2026-06-10'),
+    ('🇺🇸 미국 CPI 발표', '2026-07-15'),
+    ('🇺🇸 미국 CPI 발표', '2026-08-12'),
+    ('🇺🇸 미국 CPI 발표', '2026-09-09'),
+    ('🇺🇸 미국 CPI 발표', '2026-10-14'),
+    ('🇺🇸 미국 CPI 발표', '2026-11-12'),
+    ('🇺🇸 미국 CPI 발표', '2026-12-10'),
+    # 한국은행 금통위
+    ('🇰🇷 한국은행 금통위', '2026-01-16'),
+    ('🇰🇷 한국은행 금통위', '2026-02-27'),
+    ('🇰🇷 한국은행 금통위', '2026-04-17'),
+    ('🇰🇷 한국은행 금통위', '2026-05-29'),
+    ('🇰🇷 한국은행 금통위', '2026-07-17'),
+    ('🇰🇷 한국은행 금통위', '2026-08-28'),
+    ('🇰🇷 한국은행 금통위', '2026-10-16'),
+    ('🇰🇷 한국은행 금통위', '2026-11-27'),
+    # 미국 고용 (비농업 고용·실업률, BLS 공식)
+    ('🇺🇸 미국 고용지표', '2026-01-09'),
+    ('🇺🇸 미국 고용지표', '2026-02-06'),
+    ('🇺🇸 미국 고용지표', '2026-03-06'),
+    ('🇺🇸 미국 고용지표', '2026-04-03'),
+    ('🇺🇸 미국 고용지표', '2026-05-08'),
+    ('🇺🇸 미국 고용지표', '2026-06-05'),
+    ('🇺🇸 미국 고용지표', '2026-07-02'),
+    ('🇺🇸 미국 고용지표', '2026-08-07'),
+    ('🇺🇸 미국 고용지표', '2026-09-04'),
+    ('🇺🇸 미국 고용지표', '2026-10-02'),
+    ('🇺🇸 미국 고용지표', '2026-11-06'),
+    ('🇺🇸 미국 고용지표', '2026-12-04'),
+]
+
+
+def get_weekly_calendar(dt):
+    from datetime import timedelta, date as date_cls
+    today = dt.date()
+    week_end = today + timedelta(days=7)
+    events = []
+    for name, date_str in CALENDAR_EVENTS:
+        d = datetime.strptime(date_str, '%Y-%m-%d').date()
+        if today <= d <= week_end:
+            diff = (d - today).days
+            if diff == 0:
+                label = '오늘'
+                badge_cls = 'nb-red'
+            elif diff == 1:
+                label = '내일'
+                badge_cls = 'nb-gold'
+            else:
+                label = f'{d.month}/{d.day}({["월","화","수","목","금","토","일"][d.weekday()]})'
+                badge_cls = 'nb-blue'
+            events.append({'name': name, 'label': label, 'badge': badge_cls, 'date': d})
+    return sorted(events, key=lambda x: x['date'])
 
 
 # ── 뉴스 ──────────────────────────────────────────────────────────────────────
@@ -256,6 +559,9 @@ def vdisp(m, name):
     if name in ('sp500', 'dow', 'nasdaq', 'nikkei'):
         cls = 'up-txt' if pct >= 0 else 'dn-txt'
         return f'<span class="{cls}">{v:,.2f}{warn}</span>'
+    if name == 'btc':
+        cls = 'up-txt' if pct >= 0 else 'dn-txt'
+        return f'<span class="{cls}">${v:,.0f}{warn}</span>'
     return f'{v:.2f}'
 
 def cdisp(m, name):
@@ -374,11 +680,38 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .invest-point{margin-top:10px;padding:8px 10px;background:var(--card2);border-radius:6px;font-size:11px;color:var(--t2);line-height:1.5}
 .warn{color:var(--gold);font-size:10px}
 .footer-note{font-size:10px;color:var(--t3);text-align:center;padding:16px 0 4px;line-height:1.6}
+.stock-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--card);border-radius:8px;margin-bottom:5px}
+.stock-name{font-size:12.5px;font-weight:600;color:var(--t1)}
+.stock-right{display:flex;align-items:center;gap:8px;font-size:12px}
+.stock-amt{color:var(--t3);font-size:10px}
+.breadth-wrap{background:var(--card);border-radius:10px;padding:12px 14px}
+.breadth-bar{height:8px;background:rgba(255,64,96,.3);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.breadth-up{height:100%;background:var(--up);border-radius:4px}
+.breadth-label{font-size:12px;display:flex;align-items:center}
+.cal-row{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border-radius:8px;margin-bottom:5px}
+.cal-name{font-size:12.5px;font-weight:600;color:var(--t1)}
+.ai-brief-wrap{background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(77,166,255,.08));border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:14px}
+.ai-brief-title{font-size:10px;color:var(--purple);font-weight:700;letter-spacing:.5px;margin-bottom:8px}
+.ai-lines{margin-bottom:8px}
+.ai-line{font-size:12.5px;color:var(--t1);line-height:1.7;font-weight:500}
+.ai-tags{margin-bottom:6px}
+.ai-tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:600}
+.ai-tag.hot{background:rgba(255,201,64,.15);color:var(--gold);border:1px solid rgba(255,201,64,.3)}
+.ai-supply{font-size:11px;color:var(--t2);padding-top:6px;border-top:1px solid rgba(255,255,255,.06)}
+.macro-card{cursor:pointer;transition:opacity .15s}
+.macro-card:active{opacity:.6}
+#macroOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;display:none;opacity:0;transition:opacity .25s}
+#macroOverlay.open{opacity:1}
+#macroModal{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;
+background:var(--card2);border-radius:16px 16px 0 0;padding:16px 16px 24px;z-index:100;
+box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(100%);
+transition:transform .28s cubic-bezier(.4,0,.2,1)}
+#macroModal.open{transform:translateY(0)}
 """
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
-def generate_html(market, news, dt):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None):
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
 
@@ -396,10 +729,133 @@ def generate_html(market, news, dt):
     dom_summary = build_dom_summary(market)
     us_summary  = build_us_summary(market)
 
+    # 환율 추이 차트
+    if usdkrw_week and len(usdkrw_week) >= 2:
+        import json as _json
+        fx_curr  = usdkrw_week[-1]
+        fx_start = usdkrw_week[0]
+        fx_diff  = fx_curr - fx_start
+        fx_color = '#ef4444' if fx_diff >= 0 else '#3b82f6'
+        fx_rgb   = '239,68,68' if fx_diff >= 0 else '59,130,246'
+        fx_sign  = '▲' if fx_diff >= 0 else '▼'
+        fx_vals_json = _json.dumps(usdkrw_week)
+        fx_card = f'''<div style="background:var(--card);border-radius:10px;padding:10px 12px;">
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">💱 환율 추이</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div>
+          <div style="font-size:18px;font-weight:700;color:{fx_color};">{fx_curr:,.0f}원</div>
+          <div style="font-size:10px;color:var(--t3);margin-top:2px;">USD/KRW</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px;font-weight:600;color:{fx_color};">{fx_sign} {abs(fx_diff):.0f}원</div>
+          <div style="font-size:9px;color:var(--t3);margin-top:2px;">7일 변동</div>
+        </div>
+      </div>
+      <canvas id="fxChart" height="90"></canvas>
+    </div>'''
+        fx_script = f'''(function(){{
+  var c=document.getElementById('fxChart').getContext('2d');
+  var v={fx_vals_json};
+  var g=c.createLinearGradient(0,0,0,80);
+  g.addColorStop(0,'rgba({fx_rgb},0.25)');
+  g.addColorStop(1,'rgba({fx_rgb},0.02)');
+  new Chart(c,{{
+    type:'line',
+    data:{{
+      labels:v.map(function(){{return '';}}),
+      datasets:[{{data:v,borderColor:'{fx_color}',backgroundColor:g,borderWidth:2,pointRadius:0,fill:true,tension:0.4}}]
+    }},
+    options:{{
+      responsive:true,
+      plugins:{{
+        legend:{{display:false}},
+        tooltip:{{callbacks:{{label:function(x){{return x.raw.toLocaleString()+'원';}}}}}}
+      }},
+      scales:{{
+        x:{{display:false}},
+        y:{{
+          grid:{{color:'rgba(255,255,255,0.06)'}},
+          ticks:{{color:'#6a80aa',font:{{size:9}},callback:function(x){{return x.toLocaleString();}}}},
+          border:{{color:'rgba(255,255,255,0.08)'}}
+        }}
+      }}
+    }}
+  }});
+}})();'''
+    else:
+        fx_card   = ''
+        fx_script = ''
+    fg_value = calc_fear_greed(market, stocks)
+    fg_card  = fear_greed_html(fg_value)
+
+    import json as _json2
+    macro_meta = {
+        'usdkrw': {'name':'USD/KRW',    'color':'#ef4444','rgb':'239,68,68',   'pre':'',  'suf':'원','dec':0},
+        'brent':  {'name':'브렌트유',    'color':'#f97316','rgb':'249,115,22',  'pre':'$', 'suf':'', 'dec':1},
+        'wti':    {'name':'WTI',         'color':'#f97316','rgb':'249,115,22',  'pre':'$', 'suf':'', 'dec':1},
+        'tnx':    {'name':'미 10년물',   'color':'#4da6ff','rgb':'77,166,255',  'pre':'',  'suf':'%','dec':2},
+        'gold':   {'name':'금 선물',     'color':'#ffc940','rgb':'255,201,64',  'pre':'$', 'suf':'', 'dec':0},
+        'dxy':    {'name':'달러 인덱스', 'color':'#a78bfa','rgb':'167,139,250', 'pre':'',  'suf':'', 'dec':2},
+        'btc':    {'name':'비트코인',    'color':'#f59e0b','rgb':'245,158,11',  'pre':'$', 'suf':'', 'dec':0},
+    }
+    macro_meta_json = _json2.dumps(macro_meta, ensure_ascii=False)
+    macro_hist_json = _json2.dumps(macro_hist or {})
+
+    # AI 브리핑 HTML
+    if ai_brief:
+        briefing_lines = ai_brief.get('briefing', [])
+        hot_sector     = ai_brief.get('hot_sector', '')
+        supply_sum     = ai_brief.get('supply_summary', '')
+        ai_html = f'''<div class="section">
+    <div class="ai-brief-wrap">
+      <div class="ai-brief-title">🤖 AI 장 브리핑</div>
+      <div class="ai-lines">{''.join(f'<div class="ai-line">· {l}</div>' for l in briefing_lines)}</div>
+      {f'<div class="ai-tags"><span class="ai-tag hot">{hot_sector}</span></div>' if hot_sector else ''}
+      {f'<div class="ai-supply">{supply_sum}</div>' if supply_sum else ''}
+    </div>
+  </div>'''
+    else:
+        ai_html = ''
+
     dom_news = news_html(news.get('domestic', []), 'nb-blue', '국내')
     int_news = news_html(news.get('international', []), 'nb-blue', '해외')
     re_news  = news_html(news.get('realestate', []),  'nb-orange', '부동산', 'var(--orange)')
     hot_news = news_html(news.get('hot', []),          'nb-red',  '이슈')
+
+    # 주도주 & 체감
+    if stocks:
+        breadth = stocks.get('breadth', {})
+        b_up    = breadth.get('up', 0)
+        b_dn    = breadth.get('down', 0)
+        b_total = b_up + b_dn + breadth.get('flat', 0)
+        b_up_pct = f"{b_up/b_total*100:.0f}" if b_total else '–'
+        breadth_html = f'''<div class="breadth-wrap">
+  <div class="breadth-bar">
+    <div class="breadth-up" style="width:{b_up/b_total*100:.1f}%"></div>
+  </div>
+  <div class="breadth-label">
+    <span class="up-txt">▲ {b_up}개 상승</span>
+    <span style="color:var(--t3);margin:0 6px;">|</span>
+    <span class="dn-txt">▼ {b_dn}개 하락</span>
+    <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 {b_total}개</span>
+  </div>
+</div>'''
+        top_amt_html  = stocks_html(stocks.get('top_amt', []))
+        top_gain_html = stocks_html(stocks.get('top_gain', []))
+    else:
+        breadth_html  = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>'
+        top_amt_html  = breadth_html
+        top_gain_html = breadth_html
+
+    # 캘린더
+    cal_events = get_weekly_calendar(dt)
+    if cal_events:
+        cal_html = ''.join(f'''<div class="cal-row">
+  <span class="news-badge {e["badge"]}">{e["label"]}</span>
+  <span class="cal-name">{e["name"]}</span>
+</div>''' for e in cal_events)
+    else:
+        cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 일정 없음</div>'
 
 
     return f"""<!DOCTYPE html>
@@ -415,6 +871,7 @@ def generate_html(market, news, dt):
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>국장 대시보드 · {dt.month}월 {dt.day}일</title>
 <style>{CSS}</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -432,6 +889,7 @@ def generate_html(market, news, dt):
   <button class="tab-btn" onclick="sw('us',this)">🇺🇸 해외</button>
   <button class="tab-btn" onclick="sw('re',this)">🏠 부동산</button>
   <button class="tab-btn" onclick="sw('hot',this)">🔥 핫이슈</button>
+  <button class="tab-btn" onclick="sw('cal',this)">📅 일정</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -445,6 +903,8 @@ def generate_html(market, news, dt):
       <span style="font-size:11.5px;opacity:.9;line-height:1.6">{dom_summary}</span>
     </div>
   </div>
+
+  {ai_html}
 
   <div class="section">
     <div class="section-label">국내 지수</div>
@@ -463,42 +923,67 @@ def generate_html(market, news, dt):
   </div>
 
   <div class="section">
-    <div class="section-label">매크로 지표</div>
+    <div class="section-label">매크로 지표 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
     <div class="macro-grid">
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('usdkrw')">
         <div class="macro-name">USD/KRW</div>
         <div class="macro-val">{vdisp(market,'usdkrw')}</div>
         <div class="macro-chg">{cdisp(market,'usdkrw')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('brent')">
         <div class="macro-name">브렌트유</div>
         <div class="macro-val">{vdisp(market,'brent')}</div>
         <div class="macro-chg">{cdisp(market,'brent')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('wti')">
         <div class="macro-name">WTI</div>
         <div class="macro-val">{vdisp(market,'wti')}</div>
         <div class="macro-chg">{cdisp(market,'wti')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('tnx')">
         <div class="macro-name">미 10년물</div>
         <div class="macro-val">{vdisp(market,'tnx')}</div>
         <div class="macro-chg">{cdisp(market,'tnx')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
         <div class="macro-val">{vdisp(market,'gold')}</div>
         <div class="macro-chg">{cdisp(market,'gold')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
         <div class="macro-val">{vdisp(market,'dxy')}</div>
         <div class="macro-chg">{cdisp(market,'dxy')}</div>
       </div>
+      <div class="macro-card" onclick="showMacroChart('btc')">
+        <div class="macro-name">🪙 비트코인</div>
+        <div class="macro-val">{vdisp(market,'btc')}</div>
+        <div class="macro-chg">{cdisp(market,'btc')}</div>
+      </div>
     </div>
   </div>
 
+  <div class="section">
+    <div class="section-label">📊 업종별 등락률</div>
+    <div style="background:var(--card);border-radius:10px;padding:12px 14px;">
+      <canvas id="sectorChart" height="200"></canvas>
+    </div>
+  </div>
 
+  <div class="section">
+    <div class="section-label">📊 시장 체감 온도</div>
+    {breadth_html}
+  </div>
+
+  <div class="section">
+    <div class="section-label">📈 거래대금 상위</div>
+    {top_amt_html}
+  </div>
+
+  <div class="section">
+    <div class="section-label">🚀 급등주 상위</div>
+    {top_gain_html}
+  </div>
 
   <div class="section">
     <div class="section-label">국내 뉴스</div>
@@ -567,6 +1052,11 @@ def generate_html(market, news, dt):
         <div class="macro-name">금 선물</div>
         <div class="macro-val">{vdisp(market,'gold')}</div>
         <div class="macro-chg">{cdisp(market,'gold')}</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-name">🪙 비트코인</div>
+        <div class="macro-val">{vdisp(market,'btc')}</div>
+        <div class="macro-chg">{cdisp(market,'btc')}</div>
       </div>
     </div>
   </div>
@@ -674,12 +1164,96 @@ def generate_html(market, news, dt):
 
 </div>
 
+<!-- ===== 일정 탭 ===== -->
+<div id="tab-cal" class="tab-panel">
+
+  <div class="section">
+    <div class="banner blue">
+      <strong>📅 이번 주 주요 일정</strong><br>
+      FOMC · CPI · 한국은행 금통위 · 고용지표
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">D-7 이내 일정</div>
+    {cal_html}
+    <div style="font-size:10px;color:var(--t3);margin-top:10px;">공모주 일정은 <a href="https://dart.fss.or.kr" target="_blank">DART</a> · <a href="https://ipo.38.co.kr" target="_blank">38커뮤니케이션</a> 확인</div>
+  </div>
+
+</div>
+
+<div id="macroOverlay" onclick="closeMacroChart()"></div>
+<div id="macroModal">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div id="macroModalTitle" style="font-size:14px;font-weight:700;color:var(--t1);"></div>
+    <button onclick="closeMacroChart()" style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;padding:0;">✕</button>
+  </div>
+  <canvas id="macroChartCanvas" height="130"></canvas>
+  <div id="macroNoData" style="display:none;color:var(--t3);font-size:12px;text-align:center;padding:36px 0;">다음 업데이트 시 데이터 표시</div>
+</div>
+
 <div class="footer-note">
   {kdate} · {gen_time}<br>
-  <span class="warn">⚠</span> 수급 데이터 자동 조회 / 부동산 시세는 직접 확인 권장
+  부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
+var MACRO_META={macro_meta_json};
+var MACRO_HIST={macro_hist_json};
+var _mc=null;
+function showMacroChart(k){{
+  var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
+  if(!m)return;
+  document.getElementById('macroOverlay').style.display='block';
+  setTimeout(function(){{
+    document.getElementById('macroOverlay').classList.add('open');
+    document.getElementById('macroModal').classList.add('open');
+  }},10);
+  document.getElementById('macroModalTitle').textContent=m.name+' 최근 7일';
+  var cv=document.getElementById('macroChartCanvas'),nd=document.getElementById('macroNoData');
+  if(_mc){{_mc.destroy();_mc=null;}}
+  if(!vals.length){{nd.style.display='block';cv.style.display='none';return;}}
+  nd.style.display='none';cv.style.display='block';
+  var ctx=cv.getContext('2d');
+  var g=ctx.createLinearGradient(0,0,0,130);
+  g.addColorStop(0,'rgba('+m.rgb+',0.25)');g.addColorStop(1,'rgba('+m.rgb+',0.02)');
+  function fmt(v){{return m.pre+(m.dec===0?Math.round(v).toLocaleString():v.toFixed(m.dec))+m.suf;}}
+  _mc=new Chart(ctx,{{type:'line',data:{{labels:vals.map(function(){{return '';}}),datasets:[{{data:vals,borderColor:m.color,backgroundColor:g,borderWidth:2,pointRadius:3,pointBackgroundColor:m.color,fill:true,tension:0.4}}]}},options:{{responsive:true,plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{label:function(c){{return fmt(c.raw);}}}}}}}},scales:{{x:{{display:false}},y:{{grid:{{color:'rgba(255,255,255,0.06)'}},ticks:{{color:'#6a80aa',font:{{size:10}},callback:function(v){{return fmt(v);}}}},border:{{color:'rgba(255,255,255,0.08)'}}}}}}}}}});
+}}
+function closeMacroChart(){{
+  document.getElementById('macroOverlay').classList.remove('open');
+  document.getElementById('macroModal').classList.remove('open');
+  setTimeout(function(){{document.getElementById('macroOverlay').style.display='none';}},280);
+}}
+(function(){{
+  var ctx=document.getElementById('sectorChart').getContext('2d');
+  var vals=[3.2,2.1,1.4,0.8,-0.5,-1.1,-1.8,-2.3];
+  var lbls=['반도체','2차전지','자동차','금융','바이오','화학','철강','에너지'];
+  var cols=vals.map(function(v){{return v>=0?'#ef4444':'#3b82f6';}});
+  new Chart(ctx,{{
+    type:'bar',
+    data:{{labels:lbls,datasets:[{{data:vals,backgroundColor:cols,borderRadius:4,barThickness:14}}]}},
+    options:{{
+      indexAxis:'y',responsive:true,
+      plugins:{{
+        legend:{{display:false}},
+        tooltip:{{callbacks:{{label:function(c){{return(c.raw>0?'+':'')+c.raw+'%';}}}}}}
+      }},
+      scales:{{
+        x:{{
+          grid:{{color:'rgba(255,255,255,0.06)'}},
+          ticks:{{color:'#6a80aa',font:{{size:10}},callback:function(v){{return v+'%';}}}},
+          border:{{color:'rgba(255,255,255,0.08)'}}
+        }},
+        y:{{
+          grid:{{display:false}},
+          ticks:{{color:'#b8ccee',font:{{size:11}}}},
+          border:{{color:'rgba(255,255,255,0.08)'}}
+        }}
+      }}
+    }}
+  }});
+}})();
 function sw(id, btn) {{
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -724,10 +1298,13 @@ def main():
     dt = now_kst()
     print(f"대시보드 생성 중: {korean_date(dt)}")
 
-    market = fetch_market()
-    news   = fetch_news()
+    market   = fetch_market()
+    news     = fetch_news()
+    stocks   = fetch_market_stocks()
+    ai_brief = fetch_ai_briefing(market, news)
 
-    html = generate_html(market, news, dt)
+    macro_hist  = fetch_macro_history()
+    html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
