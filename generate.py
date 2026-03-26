@@ -298,6 +298,54 @@ def fetch_ai_briefing(market, news):
         return None
 
 
+def translate_news_to_korean(items):
+    """Gemini API로 해외 뉴스 제목/요약을 한국어로 번역"""
+    import os, json, re
+    api_key = os.environ.get('GEMINI_API_KEY', '')
+    if not api_key or not items:
+        return items
+    try:
+        print("  해외 뉴스 번역 중...")
+        titles = [item['title'] for item in items]
+        summaries = [item.get('summary', '') for item in items]
+        prompt = f"""아래 영어 주식/금융 뉴스 제목과 요약을 자연스러운 한국어로 번역하세요.
+반드시 아래 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요.
+{{
+  "titles": ["번역된 제목1", "번역된 제목2", ...],
+  "summaries": ["번역된 요약1", "번역된 요약2", ...]
+}}
+
+제목 목록:
+{json.dumps(titles, ensure_ascii=False)}
+
+요약 목록:
+{json.dumps(summaries, ensure_ascii=False)}"""
+
+        resp = requests.post(
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}',
+            json={'contents': [{'parts': [{'text': prompt}]}],
+                  'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024}},
+            timeout=25
+        )
+        resp.raise_for_status()
+        text = resp.json()['candidates'][0]['content']['parts'][0]['text'].strip()
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            data = json.loads(m.group(0))
+            ko_titles = data.get('titles', [])
+            ko_summaries = data.get('summaries', [])
+            for i, item in enumerate(items):
+                if i < len(ko_titles) and ko_titles[i]:
+                    item['title_orig'] = item['title']
+                    item['title'] = ko_titles[i]
+                if i < len(ko_summaries) and ko_summaries[i]:
+                    item['summary'] = ko_summaries[i]
+            print(f"  해외 뉴스 번역 완료 ({len(items)}건)")
+    except Exception as e:
+        print(f"  해외 뉴스 번역 오류: {e}")
+    return items
+
+
 # ── 캘린더 ─────────────────────────────────────────────────────────────────────
 
 # FOMC 2026 (발표일 기준)
@@ -378,10 +426,11 @@ def get_weekly_calendar(dt):
 RSS_FEEDS = {
     'domestic': [
         ('연합뉴스', 'https://www.yna.co.kr/rss/economy.xml'),
-        ('한국경제', 'https://www.hankyung.com/feed/economy'),
+        ('한국경제', 'https://www.hankyung.com/feed/finance'),
     ],
     'international': [
-        ('CNBC', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114'),
+        ('CNBC Markets', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664'),
+        ('CNBC Finance', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=15839069'),
     ],
     'realestate': [
         ('한국경제', 'https://www.hankyung.com/feed/realestate'),
@@ -413,10 +462,17 @@ def fetch_news():
                                 date_str = f"{dt.month}월 {dt.day}일"
                             except:
                                 date_str = published[:10]
-                        items.append({'title': title, 'url': link, 'date': date_str, 'source': source})
+                        raw_summary = entry.get('summary', '') or entry.get('description', '')
+                        import re as _re
+                        summary = _re.sub(r'<[^>]+>', '', raw_summary).strip()
+                        summary = summary[:80] + '…' if len(summary) > 80 else summary
+                        items.append({'title': title, 'url': link, 'date': date_str, 'source': source, 'summary': summary})
             except Exception as e:
                 print(f"  RSS 오류 [{url}]: {e}")
         news[cat] = items[:7]
+    # 해외 뉴스 한국어 번역
+    if news.get('international'):
+        news['international'] = translate_news_to_korean(news['international'])
     return news
 
 # ── 시황 요약 ──────────────────────────────────────────────────────────────────
@@ -603,9 +659,15 @@ def news_html(items, badge_cls='nb-blue', badge_txt='뉴스', border=None):
             title = title[:75] + '…'
         url = item.get('url', '#')
         meta = ' · '.join(filter(None, [item.get('source',''), item.get('date','')]))
+        summary = item.get('summary', '')
+        summary_html = f'<div class="news-summary">{summary}</div>' if summary else ''
+        title_orig = item.get('title_orig', '')
+        orig_html = f'<div class="news-orig">{title_orig[:80]}{"…" if len(title_orig) > 80 else ""}</div>' if title_orig else ''
         out += f'''<div class="news-item"{style}>
   <span class="news-badge {badge_cls}">{badge_txt}</span>
   <div class="news-title"><a href="{url}" target="_blank">{title}</a></div>
+  {orig_html}
+  {summary_html}
   <div class="news-meta">{meta}</div>
 </div>'''
     return out
@@ -649,14 +711,16 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 12px}
 .macro-name{font-size:10px;color:var(--t3);margin-bottom:3px}
 .macro-val{font-size:15px;font-weight:700}.macro-chg{font-size:11px;margin-top:2px}
-.news-item{background:var(--card);border-radius:8px;padding:11px 12px;margin-bottom:6px;border-left:3px solid var(--border)}
-.news-badge{display:inline-block;font-size:9px;padding:1px 6px;border-radius:3px;margin-bottom:4px;font-weight:600}
+.news-item{background:var(--card);border-radius:10px;padding:13px 14px;margin-bottom:8px;border-left:3px solid var(--border)}
+.news-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:3px;margin-bottom:5px;font-weight:600}
 .nb-red{background:rgba(255,64,96,.15);color:#ff6080}.nb-blue{background:rgba(77,166,255,.15);color:var(--blue)}
 .nb-green{background:rgba(0,232,150,.15);color:var(--up)}.nb-gold{background:rgba(255,201,64,.15);color:var(--gold)}
 .nb-orange{background:rgba(255,140,58,.15);color:var(--orange)}.nb-purple{background:rgba(167,139,250,.15);color:var(--purple)}
-.news-title{font-size:12.5px;font-weight:600;line-height:1.4}
+.news-title{font-size:14px;font-weight:700;line-height:1.45}
 .news-title a{color:var(--t1)}.news-title a:hover{color:var(--blue);text-decoration:none}
-.news-meta{font-size:10px;color:var(--t3);margin-top:4px}
+.news-summary{font-size:11.5px;color:var(--t2);line-height:1.5;margin-top:5px}
+.news-meta{font-size:10px;color:var(--t3);margin-top:5px}
+.news-orig{font-size:10px;color:var(--t3);margin-top:3px;font-style:italic;opacity:.7}
 .apt-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
 .apt-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
 .apt-name{font-size:15px;font-weight:700}.apt-info{font-size:10px;color:var(--t3);margin-top:3px}

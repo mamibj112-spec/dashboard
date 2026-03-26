@@ -27,6 +27,8 @@ jobs:
 
       - name: 대시보드 생성
         run: python generate.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: 변경사항 커밋 & 푸시
         run: |
