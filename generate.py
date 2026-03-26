@@ -238,7 +238,7 @@ def stocks_html(rows):
 def fetch_ai_briefing(market, news):
     """Gemini API로 오늘 장 AI 브리핑 생성"""
     import os
-    api_key = os.environ.get('GEMINI_API_KEY', '')
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
     if not api_key:
         print("  GEMINI_API_KEY 없음, AI 브리핑 스킵")
         return None
@@ -278,7 +278,7 @@ def fetch_ai_briefing(market, news):
 }}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
                   'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 512}},
             timeout=20
@@ -301,7 +301,7 @@ def fetch_ai_briefing(market, news):
 def translate_news_to_korean(items):
     """Gemini API로 해외 뉴스 제목/요약을 한국어로 번역"""
     import os, json, re
-    api_key = os.environ.get('GEMINI_API_KEY', '')
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
     if not api_key or not items:
         return items
     try:
@@ -322,7 +322,7 @@ def translate_news_to_korean(items):
 {json.dumps(summaries, ensure_ascii=False)}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
                   'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024}},
             timeout=25
