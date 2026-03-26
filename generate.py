@@ -278,7 +278,7 @@ def fetch_ai_briefing(market, news):
 }}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
                   'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 512}},
             timeout=20
@@ -322,7 +322,7 @@ def translate_news_to_korean(items):
 {json.dumps(summaries, ensure_ascii=False)}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
                   'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024}},
             timeout=25
