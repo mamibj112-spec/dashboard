@@ -45,6 +45,7 @@ TICKERS = {
     'tnx':    '^TNX',
     'dxy':    'DX-Y.NYB',
     'btc':    'BTC-USD',
+    'vix':    '^VIX',
 }
 
 def fetch_market():
@@ -150,6 +151,12 @@ def calc_fear_greed(market, stocks):
 
 
 MACRO_HISTORY_TICKERS = {
+    'kospi':  '^KS11',
+    'kosdaq': '^KQ11',
+    'sp500':  '^GSPC',
+    'nasdaq': '^NDX',
+    'dow':    '^DJI',
+    'vix':    '^VIX',
     'usdkrw': 'KRW=X',
     'brent':  'BZ=F',
     'wti':    'CL=F',
@@ -265,22 +272,27 @@ def fetch_ai_briefing(market, news):
 - USD/KRW: {mv('usdkrw')}
 - 미 10년물 금리: {mv('tnx')}
 - 브렌트유: {mv('brent')}
+- WTI: {mv('wti')}
+- 금: {mv('gold')}
 - 비트코인: {mv('btc')}
 
-오늘 주요 뉴스 제목:
+오늘 주요 뉴스:
 {chr(10).join(f"- {h}" for h in headlines[:12])}
 
-위 데이터를 분석해서 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
+위 데이터를 바탕으로 단순 나열이 아닌, 지표 간 인과관계와 스토리가 있는 시황 분석을 작성하세요.
+부동산 내용은 절대 포함하지 마세요. 주식 시장만 분석하세요.
+아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
 {{
-  "briefing": ["한 줄 (25자 이내, 이모지 포함)", "두 줄", "세 줄"],
-  "hot_sector": "오늘 가장 뜨거웠던 섹터/테마 1-2개 (이모지 포함, 뉴스 기반 추론)",
-  "supply_summary": "오늘 수급의 핵심 주체 한 줄 (뉴스 기반 추론, 25자 이내)"
+  "keyword": "오늘의 핵심 키워드 한 줄 (이모지 포함, 20자 이내)",
+  "story": "주요 지표 움직임의 원인과 연결고리 설명 (2~3문장, 인과관계 중심)",
+  "sector_story": "업종별 등락 스토리 (왜 올랐고 왜 내렸는지 흐름 설명, 2문장)",
+  "watch_points": ["투자자 주목 포인트 1", "투자자 주목 포인트 2", "투자자 주목 포인트 3"]
 }}"""
 
         resp = requests.post(
             f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
-                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 512, 'thinkingConfig': {'thinkingBudget': 0}}},
+                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 1024, 'thinkingConfig': {'thinkingBudget': 0}}},
             timeout=60
         )
         resp.raise_for_status()
@@ -428,8 +440,8 @@ def get_weekly_calendar(dt):
 
 RSS_FEEDS = {
     'domestic': [
-        ('연합뉴스', 'https://www.yna.co.kr/rss/economy.xml'),
         ('한국경제', 'https://www.hankyung.com/feed/finance'),
+        ('매일경제', 'https://www.mk.co.kr/rss/30100041/'),
     ],
     'international': [
         ('CNBC Markets', 'https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10000664'),
@@ -444,32 +456,181 @@ RSS_FEEDS = {
     ],
 }
 
+REALESTATE_KEYWORDS = ['부동산','아파트','전세','청약','분양','재건축','재개발','임대','빌라','오피스텔','주택','토지','상가','부지','공시지가','임차']
+STOCK_KEYWORDS = ['주식','증시','코스피','코스닥','주가','상장','IPO','공모','실적','매수','매도','외국인','기관투자','수급','ETF','펀드','공매도','선물','옵션','배당','증권','반도체','2차전지','바이오','상한가','하한가','급등','급락','시총','거래대금','테마주','코스닥','코스피','금투','기업공개','자사주','유상증자','무상증자','상장폐지','감사의견','영업이익','매출','PER','ROE','지수','장세','개미','동학','서학']
+
+
+def fetch_stock_story(stocks):
+    """Gemini로 거래대금 상위 + 급등주 기반 시장 스토리 분석"""
+    import os, json, re
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not api_key or not stocks:
+        return None
+    try:
+        print("  주도주 스토리 분석 중...")
+        top_amt  = stocks.get('top_amt', [])
+        top_gain = stocks.get('top_gain', [])
+        breadth  = stocks.get('breadth', {})
+
+        amt_text  = '\n'.join(f"- {s['Name']} ({s['ChagesRatio']:+.1f}%, 거래대금 {int(s['Amount'])//100000000}억)" for s in top_amt)
+        gain_text = '\n'.join(f"- {s['Name']} ({s['ChagesRatio']:+.1f}%)" for s in top_gain)
+        up, dn    = breadth.get('up', 0), breadth.get('down', 0)
+
+        prompt = f"""오늘 코스피/코스닥 시장 데이터입니다.
+
+전체 상승 {up}개 / 하락 {dn}개
+
+거래대금 상위:
+{amt_text}
+
+급등주 상위:
+{gain_text}
+
+위 데이터를 바탕으로 아래 3가지를 분석해주세요. 부동산 내용은 절대 포함하지 마세요.
+JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
+{{
+  "theme": "오늘의 주도 테마 한 줄 (어떤 종목들이 함께 올랐는지, 이모지 포함, 30자 이내)",
+  "theme_reason": "해당 테마가 오늘 주목받은 이유 (1~2문장, 뉴스/정책/이슈 추론 포함)",
+  "money_flow": "거래대금 상위 분석 - 큰 돈이 어디로 쏠렸는지 (1~2문장, 이례적 종목 포착)",
+  "market_tone": "오늘 장세 성격 한 줄 (대형주 장세 vs 테마주 장세 등, 25자 이내)"
+}}"""
+
+        resp = requests.post(
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
+            json={'contents': [{'parts': [{'text': prompt}]}],
+                  'generationConfig': {'temperature': 0.5, 'maxOutputTokens': 1024, 'thinkingConfig': {'thinkingBudget': 0}}},
+            timeout=60
+        )
+        resp.raise_for_status()
+        parts = resp.json()['candidates'][0]['content']['parts']
+        text = next((p['text'] for p in parts if 'text' in p), '').strip()
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            data = json.loads(m.group(0))
+            print("  주도주 스토리 분석 완료")
+            return data
+        return None
+    except Exception as e:
+        print(f"  주도주 스토리 오류: {e}")
+        return None
+
+
+def fetch_research_reports():
+    """네이버 증권 리서치 종목분석 리포트 스크래핑"""
+    print("증권사 리포트 수집 중...")
+    try:
+        from bs4 import BeautifulSoup
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        r = requests.get('https://finance.naver.com/research/company_list.naver', headers=headers, timeout=10)
+        r.encoding = 'euc-kr'
+        soup = BeautifulSoup(r.text, 'html.parser')
+        rows = soup.select('table.type_1 tr')
+        reports = []
+        for row in rows[2:]:
+            tds = row.find_all('td')
+            if len(tds) < 5:
+                continue
+            stock   = tds[0].get_text(strip=True)
+            title   = tds[1].get_text(strip=True)
+            firm    = tds[2].get_text(strip=True)
+            date    = tds[4].get_text(strip=True)
+            a_tag   = tds[1].find('a')
+            href    = a_tag['href'] if a_tag and a_tag.get('href') else ''
+            url     = f"https://finance.naver.com/research/{href}" if href else ''
+            if stock and title and firm:
+                reports.append({'stock': stock, 'title': title, 'firm': firm, 'date': date, 'url': url})
+        print(f"  리포트 수집 완료: {len(reports)}건")
+        return reports[:15]
+    except Exception as e:
+        print(f"  리포트 수집 오류: {e}")
+        return []
+
+
+def fetch_research_summary(reports):
+    """Gemini로 오늘의 핵심 리포트 3개 선정 및 요약"""
+    import os, json, re
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not api_key or not reports:
+        return None
+    try:
+        print("  리포트 AI 요약 중...")
+        report_text = '\n'.join(
+            f"{i+1}. [{r['firm']}] {r['stock']} - {r['title']} ({r['date']})"
+            for i, r in enumerate(reports)
+        )
+        prompt = f"""아래는 오늘 네이버 증권에 올라온 증권사 리포트 목록입니다.
+
+{report_text}
+
+위 리포트 중 오늘 가장 주목할 만한 3개를 선정하고, 각각의 핵심 투자 포인트를 2줄로 요약해주세요.
+선정한 리포트의 번호(위 목록의 숫자)를 index 필드에 포함하세요 (1부터 시작).
+아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
+{{
+  "reports": [
+    {{"index": 1, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}},
+    {{"index": 2, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}},
+    {{"index": 3, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}}
+  ]
+}}"""
+        resp = requests.post(
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
+            json={'contents': [{'parts': [{'text': prompt}]}],
+                  'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024, 'thinkingConfig': {'thinkingBudget': 0}}},
+            timeout=60
+        )
+        resp.raise_for_status()
+        parts = resp.json()['candidates'][0]['content']['parts']
+        text = next((p['text'] for p in parts if 'text' in p), '').strip()
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            data = json.loads(m.group(0))
+            result = data.get('reports', [])
+            # index로 원본 URL 매핑
+            for rp in result:
+                idx = rp.get('index', 0)
+                if 1 <= idx <= len(reports):
+                    rp['url'] = reports[idx - 1].get('url', '')
+            print("  리포트 AI 요약 완료")
+            return result
+        return None
+    except Exception as e:
+        print(f"  리포트 AI 요약 오류: {e}")
+        return None
+
+
 def fetch_news():
     print("뉴스 수집 중...")
+    import re as _re
     news = {}
     for cat, feeds in RSS_FEEDS.items():
         items = []
         for source, url in feeds:
             try:
                 f = feedparser.parse(url, request_headers={'User-Agent': 'Mozilla/5.0'})
-                for entry in f.entries[:6]:
+                for entry in f.entries[:10]:
                     title = entry.get('title', '').strip()
                     link = entry.get('link', '#')
                     published = entry.get('published', '')
-                    if title and len(title) > 5:
-                        date_str = ''
-                        if published:
-                            try:
-                                from email.utils import parsedate_to_datetime
-                                dt = parsedate_to_datetime(published).astimezone(KST)
-                                date_str = f"{dt.month}월 {dt.day}일"
-                            except:
-                                date_str = published[:10]
-                        raw_summary = entry.get('summary', '') or entry.get('description', '')
-                        import re as _re
-                        summary = _re.sub(r'<[^>]+>', '', raw_summary).strip()
-                        summary = summary[:80] + '…' if len(summary) > 80 else summary
-                        items.append({'title': title, 'url': link, 'date': date_str, 'source': source, 'summary': summary})
+                    if not title or len(title) <= 5:
+                        continue
+                    # 국내 뉴스는 주식 관련 키워드 포함된 것만, 부동산 제외
+                    if cat == 'domestic':
+                        if any(kw in title for kw in REALESTATE_KEYWORDS):
+                            continue
+                        if not any(kw in title for kw in STOCK_KEYWORDS):
+                            continue
+                    date_str = ''
+                    if published:
+                        try:
+                            from email.utils import parsedate_to_datetime
+                            dt = parsedate_to_datetime(published).astimezone(KST)
+                            date_str = f"{dt.month}월 {dt.day}일"
+                        except:
+                            date_str = published[:10]
+                    raw_summary = entry.get('summary', '') or entry.get('description', '')
+                    summary = _re.sub(r'<[^>]+>', '', raw_summary).strip()
+                    summary = summary[:80] + '…' if len(summary) > 80 else summary
+                    items.append({'title': title, 'url': link, 'date': date_str, 'source': source, 'summary': summary})
             except Exception as e:
                 print(f"  RSS 오류 [{url}]: {e}")
         news[cat] = items[:7]
@@ -710,10 +871,10 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .idx-name{font-size:11px;color:var(--t3);margin-bottom:4px}
 .idx-val{font-size:20px;font-weight:700}.idx-chg{font-size:12px;margin-top:3px}
 .up-txt{color:var(--up)}.dn-txt{color:var(--dn)}.neu-txt{color:var(--t2)}
-.macro-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 12px}
-.macro-name{font-size:10px;color:var(--t3);margin-bottom:3px}
-.macro-val{font-size:15px;font-weight:700}.macro-chg{font-size:11px;margin-top:2px}
+.macro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 10px}
+.macro-name{font-size:9.5px;color:var(--t3);margin-bottom:2px}
+.macro-val{font-size:13px;font-weight:700}.macro-chg{font-size:10px;margin-top:2px}
 .news-item{background:var(--card);border-radius:10px;padding:13px 14px;margin-bottom:8px;border-left:3px solid var(--border)}
 .news-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:3px;margin-bottom:5px;font-weight:600}
 .nb-red{background:rgba(255,64,96,.15);color:#ff6080}.nb-blue{background:rgba(77,166,255,.15);color:var(--blue)}
@@ -747,10 +908,10 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .invest-point{margin-top:10px;padding:8px 10px;background:var(--card2);border-radius:6px;font-size:11px;color:var(--t2);line-height:1.5}
 .warn{color:var(--gold);font-size:10px}
 .footer-note{font-size:10px;color:var(--t3);text-align:center;padding:16px 0 4px;line-height:1.6}
-.stock-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--card);border-radius:8px;margin-bottom:5px}
-.stock-name{font-size:12.5px;font-weight:600;color:var(--t1)}
-.stock-right{display:flex;align-items:center;gap:8px;font-size:12px}
-.stock-amt{color:var(--t3);font-size:10px}
+.stock-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--card);border-radius:6px;margin-bottom:4px}
+.stock-name{font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px}
+.stock-right{display:flex;align-items:center;gap:5px;font-size:11px;flex-shrink:0}
+.stock-amt{color:var(--t3);font-size:9.5px}
 .breadth-wrap{background:var(--card);border-radius:10px;padding:12px 14px}
 .breadth-bar{height:8px;background:rgba(255,64,96,.3);border-radius:4px;overflow:hidden;margin-bottom:8px}
 .breadth-up{height:100%;background:var(--up);border-radius:4px}
@@ -767,18 +928,42 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .ai-supply{font-size:11px;color:var(--t2);padding-top:6px;border-top:1px solid rgba(255,255,255,.06)}
 .macro-card{cursor:pointer;transition:opacity .15s}
 .macro-card:active{opacity:.6}
+.stock-story-wrap{display:flex;gap:10px;align-items:flex-start}
+.stock-list-col{flex:0 0 44%;min-width:0}
+.stock-story-col{flex:1;min-width:0}
+.ss-sub-label{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;padding-left:2px}
+.ss-wrap{background:linear-gradient(135deg,rgba(255,201,64,.07),rgba(249,115,22,.05));border:1px solid rgba(255,201,64,.2);border-radius:12px;padding:12px;height:100%;box-sizing:border-box}
+.ss-tone{font-size:11.5px;font-weight:700;color:var(--gold);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);line-height:1.4}
+.ss-block{margin-bottom:9px}.ss-block:last-child{margin-bottom:0}
+.ss-label{font-size:9px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:4px}
+.ss-theme{font-size:11px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.ss-text{font-size:10.5px;color:var(--t2);line-height:1.7}
+.story-wrap{background:linear-gradient(135deg,rgba(77,166,255,.08),rgba(167,139,250,.06));border:1px solid rgba(77,166,255,.2);border-radius:12px;padding:14px}
+.story-keyword{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.story-block{margin-bottom:10px}
+.story-block:last-child{margin-bottom:0}
+.story-label{font-size:10px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:5px}
+.story-text{font-size:12px;color:var(--t2);line-height:1.75}
+.story-watch{font-size:12px;color:var(--t1);line-height:1.9;font-weight:500}
+.report-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.report-stock{font-size:13px;font-weight:700;color:var(--t1)}
+.report-firm{font-size:10px;color:var(--purple);background:rgba(167,139,250,.12);padding:2px 7px;border-radius:10px}
+.report-title{font-size:11.5px;color:var(--t2);margin-bottom:7px;line-height:1.5}
+.report-points{border-top:1px solid var(--border);padding-top:7px}
+.report-point{font-size:11px;color:var(--t2);line-height:1.7}
 #macroOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;display:none;opacity:0;transition:opacity .25s}
 #macroOverlay.open{opacity:1}
-#macroModal{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;
-background:var(--card2);border-radius:16px 16px 0 0;padding:16px 16px 24px;z-index:100;
-box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(100%);
+#macroModal{position:fixed;bottom:20px;left:8px;right:8px;max-width:480px;margin:0 auto;
+background:var(--card2);border-radius:16px;padding:16px 16px 24px;z-index:100;
+box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(calc(100% + 28px));
 transition:transform .28s cubic-bezier(.4,0,.2,1)}
 #macroModal.open{transform:translateY(0)}
 """
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None):
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
 
@@ -857,6 +1042,12 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
     import json as _json2
     macro_meta = {
+        'kospi':  {'name':'코스피',      'color':'#ef4444','rgb':'239,68,68',   'pre':'',  'suf':'', 'dec':2},
+        'kosdaq': {'name':'코스닥',      'color':'#3b82f6','rgb':'59,130,246',  'pre':'',  'suf':'', 'dec':2},
+        'sp500':  {'name':'S&P 500',    'color':'#00e896','rgb':'0,232,150',   'pre':'',  'suf':'', 'dec':2},
+        'nasdaq': {'name':'나스닥 100', 'color':'#4da6ff','rgb':'77,166,255',  'pre':'',  'suf':'', 'dec':2},
+        'dow':    {'name':'다우존스',   'color':'#a78bfa','rgb':'167,139,250', 'pre':'',  'suf':'', 'dec':2},
+        'vix':    {'name':'VIX',        'color':'#ffc940','rgb':'255,201,64',  'pre':'',  'suf':'', 'dec':2},
         'usdkrw': {'name':'USD/KRW',    'color':'#ef4444','rgb':'239,68,68',   'pre':'',  'suf':'원','dec':0},
         'brent':  {'name':'브렌트유',    'color':'#f97316','rgb':'249,115,22',  'pre':'$', 'suf':'', 'dec':1},
         'wti':    {'name':'WTI',         'color':'#f97316','rgb':'249,115,22',  'pre':'$', 'suf':'', 'dec':1},
@@ -868,21 +1059,71 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     macro_meta_json = _json2.dumps(macro_meta, ensure_ascii=False)
     macro_hist_json = _json2.dumps(macro_hist or {})
 
-    # AI 브리핑 HTML
+    ai_extra = ''
+    ai_html = ''
+
+    # 스토리형 시황 분석 섹션
     if ai_brief:
-        briefing_lines = ai_brief.get('briefing', [])
-        hot_sector     = ai_brief.get('hot_sector', '')
-        supply_sum     = ai_brief.get('supply_summary', '')
-        ai_html = f'''<div class="section">
-    <div class="ai-brief-wrap">
-      <div class="ai-brief-title">🤖 AI 장 브리핑</div>
-      <div class="ai-lines">{''.join(f'<div class="ai-line">· {l}</div>' for l in briefing_lines)}</div>
-      {f'<div class="ai-tags"><span class="ai-tag hot">{hot_sector}</span></div>' if hot_sector else ''}
-      {f'<div class="ai-supply">{supply_sum}</div>' if supply_sum else ''}
+        keyword      = ai_brief.get('keyword', '')
+        story        = ai_brief.get('story', '')
+        sector_story = ai_brief.get('sector_story', '')
+        watch_points = ai_brief.get('watch_points', [])
+        wp_html = ''.join(f'<div class="story-watch">· {wp}</div>' for wp in watch_points)
+        story_html = f'''<div class="section">
+  <div class="story-wrap">
+    <div class="story-keyword">{keyword}</div>
+    <div class="story-block">
+      <div class="story-label">📊 시황 흐름</div>
+      <div class="story-text">{story}</div>
     </div>
-  </div>'''
+    <div class="story-block">
+      <div class="story-label">🏭 업종 스토리</div>
+      <div class="story-text">{sector_story}</div>
+    </div>
+    {f'<div class="story-block"><div class="story-label">👀 오늘의 주목 포인트</div>{wp_html}</div>' if wp_html else ''}
+  </div>
+</div>'''
     else:
-        ai_html = ''
+        story_html = ''
+
+    # 주도주 스토리 HTML
+    if stock_story:
+        stock_story_html = f'''<div class="ss-wrap">
+  <div class="ss-tone">{stock_story.get('market_tone','')}</div>
+  <div class="ss-block">
+    <div class="ss-label">🔥 주도 테마</div>
+    <div class="ss-theme">{stock_story.get('theme','')}</div>
+    <div class="ss-text">{stock_story.get('theme_reason','')}</div>
+  </div>
+  <div class="ss-block">
+    <div class="ss-label">💰 큰 돈의 흐름</div>
+    <div class="ss-text">{stock_story.get('money_flow','')}</div>
+  </div>
+</div>'''
+    else:
+        stock_story_html = ''
+
+    # 증권사 리포트 HTML
+    if research_summary:
+        cards = ''
+        for rp in research_summary:
+            url = rp.get('url', '')
+            link_open  = f'<a href="{url}" target="_blank" style="text-decoration:none;display:block">' if url else '<div>'
+            link_close = '</a>' if url else '</div>'
+            cards += f'''{link_open}<div class="report-card">
+  <div class="report-header">
+    <span class="report-stock">{rp.get('stock','')}</span>
+    <span class="report-firm">{rp.get('firm','')}</span>
+  </div>
+  <div class="report-title">{rp.get('title','')}</div>
+  <div class="report-points">
+    <div class="report-point">· {rp.get('point1','')}</div>
+    <div class="report-point">· {rp.get('point2','')}</div>
+  </div>
+</div>{link_close}'''
+        research_html = f'<div class="section"><div class="section-label">📋 오늘의 증권사 리포트</div>{cards}</div>'
+    else:
+        research_html = ''
 
     dom_news = news_html(news.get('domestic', []), 'nb-blue', '국내')
     int_news = news_html(news.get('international', []), 'nb-blue', '해외')
@@ -939,12 +1180,13 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 <title>국장 대시보드 · {dt.month}월 {dt.day}일</title>
 <style>{CSS}</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
 
 <div class="header">
   <div>
-    <div class="header-title">국장 데일리 대시보드</div>
+    <div class="header-title">📈 국내 주식</div>
     <div class="header-date">{kdate}</div>
     <div class="header-day">장 마감 기준</div>
   </div>
@@ -953,7 +1195,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
 <nav class="tab-nav">
   <button class="tab-btn active" onclick="sw('dom',this)">📈 국내</button>
-  <button class="tab-btn" onclick="sw('us',this)">🇺🇸 해외</button>
+  <button class="tab-btn" onclick="sw('us',this)">🌐 해외</button>
   <button class="tab-btn" onclick="sw('re',this)">🏠 부동산</button>
   <button class="tab-btn" onclick="sw('hot',this)">🔥 핫이슈</button>
   <button class="tab-btn" onclick="sw('cal',this)">📅 일정</button>
@@ -971,20 +1213,46 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     </div>
   </div>
 
-  {ai_html}
+  {story_html}
 
   <div class="section">
     <div class="section-label">국내 지수</div>
     <div class="index-grid">
-      <div class="idx-card">
-        <div class="idx-name">코스피</div>
+      <div class="idx-card" onclick="showMacroChart('kospi')" style="cursor:pointer">
+        <div class="idx-name">코스피 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
         <div class="idx-val">{vdisp(market,'kospi')}</div>
         <div class="idx-chg">{cdisp(market,'kospi')}</div>
       </div>
-      <div class="idx-card">
-        <div class="idx-name">코스닥</div>
+      <div class="idx-card" onclick="showMacroChart('kosdaq')" style="cursor:pointer">
+        <div class="idx-name">코스닥 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
         <div class="idx-val">{vdisp(market,'kosdaq')}</div>
         <div class="idx-chg">{cdisp(market,'kosdaq')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">미국 주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
+    <div class="index-grid">
+      <div class="idx-card" onclick="showMacroChart('nasdaq')" style="cursor:pointer">
+        <div class="idx-name">나스닥 100</div>
+        <div class="idx-val">{vdisp(market,'nasdaq')}</div>
+        <div class="idx-chg">{cdisp(market,'nasdaq')}</div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('sp500')" style="cursor:pointer">
+        <div class="idx-name">S&amp;P 500</div>
+        <div class="idx-val">{vdisp(market,'sp500')}</div>
+        <div class="idx-chg">{cdisp(market,'sp500')}</div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
+        <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
+        <div class="idx-val">{vdisp(market,'vix')}</div>
+        <div class="idx-chg">{cdisp(market,'vix')}</div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
+        <div class="idx-name">다우존스</div>
+        <div class="idx-val">{vdisp(market,'dow')}</div>
+        <div class="idx-chg">{cdisp(market,'dow')}</div>
       </div>
     </div>
   </div>
@@ -1006,11 +1274,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         <div class="macro-name">WTI</div>
         <div class="macro-val">{vdisp(market,'wti')}</div>
         <div class="macro-chg">{cdisp(market,'wti')}</div>
-      </div>
-      <div class="macro-card" onclick="showMacroChart('tnx')">
-        <div class="macro-name">미 10년물</div>
-        <div class="macro-val">{vdisp(market,'tnx')}</div>
-        <div class="macro-chg">{cdisp(market,'tnx')}</div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
@@ -1043,17 +1306,23 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 
   <div class="section">
-    <div class="section-label">📈 거래대금 상위</div>
-    {top_amt_html}
+    <div class="stock-story-wrap">
+      <div class="stock-list-col">
+        <div class="ss-sub-label">📈 거래대금</div>
+        {top_amt_html}
+        <div class="ss-sub-label" style="margin-top:10px">🚀 급등주</div>
+        {top_gain_html}
+      </div>
+      <div class="stock-story-col">
+        {stock_story_html}
+      </div>
+    </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">🚀 급등주 상위</div>
-    {top_gain_html}
-  </div>
+  {research_html}
 
   <div class="section">
-    <div class="section-label">국내 뉴스</div>
+    <div class="section-label">국내 주식 뉴스</div>
     {dom_news}
   </div>
 
@@ -1207,10 +1476,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">부동산 뉴스</div>
-    {re_news}
-  </div>
 
 </div>
 
@@ -1255,7 +1520,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <div id="macroModalTitle" style="font-size:14px;font-weight:700;color:var(--t1);"></div>
     <button onclick="closeMacroChart()" style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;padding:0;">✕</button>
   </div>
-  <canvas id="macroChartCanvas" height="130"></canvas>
+  <canvas id="macroChartCanvas" height="110"></canvas>
   <div id="macroNoData" style="display:none;color:var(--t3);font-size:12px;text-align:center;padding:36px 0;">다음 업데이트 시 데이터 표시</div>
 </div>
 
@@ -1285,7 +1550,7 @@ function showMacroChart(k){{
   var g=ctx.createLinearGradient(0,0,0,130);
   g.addColorStop(0,'rgba('+m.rgb+',0.25)');g.addColorStop(1,'rgba('+m.rgb+',0.02)');
   function fmt(v){{return m.pre+(m.dec===0?Math.round(v).toLocaleString():v.toFixed(m.dec))+m.suf;}}
-  _mc=new Chart(ctx,{{type:'line',data:{{labels:vals.map(function(){{return '';}}),datasets:[{{data:vals,borderColor:m.color,backgroundColor:g,borderWidth:2,pointRadius:3,pointBackgroundColor:m.color,fill:true,tension:0.4}}]}},options:{{responsive:true,plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{label:function(c){{return fmt(c.raw);}}}}}}}},scales:{{x:{{display:false}},y:{{grid:{{color:'rgba(255,255,255,0.06)'}},ticks:{{color:'#6a80aa',font:{{size:10}},callback:function(v){{return fmt(v);}}}},border:{{color:'rgba(255,255,255,0.08)'}}}}}}}}}});
+  _mc=new Chart(ctx,{{type:'line',data:{{labels:vals.map(function(){{return '';}}),datasets:[{{data:vals,borderColor:m.color,backgroundColor:g,borderWidth:2,pointRadius:4,pointBackgroundColor:m.color,fill:true,tension:0.4,clip:false}}]}},options:{{layout:{{padding:{{top:24,bottom:4,left:16,right:16}}}},clip:false,responsive:true,plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{label:function(c){{return fmt(c.raw);}}}}}},datalabels:{{color:m.color,font:{{size:9,weight:'600'}},formatter:function(v){{return fmt(v);}},anchor:'end',align:'top',offset:2,clamp:true}}}},scales:{{x:{{display:false}},y:{{display:false}}}}}},plugins:[ChartDataLabels]}});
 }}
 function closeMacroChart(){{
   document.getElementById('macroOverlay').classList.remove('open');
@@ -1304,28 +1569,33 @@ function closeMacroChart(){{
       indexAxis:'y',responsive:true,
       plugins:{{
         legend:{{display:false}},
-        tooltip:{{callbacks:{{label:function(c){{return(c.raw>0?'+':'')+c.raw+'%';}}}}}}
+        tooltip:{{callbacks:{{label:function(c){{return(c.raw>0?'+':'')+c.raw+'%';}}}}}},
+        datalabels:{{
+          color:function(ctx){{return ctx.dataset.data[ctx.dataIndex]>=0?'#ef4444':'#3b82f6';}},
+          font:{{size:10,weight:'600'}},
+          formatter:function(v){{return(v>0?'+':'')+v+'%';}},
+          anchor:'end',align:'end',offset:2,clamp:true
+        }}
       }},
       scales:{{
-        x:{{
-          grid:{{color:'rgba(255,255,255,0.06)'}},
-          ticks:{{color:'#6a80aa',font:{{size:10}},callback:function(v){{return v+'%';}}}},
-          border:{{color:'rgba(255,255,255,0.08)'}}
-        }},
+        x:{{display:false}},
         y:{{
           grid:{{display:false}},
           ticks:{{color:'#b8ccee',font:{{size:11}}}},
           border:{{color:'rgba(255,255,255,0.08)'}}
         }}
       }}
-    }}
+    }},
+    plugins:[ChartDataLabels]
   }});
 }})();
+var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정'}};
 function sw(id, btn) {{
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
+  document.querySelector('.header-title').textContent=_tabTitles[id]||'국장 데일리 대시보드';
 }}
 if ('serviceWorker' in navigator) {{
   navigator.serviceWorker.register('sw.js').catch(() => {{}});
@@ -1370,8 +1640,12 @@ def main():
     stocks   = fetch_market_stocks()
     ai_brief = fetch_ai_briefing(market, news)
 
+    research_reports = fetch_research_reports()
+    research_summary = fetch_research_summary(research_reports)
+    stock_story = fetch_stock_story(stocks)
+
     macro_hist  = fetch_macro_history()
-    html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist)
+    html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
