@@ -43,10 +43,10 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .idx-name{font-size:11px;color:var(--t3);margin-bottom:4px}
 .idx-val{font-size:20px;font-weight:700}.idx-chg{font-size:12px;margin-top:3px}
 .up-txt{color:var(--up)}.dn-txt{color:var(--dn)}.neu-txt{color:var(--t2)}
-.macro-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 12px}
-.macro-name{font-size:10px;color:var(--t3);margin-bottom:3px}
-.macro-val{font-size:15px;font-weight:700}.macro-chg{font-size:11px;margin-top:2px}
+.macro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 10px}
+.macro-name{font-size:9.5px;color:var(--t3);margin-bottom:2px}
+.macro-val{font-size:13px;font-weight:700}.macro-chg{font-size:10px;margin-top:2px}
 .news-item{background:var(--card);border-radius:10px;padding:13px 14px;margin-bottom:8px;border-left:3px solid var(--border)}
 .news-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:3px;margin-bottom:5px;font-weight:600}
 .nb-red{background:rgba(255,64,96,.15);color:#ff6080}.nb-blue{background:rgba(77,166,255,.15);color:var(--blue)}
@@ -80,10 +80,10 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .invest-point{margin-top:10px;padding:8px 10px;background:var(--card2);border-radius:6px;font-size:11px;color:var(--t2);line-height:1.5}
 .warn{color:var(--gold);font-size:10px}
 .footer-note{font-size:10px;color:var(--t3);text-align:center;padding:16px 0 4px;line-height:1.6}
-.stock-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--card);border-radius:8px;margin-bottom:5px}
-.stock-name{font-size:12.5px;font-weight:600;color:var(--t1)}
-.stock-right{display:flex;align-items:center;gap:8px;font-size:12px}
-.stock-amt{color:var(--t3);font-size:10px}
+.stock-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--card);border-radius:6px;margin-bottom:4px}
+.stock-name{font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px}
+.stock-right{display:flex;align-items:center;gap:5px;font-size:11px;flex-shrink:0}
+.stock-amt{color:var(--t3);font-size:9.5px}
 .breadth-wrap{background:var(--card);border-radius:10px;padding:12px 14px}
 .breadth-bar{height:8px;background:rgba(255,64,96,.3);border-radius:4px;overflow:hidden;margin-bottom:8px}
 .breadth-up{height:100%;background:var(--up);border-radius:4px}
@@ -100,30 +100,55 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .ai-supply{font-size:11px;color:var(--t2);padding-top:6px;border-top:1px solid rgba(255,255,255,.06)}
 .macro-card{cursor:pointer;transition:opacity .15s}
 .macro-card:active{opacity:.6}
+.stock-story-wrap{display:flex;gap:10px;align-items:flex-start}
+.stock-list-col{flex:0 0 44%;min-width:0}
+.stock-story-col{flex:1;min-width:0}
+.ss-sub-label{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;padding-left:2px}
+.ss-wrap{background:linear-gradient(135deg,rgba(255,201,64,.07),rgba(249,115,22,.05));border:1px solid rgba(255,201,64,.2);border-radius:12px;padding:12px;height:100%;box-sizing:border-box}
+.ss-tone{font-size:11.5px;font-weight:700;color:var(--gold);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);line-height:1.4}
+.ss-block{margin-bottom:9px}.ss-block:last-child{margin-bottom:0}
+.ss-label{font-size:9px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:4px}
+.ss-theme{font-size:11px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.ss-text{font-size:10.5px;color:var(--t2);line-height:1.7}
+.story-wrap{background:linear-gradient(135deg,rgba(77,166,255,.08),rgba(167,139,250,.06));border:1px solid rgba(77,166,255,.2);border-radius:12px;padding:14px}
+.story-keyword{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.story-block{margin-bottom:10px}
+.story-block:last-child{margin-bottom:0}
+.story-label{font-size:10px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:5px}
+.story-text{font-size:12px;color:var(--t2);line-height:1.75}
+.story-watch{font-size:12px;color:var(--t1);line-height:1.9;font-weight:500}
+.report-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.report-stock{font-size:13px;font-weight:700;color:var(--t1)}
+.report-firm{font-size:10px;color:var(--purple);background:rgba(167,139,250,.12);padding:2px 7px;border-radius:10px}
+.report-title{font-size:11.5px;color:var(--t2);margin-bottom:7px;line-height:1.5}
+.report-points{border-top:1px solid var(--border);padding-top:7px}
+.report-point{font-size:11px;color:var(--t2);line-height:1.7}
 #macroOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;display:none;opacity:0;transition:opacity .25s}
 #macroOverlay.open{opacity:1}
-#macroModal{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;
-background:var(--card2);border-radius:16px 16px 0 0;padding:16px 16px 24px;z-index:100;
-box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(100%);
+#macroModal{position:fixed;bottom:20px;left:8px;right:8px;max-width:480px;margin:0 auto;
+background:var(--card2);border-radius:16px;padding:16px 16px 24px;z-index:100;
+box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(calc(100% + 28px));
 transition:transform .28s cubic-bezier(.4,0,.2,1)}
 #macroModal.open{transform:translateY(0)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
 
 <div class="header">
   <div>
-    <div class="header-title">국장 데일리 대시보드</div>
+    <div class="header-title">📈 국내 주식</div>
     <div class="header-date">2026년 3월 29일 일요일</div>
     <div class="header-day">장 마감 기준</div>
   </div>
-  <div class="header-right">16:44 생성<br>자동 업데이트</div>
+  <div class="header-right">20:39 생성<br>자동 업데이트</div>
 </div>
 
 <nav class="tab-nav">
   <button class="tab-btn active" onclick="sw('dom',this)">📈 국내</button>
-  <button class="tab-btn" onclick="sw('us',this)">🇺🇸 해외</button>
+  <button class="tab-btn" onclick="sw('us',this)">🌐 해외</button>
   <button class="tab-btn" onclick="sw('re',this)">🏠 부동산</button>
   <button class="tab-btn" onclick="sw('hot',this)">🔥 핫이슈</button>
   <button class="tab-btn" onclick="sw('cal',this)">📅 일정</button>
@@ -142,26 +167,58 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   </div>
 
   <div class="section">
-    <div class="ai-brief-wrap">
-      <div class="ai-brief-title">🤖 AI 장 브리핑</div>
-      <div class="ai-lines"><div class="ai-line">· 코스피 하락, 코스닥 상승 혼조세 📊</div><div class="ai-line">· 환율 상승, 유가 하락하며 불안정한 시장 분위기 📉</div><div class="ai-line">· 부동산 시장 상승세 지속, 핀테크 주식 반전 기대 🤔</div></div>
-      <div class="ai-tags"><span class="ai-tag hot">부동산/건설 🏘️, 반도체 칩 💾</span></div>
-      <div class="ai-supply">선물 거래 승자 가능성 언급</div>
+  <div class="story-wrap">
+    <div class="story-keyword">고용지표 경계 속 혼조세 🧐</div>
+    <div class="story-block">
+      <div class="story-label">📊 시황 흐름</div>
+      <div class="story-text">뉴욕 증시의 하락세가 국내 증시에 부담을 주었지만, 코스닥은 상승 전환하며 차별화된 모습을 보였습니다. 이는 불확실성 증시에 대한 방어적 대응으로 채권 및 MMF로의 자금 이동과 함께, 국제 유가 상승 및 금 가격 급등이 인플레이션 우려를 다시 키우면서 투자 심리를 위축시킨 결과로 보입니다.</div>
     </div>
+    <div class="story-block">
+      <div class="story-label">🏭 업종 스토리</div>
+      <div class="story-text">국제 유가 상승에 WTI가 급등하며 원자재 관련주에 대한 관심이 커질 수 있는 반면, 고유가와 강달러(USD/KRW 환율 상승)는 항공주 등 운송 섹터에 부정적인 영향을 미쳐 급락을 야기했습니다.</div>
+    </div>
+    <div class="story-block"><div class="story-label">👀 오늘의 주목 포인트</div><div class="story-watch">· 미국 3월 고용 지표 발표가 국내외 증시에 미칠 영향</div><div class="story-watch">· 고유가 및 강달러 기조 지속 여부와 인플레이션 압력</div><div class="story-watch">· 불확실성 장세 속 방어적 자산(채권, MMF) 및 원자재 관련 투자 동향</div></div>
   </div>
+</div>
 
   <div class="section">
     <div class="section-label">국내 지수</div>
     <div class="index-grid">
-      <div class="idx-card">
-        <div class="idx-name">코스피</div>
+      <div class="idx-card" onclick="showMacroChart('kospi')" style="cursor:pointer">
+        <div class="idx-name">코스피 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
         <div class="idx-val"><span class="dn-txt">5,438.87</span></div>
         <div class="idx-chg"><span class="dn-txt">▼ 21.59 (0.40%)</span></div>
       </div>
-      <div class="idx-card">
-        <div class="idx-name">코스닥</div>
+      <div class="idx-card" onclick="showMacroChart('kosdaq')" style="cursor:pointer">
+        <div class="idx-name">코스닥 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
         <div class="idx-val"><span class="up-txt">1,141.51</span></div>
         <div class="idx-chg"><span class="up-txt">▲ 4.87 (0.43%)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">미국 주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
+    <div class="index-grid">
+      <div class="idx-card" onclick="showMacroChart('nasdaq')" style="cursor:pointer">
+        <div class="idx-name">나스닥 100</div>
+        <div class="idx-val"><span class="dn-txt">23,132.77</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 454.22 (1.93%)</span></div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('sp500')" style="cursor:pointer">
+        <div class="idx-name">S&amp;P 500</div>
+        <div class="idx-val"><span class="dn-txt">6,368.85</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 108.31 (1.67%)</span></div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
+        <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
+        <div class="idx-val">31.05</div>
+        <div class="idx-chg"><span class="up-txt">▲ 3.61 (13.16%)</span></div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
+        <div class="idx-name">다우존스</div>
+        <div class="idx-val"><span class="dn-txt">45,166.64</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 793.47 (1.73%)</span></div>
       </div>
     </div>
   </div>
@@ -184,15 +241,10 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <div class="macro-val"><span class="up-txt">$99.6</span></div>
         <div class="macro-chg"><span class="up-txt">▲ $5.16 (5.46%)</span></div>
       </div>
-      <div class="macro-card" onclick="showMacroChart('tnx')">
-        <div class="macro-name">미 10년물</div>
-        <div class="macro-val"><span class="dn-txt">4.44%</span></div>
-        <div class="macro-chg"><span class="dn-txt">▲ 0.02%p</span></div>
-      </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="up-txt">$4,492</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $116.50 (2.66%)</span></div>
+        <div class="macro-val"><span class="up-txt">$4,524</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $148.80 (3.40%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
@@ -201,8 +253,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$66,565</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 245.49 (0.37%)</span></div>
+        <div class="macro-val"><span class="up-txt">$66,752</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 432.51 (0.65%)</span></div>
       </div>
     </div>
   </div>
@@ -230,8 +282,10 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   </div>
 
   <div class="section">
-    <div class="section-label">📈 거래대금 상위</div>
-    <div class="stock-row">
+    <div class="stock-story-wrap">
+      <div class="stock-list-col">
+        <div class="ss-sub-label">📈 거래대금</div>
+        <div class="stock-row">
   <div class="stock-name">삼성전자</div>
   <div class="stock-right">
     <span class="dn-txt">▼0.2%</span>
@@ -262,11 +316,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <span class="stock-amt">7101억</span>
   </div>
 </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">🚀 급등주 상위</div>
-    <div class="stock-row">
+        <div class="ss-sub-label" style="margin-top:10px">🚀 급등주</div>
+        <div class="stock-row">
   <div class="stock-name">SV인베스트먼트<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
   <div class="stock-right">
     <span class="up-txt">▲30.0%</span>
@@ -297,52 +348,95 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <span class="stock-amt">20억</span>
   </div>
 </div>
+      </div>
+      <div class="stock-story-col">
+        <div class="ss-wrap">
+  <div class="ss-tone">대형주와 스팩/테마주가 혼재된 장세</div>
+  <div class="ss-block">
+    <div class="ss-label">🔥 주도 테마</div>
+    <div class="ss-theme">🚀스팩/벤처투자 관련주 강세</div>
+    <div class="ss-text">엔에이치스팩33호의 급등과 미래에셋벤처투자, SV인베스트먼트, 캡스톤파트너스 등 벤처투자 관련주들의 동반 강세가 두드러졌습니다. 이는 특정 이슈보다는 스팩 합병 기대감 및 벤처투자 시장 전반에 대한 관심 증가로 풀이됩니다.</div>
+  </div>
+  <div class="ss-block">
+    <div class="ss-label">💰 큰 돈의 흐름</div>
+    <div class="ss-text">삼성전자, SK하이닉스 등 대형주에 여전히 큰 자금이 유입되었으나, 엔에이치스팩33호가 이례적으로 1조원 이상의 거래대금을 기록하며 시장의 관심을 집중시켰습니다.</div>
+  </div>
+</div>
+      </div>
+    </div>
   </div>
 
+  <div class="section"><div class="section-label">📋 오늘의 증권사 리포트</div><a href="https://finance.naver.com/research/company_read.naver?nid=91103&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
+  <div class="report-header">
+    <span class="report-stock">동성화인텍</span>
+    <span class="report-firm">미래에셋증권</span>
+  </div>
+  <div class="report-title">동성화인텍 - LNGC 호황에 먼저 웃을 보냉재</div>
+  <div class="report-points">
+    <div class="report-point">· LNGC(액화천연가스 운반선) 발주 증가로 보냉재 수요가 급증하며 동성화인텍의 수혜가 예상됩니다.</div>
+    <div class="report-point">· 글로벌 LNG 수요 증가와 환경 규제 강화로 친환경 선박 전환이 가속화되며 장기적인 성장 동력을 확보했습니다.</div>
+  </div>
+</div></a><a href="https://finance.naver.com/research/company_read.naver?nid=91099&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
+  <div class="report-header">
+    <span class="report-stock">LG이노텍</span>
+    <span class="report-firm">하나증권</span>
+  </div>
+  <div class="report-title">LG이노텍 - 저도 기판 멀티플 주세요</div>
+  <div class="report-points">
+    <div class="report-point">· LG이노텍은 고부가 기판 사업 확대로 수익성 개선 및 기업 가치 재평가가 기대됩니다.</div>
+    <div class="report-point">· AI 및 전장 부품 시장 성장에 따른 FC-BGA 등 고성능 기판 수요 증가로 새로운 성장 모멘텀을 확보할 것입니다.</div>
+  </div>
+</div></a><a href="https://finance.naver.com/research/company_read.naver?nid=91095&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
+  <div class="report-header">
+    <span class="report-stock">알테오젠</span>
+    <span class="report-firm">신한투자증권</span>
+  </div>
+  <div class="report-title">알테오젠 - 한 분기에 2건 L/O 체결, 간담회 내용 정리</div>
+  <div class="report-points">
+    <div class="report-point">· 알테오젠은 한 분기 내 두 건의 기술이전(L/O) 계약 체결로 기술력과 사업화 역량을 입증했습니다.</div>
+    <div class="report-point">· SC 제형 변경 기술인 Hybrozyme 플랫폼의 가치가 재조명되며 추가적인 기술이전 및 파이프라인 확장이 기대됩니다.</div>
+  </div>
+</div></a></div>
+
   <div class="section">
-    <div class="section-label">국내 뉴스</div>
+    <div class="section-label">국내 주식 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260329031800003" target="_blank">KB "서울 오피스텔 매매가 14개월째 상승…오름폭 확대"</a></div>
-  
-  <div class="news-summary">(서울=연합뉴스) 홍국기 기자 = 서울 오피스텔 매매 가격이 KB 시세로 14개월째 상승한 가운데, 이달 오름폭을 확대한 것으로 나타났다.</div>
-  <div class="news-meta">연합뉴스 · 3월 29일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260329028500011" target="_blank">[연합뉴스 이 시각 헤드라인] - 15:00</a></div>
-  
-  <div class="news-summary">■ 구윤철 &quot;유가 120∼130달러되면 위기3단계…차량부제 민간에도&quot;</div>
-  <div class="news-meta">연합뉴스 · 3월 29일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260329027600003" target="_blank">"벤처 수 늘리기에 치우친 정책, 이제 전주기 지원으로 바꿔야"</a></div>
-  
-  <div class="news-summary">(서울=연합뉴스) 신창용 기자 = 정부가 벤처 정책의 초점을 기존의 창업 지원을 넘어 투자, 성장, 회수로 이어지는 &apos;전주기 성장경로&…</div>
-  <div class="news-meta">연합뉴스 · 3월 29일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260329024700002" target="_blank">[동정] 한국인문사회총연합회 이사장에 김정식 연세대 명예교수</a></div>
-  
-  <div class="news-summary">▲ 한국인문사회총연합회는 김정식 연세대 명예교수를 이사장으로 선임했다고 29일 밝혔다. 한국인문학총연합회·한국사회과학협의회 등 인문·사회과학 학…</div>
-  <div class="news-meta">연합뉴스 · 3월 29일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260327147300062" target="_blank">태백시, 통합공공임대주택 건립 본격화…2027년 준공 목표</a></div>
-  
-  <div class="news-summary">(태백=연합뉴스) 이상학 기자 = 강원 태백시가 강원형 공공주택으로 추진하는 통합공공임대주택 건립을 본격화된다.</div>
-  <div class="news-meta">연합뉴스 · 3월 29일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.yna.co.kr/view/AKR20260329023900030" target="_blank">롯데, 파트너사 임직원 초청 '동행 콘서트' 개최</a></div>
-  
-  <div class="news-summary">(서울=연합뉴스) 한주홍 기자 = 롯데는 파트너사 임직원을 초청해 &apos;행복나눔 동행콘서트&apos;를 개최했다고 29일 밝혔다.</div>
-  <div class="news-meta">연합뉴스 · 3월 29일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293859i" target="_blank">[마켓칼럼] AI 공포와 혁신</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032939681" target="_blank">뉴욕·상하이 증시…美 3월 고용, 반등 규모에 관심</a></div>
   
   
   <div class="news-meta">한국경제 · 3월 29일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032940161" target="_blank">"불확실성 커진 증시…채권·MMF로 방어적 대응을"</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 3월 29일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032940201" target="_blank">美·이란 전쟁에 탄소배출권 ETF 잘나가네</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 3월 29일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032940211" target="_blank">"항공주 급락은 우량주 가릴 기회"</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 3월 29일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032940181" target="_blank">삼천당제약·알테오젠…큰손 개미 픽은 바이오</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 3월 29일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.mk.co.kr/news/economy/12001774" target="_blank">매출 제자리, 비용은 껑충…외식업 이중고</a></div>
+  
+  <div class="news-summary">서울 서대문구에서 식당을 운영하는 안 모씨는 좀처럼 매출이 오르지 않는데 식재료비와 인건비 부담은 커져 폐업을 진지하게 고민하고 있다.
+안씨는 …</div>
+  <div class="news-meta">매일경제 · 3월 30일</div>
 </div>
   </div>
 
@@ -356,7 +450,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <strong>🌐 해외 시황</strong><br>
       S&amp;P500 <span class="dn-txt">6,368.85</span> <span class="dn-txt">▼ 108.31 (1.67%)</span> &nbsp;|&nbsp;
       나스닥 <span class="dn-txt">23,132.77</span> <span class="dn-txt">▼ 454.22 (1.93%)</span><br>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">S&P500 1.7% 하락 · 금 2.7% 상승</span>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">S&P500 1.7% 하락 · 금 3.4% 상승</span>
     </div>
   </div>
 
@@ -406,13 +500,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="macro-card">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="up-txt">$4,492</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $116.50 (2.66%)</span></div>
+        <div class="macro-val"><span class="up-txt">$4,524</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $148.80 (3.40%)</span></div>
       </div>
       <div class="macro-card">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$66,565</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 245.49 (0.37%)</span></div>
+        <div class="macro-val"><span class="up-txt">$66,752</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 432.51 (0.65%)</span></div>
       </div>
     </div>
   </div>
@@ -421,21 +515,21 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">해외 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/03/28/market-correction-futures-hedging-strategies.html" target="_blank">주식과 채권이 하락하고 유가가 100달러를 기록하면서, 2022년에 급증했던 선물 거래가 다시 승자가 될 수 있습니다</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/28/market-correction-futures-hedging-strategies.html" target="_blank">주식과 채권 하락, 유가 100달러 돌파: 2022년 급성장했던 선물 거래, 다시 승자가 될 수도</a></div>
   <div class="news-orig">As stocks and bonds fall, and oil hits $100, a futures trade that boomed in 2022…</div>
-  <div class="news-summary">몇 달에 걸쳐 전개될 것으로 예상되는 거시적 테마를 추적하는 관리형 선물은…</div>
+  <div class="news-summary">수개월에 걸쳐 전개될 것으로 예상되는 거시적 테마를 추적하는 관리형 선물은…</div>
   <div class="news-meta">CNBC Markets · 3월 28일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/03/27/this-bargain-fintech-stock-is-stuck-in-a-five-year-rut-a-turnaround-is-coming.html" target="_blank">이 저렴한 핀테크 주식은 5년간 침체에 빠져 있습니다. 반전이 다가오고 있습니다</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/27/this-bargain-fintech-stock-is-stuck-in-a-five-year-rut-a-turnaround-is-coming.html" target="_blank">이 저렴한 핀테크 주식은 5년간 침체에 빠져 있습니다. 반전이 다가오고 있습니다.</a></div>
   <div class="news-orig">This bargain fintech stock is stuck in a five-year rut. A turnaround is coming</div>
-  <div class="news-summary">최근 인수 후, 회사는 새로운 초점과 규모 확대를 이루었습니다. 이는…</div>
+  <div class="news-summary">최근 인수 후, 이 회사는 새로운 초점을 맞추고 규모를 확대했습니다. 이…</div>
   <div class="news-meta">CNBC Markets · 3월 28일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/03/27/stocks-making-the-biggest-moves-premarket-azn-u-coin.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: 아스트라제네카, 유니티 소프트웨어, 코인베이스 등</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/27/stocks-making-the-biggest-moves-premarket-azn-u-coin.html" target="_blank">개장 전 가장 큰 폭으로 움직이는 주식: 아스트라제네카, 유니티 소프트웨어, 코인베이스 등</a></div>
   <div class="news-orig">Stocks making the biggest moves premarket: AstraZeneca, Unity Software, Coinbase…</div>
-  <div class="news-summary">개장 전 가장 큰 움직임을 보이는 주식들입니다.</div>
+  <div class="news-summary">개장 전 가장 큰 폭으로 움직이는 주식들입니다.</div>
   <div class="news-meta">CNBC Markets · 3월 27일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
@@ -445,22 +539,22 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="news-meta">CNBC Markets · 3월 27일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/03/27/wall-street-banks-private-credit-market-share-leveraged-loans.html" target="_blank">사모 신용 시장의 균열이 월스트리트 은행의 복귀를 위한 문을 열다: '줄다리기는 이제 막 시작되었습니다'</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/27/wall-street-banks-private-credit-market-share-leveraged-loans.html" target="_blank">사모 신용 시장의 균열, 월스트리트 은행의 복귀 문을 열다: '줄다리기는 이제 막 시작되었습니다'</a></div>
   <div class="news-orig">Private credit's cracks open door for Wall Street banks' comeback: 'The tug of w…</div>
   <div class="news-summary">월스트리트 은행들은 마침내 오랫동안 기다려온 시장 점유율을 되찾을 기회를 얻을 수 있습니다…</div>
   <div class="news-meta">CNBC Markets · 3월 27일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/03/26/federal-reserve-kevin-walsh-elizabeth-warren-trump.html" target="_blank">워렌 상원의원, 연준 의장 지명자 케빈 워시 비판: '당신은 당신의 실패로부터 아무것도 배우지 못했습니다'</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/26/federal-reserve-kevin-walsh-elizabeth-warren-trump.html" target="_blank">워렌 상원의원, 연준 의장 후보 케빈 워시 맹비난: '당신은 실패로부터 아무것도 배우지 못했습니다'</a></div>
   <div class="news-orig">Sen. Warren rips Federal Reserve chair pick Kevin Warsh: 'You have learned nothi…</div>
-  <div class="news-summary">케빈 워시의 연방준비제도 의장 지명은 다음과 같은 이유로 보류되어 왔습니다…</div>
+  <div class="news-summary">케빈 워시의 연방준비제도 의장 지명은 다음과 같은 이유로 보류되었습니다…</div>
   <div class="news-meta">CNBC Markets · 3월 28일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/03/28/meta-is-among-the-most-oversold-stocks-after-another-losing-week-on-wall-street.html" target="_blank">메타는 월스트리트에서 또 다른 손실 주간을 보낸 후 가장 과매도된 주식 중 하나입니다</a></div>
-  <div class="news-orig">Meta is among the most oversold stocks after another losing week on Wall Street</div>
-  <div class="news-summary">시장 침체로 인해 소비재, 산업재 등 일부 주식들이… 영향을 받았습니다.</div>
-  <div class="news-meta">CNBC Finance · 3월 28일</div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/03/26/stocks-making-the-biggest-moves-midday-meta-bby-app-smg.html" target="_blank">장중 가장 큰 폭으로 움직이는 주식: 메타, 베스트바이, 앱러빈, 스캇츠 미라클-그로 등</a></div>
+  <div class="news-orig">Stocks making the biggest moves midday: Meta, Best Buy, AppLovin, Scotts Miracle…</div>
+  <div class="news-summary">장중 거래에서 가장 큰 폭으로 움직이는 주식들입니다.</div>
+  <div class="news-meta">CNBC Markets · 3월 27일</div>
 </div>
   </div>
 
@@ -538,46 +632,6 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-label">부동산 뉴스</div>
-    <div class="news-item" style="border-left-color:var(--orange);">
-  <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026032938927" target="_blank">강남구 아파트값 2년 만에 '하락' 전환…"급매물 위주 거래 영향"</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 3월 29일</div>
-</div><div class="news-item" style="border-left-color:var(--orange);">
-  <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293681i" target="_blank">다음주 청약 단지는?…서울 더샵신길센트럴시티, 아크로드서초 분양한다</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 3월 29일</div>
-</div><div class="news-item" style="border-left-color:var(--orange);">
-  <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293718i" target="_blank">"건설사도 일하는 방식 혁신"…포스코이앤씨, AI챌린지 경진대회 개최</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 3월 29일</div>
-</div><div class="news-item" style="border-left-color:var(--orange);">
-  <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293671i" target="_blank">부동산 범죄에 지방공무원도 가담…11건 중 9건 '지방'</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 3월 29일</div>
-</div><div class="news-item" style="border-left-color:var(--orange);">
-  <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603282833i" target="_blank">순영·대명·에스엠·제일…최근 5년동안 '하자' 많은 아파트는</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 3월 29일</div>
-</div><div class="news-item" style="border-left-color:var(--orange);">
-  <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026032705706" target="_blank">'신길동 34평 vs 서초동 25평' 갈림길…예비 청약자 선택지는 [이송렬의 우주인]</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 3월 29일</div>
-</div>
-  </div>
 
 </div>
 
@@ -595,46 +649,46 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">핫이슈 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293754i" target="_blank">자급률 목표 실패했지만…다시 꺼내 든 '반도체 굴기 2.0' [차이나 워치]</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032941737" target="_blank">삼성바이오, 창립 이래 첫 파업 위기…노조 찬성률 95%</a></div>
   
   
   <div class="news-meta">한국경제 · 3월 29일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293697i" target="_blank">수원역 한복판에 열었다…신세계 시코르, 핵심상권 출점 속도</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202603293910i" target="_blank">담뱃값 1만원 되나…지방선거 앞두고 다시 불붙는 인상론</a></div>
   
   
   <div class="news-meta">한국경제 · 3월 29일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293674i" target="_blank">쿠팡풀필먼트서비스, 대구서 채용박람회…335명 몰렸다</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032940551" target="_blank">[단독] 한의원 몰려가는 '나이롱 환자'…車보험금 1.7조 줄줄 샌다</a></div>
   
   
   <div class="news-meta">한국경제 · 3월 29일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293685i" target="_blank">[포토] 서울 평균 휘발유 가격 1900원 돌파</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032936547" target="_blank">"그때 사둘 걸" "벌써 품절됐다"…자영업자 난리 난 이유 [현장+]</a></div>
   
   
   <div class="news-meta">한국경제 · 3월 29일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026032936567" target="_blank">2차 석유 최고가제 사흘째…서울 휘발윳값 1900원 돌파</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032940141" target="_blank">"40國 대표단 설득해 디스플레이 관세 年120억 아꼈죠"</a></div>
   
   
   <div class="news-meta">한국경제 · 3월 29일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202603293529i" target="_blank">과일값 부담되자 냉동으로 몰렸다…GS샵 판매량 '쑥'</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032940091" target="_blank">풍력산업협회장에 김강학 명운산업 대표</a></div>
   
   
   <div class="news-meta">한국경제 · 3월 29일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/03/28/iran-war-oil-companies-price-gas-diesel-strait-hormuz.html" target="_blank">How the big oil and gas CEOs think the Iran war supply disruption will play…</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026032940731" target="_blank">보조금·가격인하 효과…전기차 3만대 등록 '역대 최다'</a></div>
   
-  <div class="news-summary">The oil industry's grim outlook for global oil and gas supplies stands in contra…</div>
-  <div class="news-meta">CNBC · 3월 29일</div>
+  
+  <div class="news-meta">한국경제 · 3월 29일</div>
 </div>
   </div>
 
@@ -667,18 +721,18 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div id="macroModalTitle" style="font-size:14px;font-weight:700;color:var(--t1);"></div>
     <button onclick="closeMacroChart()" style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;padding:0;">✕</button>
   </div>
-  <canvas id="macroChartCanvas" height="130"></canvas>
+  <canvas id="macroChartCanvas" height="110"></canvas>
   <div id="macroNoData" style="display:none;color:var(--t3);font-size:12px;text-align:center;padding:36px 0;">다음 업데이트 시 데이터 표시</div>
 </div>
 
 <div class="footer-note">
-  2026년 3월 29일 일요일 · 16:44 생성<br>
+  2026년 3월 29일 일요일 · 20:39 생성<br>
   부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
-var MACRO_META={"usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
-var MACRO_HIST={"usdkrw": [1505.25, 1489.84, 1504.21, 1485.36, 1497.3101, 1500.97, 1508.36], "brent": [108.65, 112.19, 99.94, 104.49, 102.22, 108.01, 105.32], "wti": [96.14, 98.32, 88.13, 92.35, 90.32, 94.48, 99.64], "tnx": [4.281, 4.391, 4.334, 4.392, 4.328, 4.416, 4.44], "gold": [4600.7002, 4570.3999, 4404.1001, 4399.2998, 4549.7998, 4375.5, 4492.0], "dxy": [99.23, 99.65, 98.95, 99.43, 99.6, 99.9, 100.15], "btc": [70914.8594, 70517.8594, 71309.8828, 68791.625, 66338.375, 66319.6953, 66565.1875]};
+var MACRO_META={"kospi": {"name": "코스피", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "", "dec": 2}, "kosdaq": {"name": "코스닥", "color": "#3b82f6", "rgb": "59,130,246", "pre": "", "suf": "", "dec": 2}, "sp500": {"name": "S&P 500", "color": "#00e896", "rgb": "0,232,150", "pre": "", "suf": "", "dec": 2}, "nasdaq": {"name": "나스닥 100", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "", "dec": 2}, "dow": {"name": "다우존스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "vix": {"name": "VIX", "color": "#ffc940", "rgb": "255,201,64", "pre": "", "suf": "", "dec": 2}, "usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
+var MACRO_HIST={"kospi": [5763.2202, 5781.2002, 5405.75, 5553.9199, 5642.21, 5460.46, 5438.8701], "kosdaq": [1143.48, 1161.52, 1096.89, 1121.4399, 1159.55, 1136.64, 1141.51], "sp500": [6606.4902, 6506.48, 6581.0, 6556.3701, 6591.8999, 6477.1602, 6368.8501], "nasdaq": [24355.2793, 23898.1504, 24188.5898, 24002.4492, 24162.9805, 23586.9902, 23132.7695], "dow": [46021.4297, 45577.4688, 46208.4688, 46124.0586, 46429.4883, 45960.1094, 45166.6406], "vix": [24.06, 26.78, 26.15, 26.95, 25.33, 27.44, 31.05], "usdkrw": [1505.25, 1489.84, 1504.21, 1485.36, 1497.3101, 1500.97, 1508.36], "brent": [108.65, 112.19, 99.94, 104.49, 102.22, 108.01, 105.32], "wti": [96.14, 98.32, 88.13, 92.35, 90.32, 94.48, 99.64], "tnx": [4.281, 4.391, 4.334, 4.392, 4.328, 4.416, 4.44], "gold": [4600.7002, 4570.3999, 4404.1001, 4399.2998, 4549.7998, 4375.5, 4524.2998], "dxy": [99.23, 99.65, 98.95, 99.43, 99.6, 99.9, 100.15], "btc": [70914.8594, 70517.8594, 71309.8828, 68791.625, 66338.375, 66319.6953, 66752.2031]};
 var _mc=null;
 function showMacroChart(k){
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
@@ -697,7 +751,7 @@ function showMacroChart(k){
   var g=ctx.createLinearGradient(0,0,0,130);
   g.addColorStop(0,'rgba('+m.rgb+',0.25)');g.addColorStop(1,'rgba('+m.rgb+',0.02)');
   function fmt(v){return m.pre+(m.dec===0?Math.round(v).toLocaleString():v.toFixed(m.dec))+m.suf;}
-  _mc=new Chart(ctx,{type:'line',data:{labels:vals.map(function(){return '';}),datasets:[{data:vals,borderColor:m.color,backgroundColor:g,borderWidth:2,pointRadius:3,pointBackgroundColor:m.color,fill:true,tension:0.4}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fmt(c.raw);}}}},scales:{x:{display:false},y:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'#6a80aa',font:{size:10},callback:function(v){return fmt(v);}},border:{color:'rgba(255,255,255,0.08)'}}}}});
+  _mc=new Chart(ctx,{type:'line',data:{labels:vals.map(function(){return '';}),datasets:[{data:vals,borderColor:m.color,backgroundColor:g,borderWidth:2,pointRadius:4,pointBackgroundColor:m.color,fill:true,tension:0.4,clip:false}]},options:{layout:{padding:{top:24,bottom:4,left:16,right:16}},clip:false,responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return fmt(c.raw);}}},datalabels:{color:m.color,font:{size:9,weight:'600'},formatter:function(v){return fmt(v);},anchor:'end',align:'top',offset:2,clamp:true}},scales:{x:{display:false},y:{display:false}}},plugins:[ChartDataLabels]});
 }
 function closeMacroChart(){
   document.getElementById('macroOverlay').classList.remove('open');
@@ -716,28 +770,33 @@ function closeMacroChart(){
       indexAxis:'y',responsive:true,
       plugins:{
         legend:{display:false},
-        tooltip:{callbacks:{label:function(c){return(c.raw>0?'+':'')+c.raw+'%';}}}
+        tooltip:{callbacks:{label:function(c){return(c.raw>0?'+':'')+c.raw+'%';}}},
+        datalabels:{
+          color:function(ctx){return ctx.dataset.data[ctx.dataIndex]>=0?'#ef4444':'#3b82f6';},
+          font:{size:10,weight:'600'},
+          formatter:function(v){return(v>0?'+':'')+v+'%';},
+          anchor:'end',align:'end',offset:2,clamp:true
+        }
       },
       scales:{
-        x:{
-          grid:{color:'rgba(255,255,255,0.06)'},
-          ticks:{color:'#6a80aa',font:{size:10},callback:function(v){return v+'%';}},
-          border:{color:'rgba(255,255,255,0.08)'}
-        },
+        x:{display:false},
         y:{
           grid:{display:false},
           ticks:{color:'#b8ccee',font:{size:11}},
           border:{color:'rgba(255,255,255,0.08)'}
         }
       }
-    }
+    },
+    plugins:[ChartDataLabels]
   });
 })();
+var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정'};
 function sw(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
+  document.querySelector('.header-title').textContent=_tabTitles[id]||'국장 데일리 대시보드';
 }
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
