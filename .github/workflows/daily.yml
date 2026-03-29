@@ -2,8 +2,10 @@ name: 매일 대시보드 자동 업데이트
 
 on:
   schedule:
-    # 매일 오전 7시 KST (22:00 UTC) — 미국 장 마감 후
-    - cron: '0 22 * * *'
+    # 매일 오전 8시 KST (23:00 UTC)
+    - cron: '0 23 * * *'
+    # 매일 오후 4시 30분 KST (07:30 UTC) — 국내 장 마감 후
+    - cron: '30 7 * * *'
   workflow_dispatch:  # 수동 실행 버튼
 
 jobs:
