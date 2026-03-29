@@ -278,13 +278,14 @@ def fetch_ai_briefing(market, news):
 }}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
-                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 512}},
-            timeout=20
+                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 512, 'thinkingConfig': {'thinkingBudget': 0}}},
+            timeout=60
         )
         resp.raise_for_status()
-        text = resp.json()['candidates'][0]['content']['parts'][0]['text'].strip()
+        parts = resp.json()['candidates'][0]['content']['parts']
+        text = next((p['text'] for p in parts if 'text' in p), '').strip()
         # JSON 파싱
         import json, re
         m = re.search(r'\{.*\}', text, re.DOTALL)
@@ -292,6 +293,7 @@ def fetch_ai_briefing(market, news):
             data = json.loads(m.group(0))
             print(f"  AI 브리핑 완료")
             return data
+        print(f"  AI 브리핑 JSON 파싱 실패: {text[:100]}")
         return None
     except Exception as e:
         print(f"  AI 브리핑 오류: {e}")
@@ -322,13 +324,14 @@ def translate_news_to_korean(items):
 {json.dumps(summaries, ensure_ascii=False)}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
-                  'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024}},
-            timeout=25
+                  'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024, 'thinkingConfig': {'thinkingBudget': 0}}},
+            timeout=60
         )
         resp.raise_for_status()
-        text = resp.json()['candidates'][0]['content']['parts'][0]['text'].strip()
+        parts = resp.json()['candidates'][0]['content']['parts']
+        text = next((p['text'] for p in parts if 'text' in p), '').strip()
         m = re.search(r'\{.*\}', text, re.DOTALL)
         if m:
             data = json.loads(m.group(0))
