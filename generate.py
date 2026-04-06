@@ -5,6 +5,8 @@
 Usage: python generate.py
 """
 import sys
+import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -961,11 +963,53 @@ background:var(--card2);border-radius:16px;padding:16px 16px 24px;z-index:100;
 box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(calc(100% + 28px));
 transition:transform .28s cubic-bezier(.4,0,.2,1)}
 #macroModal.open{transform:translateY(0)}
+.yt-input-row{display:flex;gap:8px;margin-bottom:8px}
+.yt-input{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--t1);font-size:12px;outline:none}
+.yt-input:focus{border-color:var(--blue)}
+.yt-gen-btn{padding:9px 14px;background:var(--blue);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.yt-gen-btn:active{opacity:.8}
+.yt-status{font-size:11px;color:var(--t3);min-height:16px;margin-bottom:4px}
+.yt-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
+.yt-meta{font-size:10px;color:var(--t3);margin-bottom:6px}
+.yt-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px;line-height:1.4}
+.yt-summary{font-size:12px;color:var(--blue);margin-bottom:10px;line-height:1.5;font-style:italic}
+.yt-toggle{font-size:11px;color:var(--t3);cursor:pointer;list-style:none;padding:4px 0;user-select:none}
+.yt-toggle::-webkit-details-marker{display:none}
+.yt-body{margin-top:10px}
+.yt-sec-head{font-size:12px;font-weight:700;color:var(--t1);margin:12px 0 4px}
+.yt-sec-body{font-size:11.5px;color:var(--t2);line-height:1.75;margin-bottom:4px;white-space:pre-line}
+.yt-ins-list{margin-top:10px;padding-left:0;list-style:none;border-top:1px solid var(--border);padding-top:8px}
+.yt-ins{font-size:11.5px;color:var(--t2);padding:5px 0 5px 16px;position:relative}
+.yt-ins::before{content:'→';position:absolute;left:0;color:var(--blue)}
 """
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None):
+def _make_reports_html(reports):
+    if not reports:
+        return '<div style="color:var(--t3);font-size:12px;padding:8px 0;">아직 생성된 리포트가 없습니다</div>'
+    items = []
+    for r in reports:
+        secs = ''.join(
+            f'<div class="yt-sec-head">{s["heading"]}</div>'
+            f'<p class="yt-sec-body">{s["content"]}</p>'
+            for s in r.get('sections', [])
+        )
+        ins = ''.join(f'<li class="yt-ins">{i}</li>' for i in r.get('insights', []))
+        items.append(
+            f'<div class="yt-card">'
+            f'<div class="yt-meta">{r["created_at"]} &nbsp;·&nbsp; <a href="{r["url"]}" target="_blank">원본 영상 ↗</a></div>'
+            f'<div class="yt-title">{r["title"]}</div>'
+            f'<div class="yt-summary">{r["summary"]}</div>'
+            f'<details><summary class="yt-toggle">전체 리포트 보기 ▾</summary>'
+            f'<div class="yt-body">{secs}</div>'
+            f'<ul class="yt-ins-list">{ins}</ul>'
+            f'</details></div>'
+        )
+    return '\n'.join(items)
+
+
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, reports=None, github_pat=''):
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
 
@@ -1157,6 +1201,10 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         top_amt_html  = breadth_html
         top_gain_html = breadth_html
 
+    # 리포트
+    reports_html = _make_reports_html(reports or [])
+    reports_count = len(reports) if reports else 0
+
     # 캘린더
     cal_events = get_weekly_calendar(dt)
     if cal_events:
@@ -1201,6 +1249,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <button class="tab-btn" onclick="sw('re',this)">🏠 부동산</button>
   <button class="tab-btn" onclick="sw('hot',this)">🔥 핫이슈</button>
   <button class="tab-btn" onclick="sw('cal',this)">📅 일정</button>
+  <button class="tab-btn" onclick="sw('yt',this)">📺 리포트</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -1516,6 +1565,32 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
 </div>
 
+<!-- ===== 리포트 탭 ===== -->
+<div id="tab-yt" class="tab-panel">
+
+  <div class="section">
+    <div class="banner blue">
+      <strong>📺 YouTube 딥리포트</strong><br>
+      영상 URL 입력 후 생성 버튼을 누르면 1~2분 후 리포트가 쌓입니다
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">새 리포트 생성</div>
+    <div class="yt-input-row">
+      <input id="ytUrl" type="url" class="yt-input" placeholder="https://youtube.com/watch?v=...">
+      <button class="yt-gen-btn" onclick="ytGenerate()">생성</button>
+    </div>
+    <div id="ytStatus" class="yt-status"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">저장된 리포트 ({reports_count}개)</div>
+    {reports_html}
+  </div>
+
+</div>
+
 <div id="macroOverlay" onclick="closeMacroChart()"></div>
 <div id="macroModal">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -1591,7 +1666,26 @@ function closeMacroChart(){{
     plugins:[ChartDataLabels]
   }});
 }})();
-var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정'}};
+var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',yt:'📺 YouTube 딥리포트'}};
+var _YT_PAT='{github_pat}';
+function ytGenerate(){{
+  var url=document.getElementById('ytUrl').value.trim();
+  if(!url){{alert('YouTube URL을 입력해주세요');return;}}
+  var st=document.getElementById('ytStatus');
+  st.textContent='요청 중...';
+  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/youtube_report.yml/dispatches',{{
+    method:'POST',
+    headers:{{'Authorization':'token '+_YT_PAT,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}},
+    body:JSON.stringify({{ref:'main',inputs:{{youtube_url:url}}}})
+  }}).then(function(r){{
+    if(r.status===204){{
+      st.innerHTML='✅ 요청 완료! 1~2분 후 페이지를 새로고침하면 리포트가 나타납니다.';
+      document.getElementById('ytUrl').value='';
+    }}else{{
+      r.json().then(function(d){{st.textContent='❌ 실패: '+(d.message||r.status);}}).catch(function(){{st.textContent='❌ 실패 (PAT 권한 확인 필요)';}});
+    }}
+  }}).catch(function(){{st.textContent='❌ 네트워크 오류';}});
+}}
 function sw(id, btn) {{
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1647,7 +1741,12 @@ def main():
     stock_story = fetch_stock_story(stocks)
 
     macro_hist  = fetch_macro_history()
-    html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story)
+
+    reports_path = Path(__file__).parent / 'reports.json'
+    reports = json.loads(reports_path.read_text(encoding='utf-8')) if reports_path.exists() else []
+    github_pat = os.environ.get('GITHUB_PAT', '')
+
+    html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, reports=reports, github_pat=github_pat)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
