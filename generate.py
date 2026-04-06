@@ -851,6 +851,8 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .header-date{font-size:16px;font-weight:700}
 .header-day{font-size:11px;color:var(--t3);margin-top:2px}
 .header-right{text-align:right;font-size:11px;color:var(--t3)}
+.update-btn{{display:inline-block;margin-top:5px;padding:4px 10px;font-size:10px;color:var(--blue);border:1px solid var(--blue);border-radius:6px;text-decoration:none;opacity:.8}}
+.update-btn:hover{{opacity:1;text-decoration:none}}
 .tab-nav{display:flex;margin:12px 0 0;border-bottom:1px solid var(--border);
 position:sticky;top:0;background:var(--bg);z-index:10;padding:0 4px}
 .tab-btn{flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;
@@ -1190,7 +1192,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <div class="header-date">{kdate}</div>
     <div class="header-day">장 마감 기준</div>
   </div>
-  <div class="header-right">{gen_time}<br>자동 업데이트</div>
+  <div class="header-right">{gen_time}<br><a class="update-btn" href="https://github.com/mamibj112-spec/dashboard/actions/workflows/daily.yml" target="_blank">지금 업데이트</a></div>
 </div>
 
 <nav class="tab-nav">
