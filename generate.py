@@ -1744,7 +1744,7 @@ def main():
 
     reports_path = Path(__file__).parent / 'reports.json'
     reports = json.loads(reports_path.read_text(encoding='utf-8')) if reports_path.exists() else []
-    github_pat = os.environ.get('GITHUB_PAT', '')
+    github_pat = os.environ.get('GH_PAT', '')
 
     html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, reports=reports, github_pat=github_pat)
 
