@@ -1892,17 +1892,17 @@ function ytGenerate(){{
       document.getElementById('ytUrl').value='';
       _ytStatus('⏳ 워크플로우 시작 중...');
       setTimeout(function(){{
-        fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs?event=workflow_dispatch&per_page=5',{{
+        fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/youtube_report.yml/runs?per_page=5',{{
           headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
         }}).then(function(r){{return r.json();}}).then(function(d){{
-          var run=(d.workflow_runs||[]).find(function(r){{return r.created_at>=triggerTime;}});
+          var run=(d.workflow_runs||[])[0];
           if(run){{
             _ytRunId=run.id;
             _ytPollTimer=setInterval(function(){{_ytPoll(pat);}},5000);
             _ytPoll(pat);
           }}else{{_ytStatus('⚠️ 실행 중 — 상태 추적 실패, 1~2분 후 새로고침하세요');}}
         }}).catch(function(){{_ytStatus('⚠️ 실행 중 — 1~2분 후 새로고침하세요');}});
-      }},3000);
+      }},5000);
     }}else{{
       _ytSetBusy(false);
       r.json().then(function(d){{_ytStatus('❌ 실패: '+(d.message||r.status));}}).catch(function(){{_ytStatus('❌ 실패 (PAT 권한 확인 필요)');}});
@@ -1958,17 +1958,17 @@ function dashUpdate(){{
     if(r.status===204){{
       _dashStatus('⏳ 시작 중...');
       setTimeout(function(){{
-        fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs?event=workflow_dispatch&per_page=5',{{
+        fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/daily.yml/runs?per_page=5',{{
           headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
         }}).then(function(r){{return r.json();}}).then(function(d){{
-          var run=(d.workflow_runs||[]).find(function(r){{return r.created_at>=triggerTime;}});
+          var run=(d.workflow_runs||[])[0];
           if(run){{
             _dashRunId=run.id;
             _dashPollTimer=setInterval(function(){{_dashPoll(pat);}},5000);
             _dashPoll(pat);
           }}else{{_dashStatus('⚠️ 실행 중 — 1~2분 후 새로고침하세요');}}
         }}).catch(function(){{_dashStatus('⚠️ 실행 중 — 1~2분 후 새로고침하세요');}});
-      }},3000);
+      }},5000);
     }}else{{
       _dashSetBusy(false);
       r.json().then(function(d){{_dashStatus('❌ 실패: '+(d.message||r.status));}}).catch(function(){{_dashStatus('❌ 실패 (PAT 권한 확인 필요)');}});
