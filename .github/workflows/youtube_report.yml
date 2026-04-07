@@ -36,7 +36,7 @@ jobs:
         run: python generate.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GH_PAT: ${{ secrets.GITHUB_PAT }}
+          GH_PAT: ${{ secrets.GH_PAT }}
 
       - name: 변경사항 커밋 & 푸시
         run: |
