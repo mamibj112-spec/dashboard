@@ -25,7 +25,7 @@ GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5
 
 
 def get_video_id(url):
-    match = re.search(r'(?:v=|/v/|youtu\.be/|/embed/)([a-zA-Z0-9_-]{11})', url)
+    match = re.search(r'(?:v=|/v/|youtu\.be/|/embed/|/shorts/)([a-zA-Z0-9_-]{11})', url)
     return match.group(1) if match else None
 
 
