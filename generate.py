@@ -48,7 +48,28 @@ TICKERS = {
     'dxy':    'DX-Y.NYB',
     'btc':    'BTC-USD',
     'vix':    '^VIX',
+    'rut':    '^RUT',
+    'soxx':   'SOXX',
 }
+
+def calculate_rsi(prices, period=14):
+    """RSI(상대강도지수) 계산"""
+    if len(prices) < period + 1:
+        return 50
+    deltas = [prices[i] - prices[i-1] for i in range(1, len(prices))]
+    gains = [d if d > 0 else 0 for d in deltas]
+    losses = [-d if d < 0 else 0 for d in deltas]
+
+    avg_gain = sum(gains[:period]) / period
+    avg_loss = sum(losses[:period]) / period
+
+    for i in range(period, len(deltas)):
+        avg_gain = (avg_gain * (period - 1) + gains[i]) / period
+        avg_loss = (avg_loss * (period - 1) + losses[i]) / period
+
+    if avg_loss == 0: return 100
+    rs = avg_gain / avg_loss
+    return int(100 - (100 / (1 + rs)))
 
 def fetch_market():
     print("시장 데이터 수집 중...")
@@ -56,21 +77,24 @@ def fetch_market():
     for name, sym in TICKERS.items():
         try:
             t = yf.Ticker(sym)
-            hist = t.history(period='5d', auto_adjust=True)
+            # RSI 계산을 위해 1개월치 데이터 수집
+            hist = t.history(period='1mo', auto_adjust=True)
             hist = hist.dropna(subset=['Close'])
             if len(hist) >= 2:
-                prev = float(hist['Close'].iloc[-2])
-                curr = float(hist['Close'].iloc[-1])
+                prices = hist['Close'].tolist()
+                prev = float(prices[-2])
+                curr = float(prices[-1])
                 chg = curr - prev
                 pct = chg / prev * 100 if prev != 0 else 0
-                data[name] = {'val': curr, 'chg': chg, 'pct': pct, 'ok': True}
+                rsi = calculate_rsi(prices)
+                data[name] = {'val': curr, 'chg': chg, 'pct': pct, 'rsi': rsi, 'ok': True}
             elif len(hist) == 1:
-                data[name] = {'val': float(hist['Close'].iloc[-1]), 'chg': 0, 'pct': 0, 'ok': False}
+                data[name] = {'val': float(hist['Close'].iloc[-1]), 'chg': 0, 'pct': 0, 'rsi': 50, 'ok': False}
             else:
-                data[name] = {'val': None, 'chg': None, 'pct': None, 'ok': False}
+                data[name] = {'val': None, 'chg': None, 'pct': None, 'rsi': 50, 'ok': False}
         except Exception as e:
             print(f"  [{name}] 오류: {e}")
-            data[name] = {'val': None, 'chg': None, 'pct': None, 'ok': False}
+            data[name] = {'val': None, 'chg': None, 'pct': None, 'rsi': 50, 'ok': False}
     return data
 
 
@@ -150,6 +174,28 @@ def calc_fear_greed(market, stocks):
     total_w = sum(w for _, w in components)
     score   = sum(s * w for s, w in components) / total_w
     return int(round(min(max(score, 0), 100)))
+
+
+def calc_us_fear_greed(market):
+    """미국 시장 데이터 기반 공포/탐욕 지수 계산 (0~100)"""
+    components = []
+    # 1. VIX (30%): 20 -> 50, 40 -> 0, 10 -> 100
+    vix = d(market, 'vix').get('val')
+    if vix:
+        score = max(0, min(100, 100 - (vix - 12) * (100 / 28)))
+        components.append((score, 0.3))
+    # 2. S&P 500 RSI (40%): RSI 그대로 사용
+    sp500_rsi = d(market, 'sp500').get('rsi')
+    if sp500_rsi:
+        components.append((sp500_rsi, 0.4))
+    # 3. 나스닥 모멘텀 (30%): ±2% -> 100/0, 0% -> 50
+    nasdaq_pct = d(market, 'nasdaq').get('pct') or 0
+    components.append((min(max(50 + nasdaq_pct * 25, 0), 100), 0.3))
+
+    if not components: return 50
+    total_w = sum(w for _, w in components)
+    score = sum(s * w for s, w in components) / total_w
+    return int(round(score))
 
 
 MACRO_HISTORY_TICKERS = {
@@ -981,6 +1027,27 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .yt-ins-list{margin-top:10px;padding-left:0;list-style:none;border-top:1px solid var(--border);padding-top:8px}
 .yt-ins{font-size:11.5px;color:var(--t2);padding:5px 0 5px 16px;position:relative}
 .yt-ins::before{content:'→';position:absolute;left:0;color:var(--blue)}
+.us-grid{display:flex;gap:8px;padding:4px 0 12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
+.us-grid::-webkit-scrollbar{display:none}
+.us-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;min-width:145px;flex-shrink:0}
+.us-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.us-name-wrap{display:flex;flex-direction:column}
+.us-name{font-size:10px;color:var(--t3);font-weight:600}
+.us-ticker-badge{font-size:8px;background:var(--card2);padding:1px 4px;border-radius:3px;color:var(--t3);margin-top:2px;align-self:flex-start}
+.us-val-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.us-val{font-size:16px;font-weight:700;color:var(--t1)}
+.us-pct-box{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700}
+.us-pct-box.up{background:rgba(0,232,150,.12);color:var(--up)}
+.us-pct-box.dn{background:rgba(255,64,96,.15);color:var(--dn)}
+.rsi-wrap{margin-top:8px}
+.rsi-head{font-size:9px;color:var(--t3);display:flex;justify-content:space-between;margin-bottom:4px}
+.rsi-bg{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.rsi-fill{height:100%;background:var(--blue);border-radius:2px}
+.fg-card-mini{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.fg-emoji{font-size:24px}
+.fg-info{display:flex;flex-direction:column}
+.fg-label{font-size:10px;color:var(--t3);margin-bottom:2px}
+.fg-val-txt{font-size:18px;font-weight:800}
 """
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
@@ -1216,6 +1283,21 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 일정 없음</div>'
 
 
+    # 미국 공포/탐욕 지수
+    us_fg = calc_us_fear_greed(market)
+    
+    # 테마에 따른 이모지 및 라벨 설정
+    if us_fg <= 25: 
+        us_fg_emoji, us_fg_label, us_fg_color = '💀', '극도공포', '#3b82f6'
+    elif us_fg <= 45:
+        us_fg_emoji, us_fg_label, us_fg_color = '😨', '공포', '#60a5fa'
+    elif us_fg <= 55:
+        us_fg_emoji, us_fg_label, us_fg_color = '😐', '중립', '#a3a3a3'
+    elif us_fg <= 75:
+        us_fg_emoji, us_fg_label, us_fg_color = '😊', '탐욕', '#f97316'
+    else:
+        us_fg_emoji, us_fg_label, us_fg_color = '🤑', '극탐욕', '#ef4444'
+
     return f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -1392,55 +1474,136 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 
   <div class="section">
-    <div class="section-label">해외 주요 지수</div>
-    <div class="index-grid">
-      <div class="idx-card">
-        <div class="idx-name">S&amp;P 500</div>
-        <div class="idx-val">{vdisp(market,'sp500')}</div>
-        <div class="idx-chg">{cdisp(market,'sp500')}</div>
+    <div class="section-label">미국 시장 모니터링</div>
+    
+    <div class="fg-card-mini">
+      <div class="fg-emoji">{us_fg_emoji}</div>
+      <div class="fg-info">
+        <div class="fg-label">미국 공포/탐욕 지수</div>
+        <div class="fg-val-txt" style="color:{us_fg_color}">
+          {us_fg} <span style="font-size:13px;margin-left:4px">{us_fg_label}</span>
+        </div>
       </div>
-      <div class="idx-card">
-        <div class="idx-name">나스닥 100</div>
-        <div class="idx-val">{vdisp(market,'nasdaq')}</div>
-        <div class="idx-chg">{cdisp(market,'nasdaq')}</div>
+    </div>
+
+    <div class="us-grid">
+      <!-- S&P 500 -->
+      <div class="us-card" onclick="showMacroChart('sp500')">
+        <div class="us-card-top">
+          <div class="us-name-wrap"><span class="us-name">S&amp;P 500</span><span class="us-ticker-badge">SPX</span></div>
+          <span style="font-size:14px">📈</span>
+        </div>
+        <div class="us-val-row">
+          <span class="us-val">{d(market,'sp500').get('val',0):,.2f}</span>
+          <span class="us-pct-box { 'up' if d(market,'sp500').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'sp500').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'sp500').get('pct',0) >= 0 else 'var(--dn)' };">
+            {d(market,'sp500').get('pct',0):+.2f}%
+          </span>
+        </div>
+        <div class="rsi-wrap">
+          <div class="rsi-head"><span>RSI</span><span>{d(market,'sp500').get('rsi',50)}</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'sp500').get('rsi',50)}%"></div></div>
+        </div>
       </div>
-      <div class="idx-card">
-        <div class="idx-name">다우존스</div>
-        <div class="idx-val">{vdisp(market,'dow')}</div>
-        <div class="idx-chg">{cdisp(market,'dow')}</div>
+
+      <!-- 나스닥 -->
+      <div class="us-card" onclick="showMacroChart('nasdaq')">
+        <div class="us-card-top">
+          <div class="us-name-wrap"><span class="us-name">나스닥 100</span><span class="us-ticker-badge">NDX</span></div>
+          <span style="font-size:14px">💻</span>
+        </div>
+        <div class="us-val-row">
+          <span class="us-val">{d(market,'nasdaq').get('val',0):,.2f}</span>
+          <span class="us-pct-box { 'up' if d(market,'nasdaq').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'nasdaq').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'nasdaq').get('pct',0) >= 0 else 'var(--dn)' };">
+            {d(market,'nasdaq').get('pct',0):+.2f}%
+          </span>
+        </div>
+        <div class="rsi-wrap">
+          <div class="rsi-head"><span>RSI</span><span>{d(market,'nasdaq').get('rsi',50)}</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'nasdaq').get('rsi',50)}%"></div></div>
+        </div>
       </div>
-      <div class="idx-card">
-        <div class="idx-name">닛케이 225</div>
-        <div class="idx-val">{vdisp(market,'nikkei')}</div>
-        <div class="idx-chg">{cdisp(market,'nikkei')}</div>
+
+      <!-- 다우 -->
+      <div class="us-card" onclick="showMacroChart('dow')">
+        <div class="us-card-top">
+          <div class="us-name-wrap"><span class="us-name">다우존스</span><span class="us-ticker-badge">DJI</span></div>
+          <span style="font-size:14px">🏛️</span>
+        </div>
+        <div class="us-val-row">
+          <span class="us-val">{d(market,'dow').get('val',0):,.2f}</span>
+          <span class="us-pct-box { 'up' if d(market,'dow').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'dow').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'dow').get('pct',0) >= 0 else 'var(--dn)' };">
+            {d(market,'dow').get('pct',0):+.2f}%
+          </span>
+        </div>
+        <div class="rsi-wrap">
+          <div class="rsi-head"><span>RSI</span><span>{d(market,'dow').get('rsi',50)}</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'dow').get('rsi',50)}%"></div></div>
+        </div>
       </div>
+
+      <!-- 러셀2000 -->
+      <div class="us-card" onclick="showMacroChart('rut')">
+        <div class="us-card-top">
+          <div class="us-name-wrap"><span class="us-name">러셀 2000</span><span class="us-ticker-badge">RUT</span></div>
+          <span style="font-size:14px">🏢</span>
+        </div>
+        <div class="us-val-row">
+          <span class="us-val">{d(market,'rut').get('val',0):,.2f}</span>
+          <span class="us-pct-box { 'up' if d(market,'rut').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'rut').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'rut').get('pct',0) >= 0 else 'var(--dn)' };">
+            {d(market,'rut').get('pct',0):+.2f}%
+          </span>
+        </div>
+        <div class="rsi-wrap">
+          <div class="rsi-head"><span>RSI</span><span>{d(market,'rut').get('rsi',50)}</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'rut').get('rsi',50)}%"></div></div>
+        </div>
+      </div>
+
+      <!-- 반도체 -->
+      <div class="us-card" onclick="showMacroChart('soxx')">
+        <div class="us-card-top">
+          <div class="us-name-wrap"><span class="us-name">반도체</span><span class="us-ticker-badge">SOXX</span></div>
+          <span style="font-size:14px">💾</span>
+        </div>
+        <div class="us-val-row">
+          <span class="us-val">{d(market,'soxx').get('val',0):,.2f}</span>
+          <span class="us-pct-box { 'up' if d(market,'soxx').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'soxx').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'soxx').get('pct',0) >= 0 else 'var(--dn)' };">
+            {d(market,'soxx').get('pct',0):+.2f}%
+          </span>
+        </div>
+        <div class="rsi-wrap">
+          <div class="rsi-head"><span>RSI</span><span>{d(market,'soxx').get('rsi',50)}</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'soxx').get('rsi',50)}%"></div></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">글로벌 매크로</div>
+    <div class="section-label">글로벌 매크로 지표</div>
     <div class="macro-grid">
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('tnx')">
         <div class="macro-name">미 10년물</div>
         <div class="macro-val">{vdisp(market,'tnx')}</div>
         <div class="macro-chg">{cdisp(market,'tnx')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
         <div class="macro-val">{vdisp(market,'dxy')}</div>
         <div class="macro-chg">{cdisp(market,'dxy')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('brent')">
         <div class="macro-name">브렌트유</div>
         <div class="macro-val">{vdisp(market,'brent')}</div>
         <div class="macro-chg">{cdisp(market,'brent')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
         <div class="macro-val">{vdisp(market,'gold')}</div>
         <div class="macro-chg">{cdisp(market,'gold')}</div>
       </div>
-      <div class="macro-card">
+      <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
         <div class="macro-val">{vdisp(market,'btc')}</div>
         <div class="macro-chg">{cdisp(market,'btc')}</div>
