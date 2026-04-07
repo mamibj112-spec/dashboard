@@ -1588,7 +1588,8 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <div class="section-label">새 리포트 생성</div>
     <div class="yt-input-row">
       <input id="ytUrl" type="url" class="yt-input" placeholder="https://youtube.com/watch?v=...">
-      <button class="yt-gen-btn" onclick="ytGenerate()">생성</button>
+      <button id="ytGenBtn" class="yt-gen-btn" onclick="ytGenerate()">생성</button>
+      <button id="ytStopBtn" class="yt-gen-btn" style="display:none;background:#ef4444;" onclick="ytStop()">STOP</button>
     </div>
     <div id="ytStatus" class="yt-status"></div>
   </div>
@@ -1688,25 +1689,74 @@ function ytSavePat(){{
   document.getElementById('ytPat').value='';
   document.getElementById('ytPatStatus').textContent='✅ PAT 저장됨';
 }}
+var _ytRunId=null,_ytPollTimer=null;
+function _ytSetBusy(busy){{
+  document.getElementById('ytGenBtn').style.display=busy?'none':'';
+  document.getElementById('ytStopBtn').style.display=busy?'':'none';
+  document.getElementById('ytUrl').disabled=busy;
+}}
+function _ytStatus(msg){{document.getElementById('ytStatus').innerHTML=msg;}}
+function _ytPoll(pat){{
+  if(!_ytRunId)return;
+  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_ytRunId,{{
+    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
+  }}).then(function(r){{return r.json();}}).then(function(d){{
+    var s=d.status,c=d.conclusion;
+    if(s==='queued'){{_ytStatus('⏳ 대기 중...');}}
+    else if(s==='in_progress'){{_ytStatus('⚙️ 생성 중... (Gemini 분석 중)')};}}
+    else if(s==='completed'){{
+      _ytSetBusy(false);
+      clearInterval(_ytPollTimer);_ytPollTimer=null;_ytRunId=null;
+      if(c==='success'){{_ytStatus('✅ 완료! <a href="javascript:location.reload()" style="color:#60a5fa;">새로고침</a>하면 리포트가 나타납니다.');}}
+      else{{_ytStatus('❌ 실패 (결론: '+c+')');}}
+    }}
+  }}).catch(function(){{_ytStatus('⚠️ 상태 확인 중 오류 — 잠시 후 재시도');}}};
+}}
 function ytGenerate(){{
   var pat=localStorage.getItem('yt_gh_pat');
   if(!pat){{alert('먼저 GitHub PAT를 설정해주세요');return;}}
   var url=document.getElementById('ytUrl').value.trim();
   if(!url){{alert('YouTube URL을 입력해주세요');return;}}
-  var st=document.getElementById('ytStatus');
-  st.textContent='요청 중...';
+  _ytSetBusy(true);
+  _ytStatus('요청 중...');
+  var triggerTime=new Date().toISOString();
   fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/youtube_report.yml/dispatches',{{
     method:'POST',
     headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}},
     body:JSON.stringify({{ref:'main',inputs:{{youtube_url:url}}}})
   }}).then(function(r){{
     if(r.status===204){{
-      st.innerHTML='✅ 요청 완료! 1~2분 후 페이지를 새로고침하면 리포트가 나타납니다.';
       document.getElementById('ytUrl').value='';
+      _ytStatus('⏳ 워크플로우 시작 중...');
+      setTimeout(function(){{
+        fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs?event=workflow_dispatch&per_page=5',{{
+          headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
+        }}).then(function(r){{return r.json();}}).then(function(d){{
+          var run=(d.workflow_runs||[]).find(function(r){{return r.created_at>=triggerTime;}});
+          if(run){{
+            _ytRunId=run.id;
+            _ytPollTimer=setInterval(function(){{_ytPoll(pat);}},5000);
+            _ytPoll(pat);
+          }}else{{_ytStatus('⚠️ 실행 중 — 상태 추적 실패, 1~2분 후 새로고침하세요');}}
+        }}).catch(function(){{_ytStatus('⚠️ 실행 중 — 1~2분 후 새로고침하세요');}});
+      }},3000);
     }}else{{
-      r.json().then(function(d){{st.textContent='❌ 실패: '+(d.message||r.status);}}).catch(function(){{st.textContent='❌ 실패 (PAT 권한 확인 필요)';}});
+      _ytSetBusy(false);
+      r.json().then(function(d){{_ytStatus('❌ 실패: '+(d.message||r.status));}}).catch(function(){{_ytStatus('❌ 실패 (PAT 권한 확인 필요)');}});
     }}
-  }}).catch(function(){{st.textContent='❌ 네트워크 오류';}});
+  }}).catch(function(){{_ytSetBusy(false);_ytStatus('❌ 네트워크 오류');}});
+}}
+function ytStop(){{
+  var pat=localStorage.getItem('yt_gh_pat');
+  if(!_ytRunId||!pat)return;
+  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_ytRunId+'/cancel',{{
+    method:'POST',
+    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
+  }}).then(function(){{
+    clearInterval(_ytPollTimer);_ytPollTimer=null;_ytRunId=null;
+    _ytSetBusy(false);
+    _ytStatus('🛑 중단됨');
+  }}).catch(function(){{_ytStatus('❌ 중단 실패');}});
 }}
 function sw(id, btn) {{
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
