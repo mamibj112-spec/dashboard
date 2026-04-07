@@ -68,7 +68,7 @@ def generate_report_with_gemini(youtube_url):
         "generationConfig": {"temperature": 0.7, "maxOutputTokens": 8192}
     }
 
-    r = requests.post(GEMINI_URL.format(api_key), json=body, timeout=120)
+    r = requests.post(GEMINI_URL.format(api_key), json=body, timeout=300)
     r.raise_for_status()
 
     text = r.json()['candidates'][0]['content']['parts'][0]['text'].strip()
