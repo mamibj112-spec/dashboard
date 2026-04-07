@@ -1258,8 +1258,8 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <div class="section">
     <div class="banner {dom_cls}">
       <strong>{dom_ico} 오늘 시황</strong><br>
-      코스피 {vdisp(market,'kospi')} {cdisp(market,'kospi')} &nbsp;|&nbsp;
-      코스닥 {vdisp(market,'kosdaq')} {cdisp(market,'kosdaq')}<br>
+      <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong>{vdisp(market,'kospi')}</strong> &nbsp;{cdisp(market,'kospi')}</span>
+      <span style="display:block;margin-bottom:6px;">코스닥 &nbsp;<strong>{vdisp(market,'kosdaq')}</strong> &nbsp;{cdisp(market,'kosdaq')}</span>
       <span style="font-size:11.5px;opacity:.9;line-height:1.6">{dom_summary}</span>
     </div>
   </div>
