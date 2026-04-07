@@ -29,10 +29,19 @@ def get_video_id(url):
     return match.group(1) if match else None
 
 
+def normalize_youtube_url(url):
+    """Shorts 등 비표준 URL을 표준 watch URL로 변환"""
+    video_id = get_video_id(url)
+    if video_id:
+        return f'https://www.youtube.com/watch?v={video_id}'
+    return url
+
+
 def generate_report_with_gemini(youtube_url):
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:
         raise Exception("GEMINI_API_KEY 환경변수가 없습니다.")
+    youtube_url = normalize_youtube_url(youtube_url)
 
     prompt = """이 YouTube 영상을 깊이 있게 분석하여 스토리텔링형 리포트를 작성해주세요.
 
