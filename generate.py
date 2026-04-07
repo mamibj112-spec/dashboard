@@ -899,8 +899,9 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .header-date{font-size:16px;font-weight:700}
 .header-day{font-size:11px;color:var(--t3);margin-top:2px}
 .header-right{text-align:right;font-size:11px;color:var(--t3)}
-.update-btn{{display:inline-block;margin-top:5px;padding:4px 10px;font-size:10px;color:var(--blue);border:1px solid var(--blue);border-radius:6px;text-decoration:none;opacity:.8}}
+.update-btn{{display:inline-block;margin-top:5px;padding:4px 10px;font-size:10px;color:var(--blue);border:1px solid var(--blue);border-radius:6px;text-decoration:none;opacity:.8;background:none;cursor:pointer}}
 .update-btn:hover{{opacity:1;text-decoration:none}}
+.update-status{{font-size:10px;color:var(--t3);display:block;text-align:right;margin-top:2px;min-height:14px}}
 .tab-nav{display:flex;margin:12px 0 0;border-bottom:1px solid var(--border);
 position:sticky;top:0;background:var(--bg);z-index:10;padding:0 4px}
 .tab-btn{flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;
@@ -1321,7 +1322,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <div class="header-date">{kdate}</div>
     <div class="header-day">장 마감 기준</div>
   </div>
-  <div class="header-right">{gen_time}<br><a class="update-btn" href="https://github.com/mamibj112-spec/dashboard/actions/workflows/daily.yml" target="_blank">지금 업데이트</a></div>
+  <div class="header-right">{gen_time}<br><button class="update-btn" id="dashUpdateBtn" onclick="dashUpdate()">지금 업데이트</button><span class="update-status" id="dashUpdateStatus"></span></div>
 </div>
 
 <nav class="tab-nav">
@@ -1919,6 +1920,60 @@ function ytStop(){{
     _ytSetBusy(false);
     _ytStatus('🛑 중단됨');
   }}).catch(function(){{_ytStatus('❌ 중단 실패');}});
+}}
+var _dashRunId=null,_dashPollTimer=null;
+function _dashSetBusy(busy){{
+  var btn=document.getElementById('dashUpdateBtn');
+  btn.disabled=busy;
+  btn.textContent=busy?'업데이트 중...':'지금 업데이트';
+}}
+function _dashStatus(msg){{document.getElementById('dashUpdateStatus').innerHTML=msg;}}
+function _dashPoll(pat){{
+  if(!_dashRunId)return;
+  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_dashRunId,{{
+    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
+  }}).then(function(r){{return r.json();}}).then(function(d){{
+    var s=d.status,c=d.conclusion;
+    if(s==='queued'){{_dashStatus('⏳ 대기 중...');}}
+    else if(s==='in_progress'){{_dashStatus('⚙️ 업데이트 중...');}}
+    else if(s==='completed'){{
+      _dashSetBusy(false);
+      clearInterval(_dashPollTimer);_dashPollTimer=null;_dashRunId=null;
+      if(c==='success'){{_dashStatus('✅ 완료! <a href="javascript:location.reload()" style="color:#60a5fa;">새로고침</a>');}}
+      else{{_dashStatus('❌ 실패 ('+c+')');}}
+    }}
+  }}).catch(function(){{_dashStatus('⚠️ 상태 확인 오류');}});
+}}
+function dashUpdate(){{
+  var pat=localStorage.getItem('yt_gh_pat');
+  if(!pat){{alert('먼저 📺 리포트 탭에서 GitHub PAT를 설정해주세요');return;}}
+  _dashSetBusy(true);
+  _dashStatus('요청 중...');
+  var triggerTime=new Date().toISOString();
+  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/daily.yml/dispatches',{{
+    method:'POST',
+    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}},
+    body:JSON.stringify({{ref:'main'}})
+  }}).then(function(r){{
+    if(r.status===204){{
+      _dashStatus('⏳ 시작 중...');
+      setTimeout(function(){{
+        fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs?event=workflow_dispatch&per_page=5',{{
+          headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
+        }}).then(function(r){{return r.json();}}).then(function(d){{
+          var run=(d.workflow_runs||[]).find(function(r){{return r.created_at>=triggerTime;}});
+          if(run){{
+            _dashRunId=run.id;
+            _dashPollTimer=setInterval(function(){{_dashPoll(pat);}},5000);
+            _dashPoll(pat);
+          }}else{{_dashStatus('⚠️ 실행 중 — 1~2분 후 새로고침하세요');}}
+        }}).catch(function(){{_dashStatus('⚠️ 실행 중 — 1~2분 후 새로고침하세요');}});
+      }},3000);
+    }}else{{
+      _dashSetBusy(false);
+      r.json().then(function(d){{_dashStatus('❌ 실패: '+(d.message||r.status));}}).catch(function(){{_dashStatus('❌ 실패 (PAT 권한 확인 필요)');}});
+    }}
+  }}).catch(function(){{_dashSetBusy(false);_dashStatus('❌ 네트워크 오류');}});
 }}
 function sw(id, btn) {{
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
