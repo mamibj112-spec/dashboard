@@ -21,7 +21,7 @@ except ImportError as e:
 
 KST = pytz.timezone('Asia/Seoul')
 REPORTS_PATH = Path(__file__).parent.parent / 'reports.json'
-GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={}'
+GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={}'
 
 
 def get_video_id(url):
