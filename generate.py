@@ -1703,14 +1703,14 @@ function _ytPoll(pat){{
   }}).then(function(r){{return r.json();}}).then(function(d){{
     var s=d.status,c=d.conclusion;
     if(s==='queued'){{_ytStatus('⏳ 대기 중...');}}
-    else if(s==='in_progress'){{_ytStatus('⚙️ 생성 중... (Gemini 분석 중)')};}}
+    else if(s==='in_progress'){{_ytStatus('⚙️ 생성 중... (Gemini 분석 중)');}}
     else if(s==='completed'){{
       _ytSetBusy(false);
       clearInterval(_ytPollTimer);_ytPollTimer=null;_ytRunId=null;
       if(c==='success'){{_ytStatus('✅ 완료! <a href="javascript:location.reload()" style="color:#60a5fa;">새로고침</a>하면 리포트가 나타납니다.');}}
       else{{_ytStatus('❌ 실패 (결론: '+c+')');}}
     }}
-  }}).catch(function(){{_ytStatus('⚠️ 상태 확인 중 오류 — 잠시 후 재시도');}}};
+  }}).catch(function(){{_ytStatus('⚠️ 상태 확인 중 오류 — 잠시 후 재시도');}});
 }}
 function ytGenerate(){{
   var pat=localStorage.getItem('yt_gh_pat');
