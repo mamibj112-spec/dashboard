@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="국장 대시보드">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>국장 대시보드 · 4월 6일</title>
+<title>국장 대시보드 · 4월 7일</title>
 <style>
 :root{--bg:#080b10;--card:#0f1318;--card2:#151a22;--border:rgba(255,255,255,.08);
 --up:#00e896;--dn:#ff4060;--blue:#4da6ff;--gold:#ffc940;--orange:#ff8c3a;
@@ -23,8 +23,8 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .header-date{font-size:16px;font-weight:700}
 .header-day{font-size:11px;color:var(--t3);margin-top:2px}
 .header-right{text-align:right;font-size:11px;color:var(--t3)}
-.update-btn{display:inline-block;margin-top:5px;padding:4px 10px;font-size:10px;color:var(--blue);border:1px solid var(--blue);border-radius:6px;text-decoration:none;opacity:.8}
-.update-btn:hover{opacity:1;text-decoration:none}
+.update-btn{{display:inline-block;margin-top:5px;padding:4px 10px;font-size:10px;color:var(--blue);border:1px solid var(--blue);border-radius:6px;text-decoration:none;opacity:.8}}
+.update-btn:hover{{opacity:1;text-decoration:none}}
 .tab-nav{display:flex;margin:12px 0 0;border-bottom:1px solid var(--border);
 position:sticky;top:0;background:var(--bg);z-index:10;padding:0 4px}
 .tab-btn{flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;
@@ -126,6 +126,13 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .report-title{font-size:11.5px;color:var(--t2);margin-bottom:7px;line-height:1.5}
 .report-points{border-top:1px solid var(--border);padding-top:7px}
 .report-point{font-size:11px;color:var(--t2);line-height:1.7}
+#macroOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;display:none;opacity:0;transition:opacity .25s}
+#macroOverlay.open{opacity:1}
+#macroModal{position:fixed;bottom:20px;left:8px;right:8px;max-width:480px;margin:0 auto;
+background:var(--card2);border-radius:16px;padding:16px 16px 24px;z-index:100;
+box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(calc(100% + 28px));
+transition:transform .28s cubic-bezier(.4,0,.2,1)}
+#macroModal.open{transform:translateY(0)}
 .yt-input-row{display:flex;gap:8px;margin-bottom:8px}
 .yt-input{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--t1);font-size:12px;outline:none}
 .yt-input:focus{border-color:var(--blue)}
@@ -144,13 +151,6 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .yt-ins-list{margin-top:10px;padding-left:0;list-style:none;border-top:1px solid var(--border);padding-top:8px}
 .yt-ins{font-size:11.5px;color:var(--t2);padding:5px 0 5px 16px;position:relative}
 .yt-ins::before{content:'→';position:absolute;left:0;color:var(--blue)}
-#macroOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;display:none;opacity:0;transition:opacity .25s}
-#macroOverlay.open{opacity:1}
-#macroModal{position:fixed;bottom:20px;left:8px;right:8px;max-width:480px;margin:0 auto;
-background:var(--card2);border-radius:16px;padding:16px 16px 24px;z-index:100;
-box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(calc(100% + 28px));
-transition:transform .28s cubic-bezier(.4,0,.2,1)}
-#macroModal.open{transform:translateY(0)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -160,7 +160,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 <div class="header">
   <div>
     <div class="header-title">📈 국내 주식</div>
-    <div class="header-date">2026년 4월 6일 월요일</div>
+    <div class="header-date">2026년 4월 7일 화요일</div>
     <div class="header-day">장 마감 기준</div>
   </div>
   <div class="header-right">19:43 생성<br><a class="update-btn" href="https://github.com/mamibj112-spec/dashboard/actions/workflows/daily.yml" target="_blank">지금 업데이트</a></div>
@@ -179,26 +179,26 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 <div id="tab-dom" class="tab-panel active">
 
   <div class="section">
-    <div class="banner up">
-      <strong>📈 오늘 시황</strong><br>
-      코스피 <span class="up-txt">5,450.33</span> <span class="up-txt">▲ 73.03 (1.36%)</span> &nbsp;|&nbsp;
-      코스닥 <span class="dn-txt">1,047.37</span> <span class="dn-txt">▼ 16.38 (1.54%)</span><br>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 1.4% 상승 · 코스닥 상대 약세 · 원/달러 1,503원 고환율 부담</span>
+    <div class="banner blue">
+      <strong>➖ 오늘 시황</strong><br>
+      코스피 <span class="up-txt">5,494.78</span> <span class="up-txt">▲ 44.45 (0.82%)</span> &nbsp;|&nbsp;
+      코스닥 <span class="dn-txt">1,036.73</span> <span class="dn-txt">▼ 10.64 (1.02%)</span><br>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 보합권 · 코스닥 상대 약세 · 원/달러 1,500원 고환율 부담</span>
     </div>
   </div>
 
   <div class="section">
   <div class="story-wrap">
-    <div class="story-keyword">📈글로벌 훈풍, 국내는 엇갈린 흐름</div>
+    <div class="story-keyword">AI, 실적, 지정학적 리스크 속 엇갈린 장 📈</div>
     <div class="story-block">
       <div class="story-label">📊 시황 흐름</div>
-      <div class="story-text">오늘 한국 증시는 코스피의 상승에도 불구하고 코스닥이 하락하며 엇갈린 모습을 보였습니다. 중동 휴전 기대감에 따른 글로벌 증시의 조심스러운 상승세가 코스피에 긍정적인 영향을 미쳤으나, 국내 벤처펀드 출구 전략 부재 및 기술금융 실적 부풀리기 의혹 등 내부적인 이슈들이 코스닥 투자 심리를 위축시킨 것으로 해석됩니다.</div>
+      <div class="story-text">오늘 한국 주식시장은 코스피가 상승하고 코스닥은 하락하며 혼조세를 보였습니다. 이는 AI, 반도체 등 성장 기대감이 큰 종목들이 코스피를 견인한 반면, 지정학적 리스크와 일부 실적 악재가 코스닥 중소형주에 부담으로 작용한 결과로 보입니다. 특히 JP모건 CEO의 지정학적 위험 언급은 투자심리에 영향을 미쳤을 가능성이 있습니다.</div>
     </div>
     <div class="story-block">
       <div class="story-label">🏭 업종 스토리</div>
-      <div class="story-text">글로벌 증시의 상승세와 금 가격 상승은 안전자산 선호 심리와 일부 대형주에 긍정적으로 작용했을 가능성이 있습니다. 반면, 벤처펀드 이슈는 성장주 위주의 코스닥 시장에 부정적인 영향을 미 미쳐, 기술주 및 신흥 기업들의 전반적인 약세를 유발했을 것으로 보입니다.</div>
+      <div class="story-text">AI, 반도체 관련 종목들의 실적 기대감은 코스피 상승에 기여했지만, 전쟁 악재와 대형마트 결제액 하락 소식은 소비재 및 일부 코스닥 업종에 부정적인 영향을 미쳤습니다.</div>
     </div>
-    <div class="story-block"><div class="story-label">👀 오늘의 주목 포인트</div><div class="story-watch">· 글로벌 지정학적 리스크 완화 여부 및 국제 유가 변동성</div><div class="story-watch">· 국내 벤처 투자 시장의 정책적 변화 및 금감원 검사 결과</div><div class="story-watch">· 주요 기업들의 실적 발표 및 AI 관련 기술 동향</div></div>
+    <div class="story-block"><div class="story-label">👀 오늘의 주목 포인트</div><div class="story-watch">· AI 및 반도체 관련 기업들의 실적 발표와 향후 전망</div><div class="story-watch">· 미국 금리 및 유가 변동이 국내 시장에 미칠 영향</div><div class="story-watch">· 지정학적 리스크와 주요 기업들의 대응 전략</div></div>
   </div>
 </div>
 
@@ -207,13 +207,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="index-grid">
       <div class="idx-card" onclick="showMacroChart('kospi')" style="cursor:pointer">
         <div class="idx-name">코스피 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
-        <div class="idx-val"><span class="up-txt">5,450.33</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 73.03 (1.36%)</span></div>
+        <div class="idx-val"><span class="up-txt">5,494.78</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 44.45 (0.82%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('kosdaq')" style="cursor:pointer">
         <div class="idx-name">코스닥 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
-        <div class="idx-val"><span class="dn-txt">1,047.37</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 16.38 (1.54%)</span></div>
+        <div class="idx-val"><span class="dn-txt">1,036.73</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 10.64 (1.02%)</span></div>
       </div>
     </div>
   </div>
@@ -223,23 +223,23 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="index-grid">
       <div class="idx-card" onclick="showMacroChart('nasdaq')" style="cursor:pointer">
         <div class="idx-name">나스닥 100</div>
-        <div class="idx-val"><span class="up-txt">24,045.53</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 25.54 (0.11%)</span></div>
+        <div class="idx-val"><span class="up-txt">24,192.17</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 146.64 (0.61%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('sp500')" style="cursor:pointer">
         <div class="idx-name">S&amp;P 500</div>
-        <div class="idx-val"><span class="up-txt">6,582.69</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 7.37 (0.11%)</span></div>
+        <div class="idx-val"><span class="up-txt">6,611.83</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 29.14 (0.44%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
         <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
-        <div class="idx-val">24.84</div>
-        <div class="idx-chg"><span class="up-txt">▲ 0.97 (4.06%)</span></div>
+        <div class="idx-val">24.71</div>
+        <div class="idx-chg"><span class="up-txt">▲ 0.54 (2.23%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
         <div class="idx-name">다우존스</div>
-        <div class="idx-val"><span class="dn-txt">46,504.67</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 61.07 (0.13%)</span></div>
+        <div class="idx-val"><span class="up-txt">46,669.88</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 165.21 (0.36%)</span></div>
       </div>
     </div>
   </div>
@@ -249,33 +249,33 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('usdkrw')">
         <div class="macro-name">USD/KRW</div>
-        <div class="macro-val"><span class="up-txt">1,502.8원</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 6.4 (0.42%)</span></div>
+        <div class="macro-val"><span class="up-txt">1,499.8원</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 9.4 (0.63%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('brent')">
         <div class="macro-name">브렌트유</div>
-        <div class="macro-val"><span class="dn-txt">$108.1</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $0.89 (0.82%)</span></div>
+        <div class="macro-val"><span class="up-txt">$110.1</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $0.33 (0.30%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('wti')">
         <div class="macro-name">WTI</div>
-        <div class="macro-val"><span class="dn-txt">$110.3</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $1.25 (1.12%)</span></div>
+        <div class="macro-val"><span class="up-txt">$113.6</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $1.23 (1.09%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="up-txt">$4,719</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $67.80 (1.46%)</span></div>
+        <div class="macro-val"><span class="up-txt">$4,692</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $35.70 (0.77%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="up-txt">99.93</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.10 (0.10%)</span></div>
+        <div class="macro-val"><span class="up-txt">99.96</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 0.02 (0.02%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$69,860</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 878.12 (1.27%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$68,554</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ 305.55 (0.44%)</span></div>
       </div>
     </div>
   </div>
@@ -291,13 +291,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">📊 시장 체감 온도</div>
     <div class="breadth-wrap">
   <div class="breadth-bar">
-    <div class="breadth-up" style="width:34.4%"></div>
+    <div class="breadth-up" style="width:30.7%"></div>
   </div>
   <div class="breadth-label">
-    <span class="up-txt">▲ 919개 상승</span>
+    <span class="up-txt">▲ 818개 상승</span>
     <span style="color:var(--t3);margin:0 6px;">|</span>
-    <span class="dn-txt">▼ 1631개 하락</span>
-    <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 2670개</span>
+    <span class="dn-txt">▼ 1693개 하락</span>
+    <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 2662개</span>
   </div>
 </div>
   </div>
@@ -309,113 +309,113 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <div class="stock-row">
   <div class="stock-name">삼성전자</div>
   <div class="stock-right">
-    <span class="up-txt">▲3.7%</span>
-    <span class="stock-amt">39717억</span>
+    <span class="up-txt">▲1.8%</span>
+    <span class="stock-amt">60620억</span>
   </div>
 </div><div class="stock-row">
   <div class="stock-name">SK하이닉스</div>
   <div class="stock-right">
-    <span class="up-txt">▲1.1%</span>
-    <span class="stock-amt">27431억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">한화오션</div>
-  <div class="stock-right">
-    <span class="dn-txt">▼4.7%</span>
-    <span class="stock-amt">18164억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">대한광통신<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
-  <div class="stock-right">
-    <span class="up-txt">▲6.7%</span>
-    <span class="stock-amt">11943억</span>
+    <span class="up-txt">▲3.4%</span>
+    <span class="stock-amt">32971억</span>
   </div>
 </div><div class="stock-row">
   <div class="stock-name">대우건설</div>
   <div class="stock-right">
-    <span class="up-txt">▲3.0%</span>
-    <span class="stock-amt">5258억</span>
+    <span class="up-txt">▲0.2%</span>
+    <span class="stock-amt">6243억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">흥구석유<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
+  <div class="stock-right">
+    <span class="up-txt">▲9.9%</span>
+    <span class="stock-amt">5700억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">에코프로머티</div>
+  <div class="stock-right">
+    <span class="up-txt">▲6.1%</span>
+    <span class="stock-amt">5401억</span>
   </div>
 </div>
         <div class="ss-sub-label" style="margin-top:10px">🚀 급등주</div>
         <div class="stock-row">
-  <div class="stock-name">다날<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
+  <div class="stock-name">옵티시스<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
   <div class="stock-right">
     <span class="up-txt">▲30.0%</span>
-    <span class="stock-amt">548억</span>
+    <span class="stock-amt">294억</span>
   </div>
 </div><div class="stock-row">
-  <div class="stock-name">CS<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
+  <div class="stock-name">글로본<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
   <div class="stock-right">
     <span class="up-txt">▲30.0%</span>
-    <span class="stock-amt">189억</span>
+    <span class="stock-amt">38억</span>
   </div>
 </div><div class="stock-row">
-  <div class="stock-name">제이케이시냅스<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
+  <div class="stock-name">형지글로벌<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
   <div class="stock-right">
     <span class="up-txt">▲30.0%</span>
-    <span class="stock-amt">78억</span>
+    <span class="stock-amt">125억</span>
   </div>
 </div><div class="stock-row">
-  <div class="stock-name">풍산홀딩스</div>
+  <div class="stock-name">앤씨앤<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
   <div class="stock-right">
     <span class="up-txt">▲30.0%</span>
-    <span class="stock-amt">526억</span>
+    <span class="stock-amt">62억</span>
   </div>
 </div><div class="stock-row">
-  <div class="stock-name">이노인스트루먼트<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
+  <div class="stock-name">모아데이타<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
   <div class="stock-right">
     <span class="up-txt">▲30.0%</span>
-    <span class="stock-amt">110억</span>
+    <span class="stock-amt">132억</span>
   </div>
 </div>
       </div>
       <div class="stock-story-col">
         <div class="ss-wrap">
-  <div class="ss-tone">대형 반도체 중심의 장세 속 테마주 강세</div>
+  <div class="ss-tone">대형주와 일부 테마주 혼합 장세</div>
   <div class="ss-block">
     <div class="ss-label">🔥 주도 테마</div>
-    <div class="ss-theme">반도체 칩스 & 통신 🚀</div>
-    <div class="ss-text">오늘 시장은 삼성전자와 SK하이닉스 등 반도체 대형주들이 강세를 보였고, 대한광통신과 같은 통신 관련주도 높은 거래대금을 기록하며 함께 주목받았습니다. 이는 최근 AI 산업 성장 기대감과 통신 인프라 투자 확대 기조가 반영된 것으로 보입니다.</div>
+    <div class="ss-theme">반도체 칩 🚀, 유가 관련주 ⛽</div>
+    <div class="ss-text">삼성전자, SK하이닉스 등 반도체 대형주가 강세를 보이며 시장을 견인했고, 흥구석유의 급등으로 유가 관련 이슈가 부각된 것으로 추정됩니다.</div>
   </div>
   <div class="ss-block">
     <div class="ss-label">💰 큰 돈의 흐름</div>
-    <div class="ss-text">거래대금 상위 종목들을 보면 삼성전자와 SK하이닉스에 압도적인 자금이 유입되었으며, 특히 대한광통신은 시가총액 대비 매우 이례적인 거래대금을 기록하며 큰 주목을 받았습니다.</div>
+    <div class="ss-text">거래대금은 삼성전자와 SK하이닉스에 압도적으로 집중되었으며, 이례적으로 유가 관련주인 흥구석유에도 상당한 자금이 유입되었습니다.</div>
   </div>
 </div>
       </div>
     </div>
   </div>
 
-  <div class="section"><div class="section-label">📋 오늘의 증권사 리포트</div><a href="https://finance.naver.com/research/company_read.naver?nid=91262&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
+  <div class="section"><div class="section-label">📋 오늘의 증권사 리포트</div><a href="https://finance.naver.com/research/company_read.naver?nid=91293&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
   <div class="report-header">
-    <span class="report-stock">리노공업</span>
+    <span class="report-stock">삼성전자</span>
+    <span class="report-firm">미래에셋증권</span>
+  </div>
+  <div class="report-title">삼성전자 - 놀라운 실적의 시작</div>
+  <div class="report-points">
+    <div class="report-point">· 삼성전자가 예상치를 뛰어넘는 1분기 실적을 발표하며, 반도체 업황 회복과 AI 수요 증가에 따른 실적 개선 기대감이 커지고 있습니다.</div>
+    <div class="report-point">· 특히 HBM 등 고부가 메모리 반도체 판매 호조와 파운드리 부문의 성장 가능성이 긍정적인 투자 포인트입니다.</div>
+  </div>
+</div></a><a href="https://finance.naver.com/research/company_read.naver?nid=91306&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
+  <div class="report-header">
+    <span class="report-stock">기아</span>
+    <span class="report-firm">한화투자증권</span>
+  </div>
+  <div class="report-title">기아 - 신차 효과 확인, 증익 흐름으로 전환 시작</div>
+  <div class="report-points">
+    <div class="report-point">· 기아가 신차 효과를 통해 판매량과 수익성 개선을 이루며 증익 흐름으로 전환할 것으로 예상됩니다.</div>
+    <div class="report-point">· 고수익 모델 판매 확대와 효율적인 비용 관리가 실적 성장을 견인할 주요 요인입니다.</div>
+  </div>
+</div></a><a href="https://finance.naver.com/research/company_read.naver?nid=91296&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
+  <div class="report-header">
+    <span class="report-stock">엔씨소프트</span>
     <span class="report-firm">하나증권</span>
   </div>
-  <div class="report-title">넘쳐나는 개발 수요</div>
+  <div class="report-title">엔씨소프트 - 지금은 사야 할 때</div>
   <div class="report-points">
-    <div class="report-point">· AI 반도체 및 고성능 컴퓨팅(HPC) 수요 증가로 비메모리 반도체 테스트 소켓 개발 수요가 폭발적으로 증가.</div>
-    <div class="report-point">· 고객사의 신규 칩 개발 가속화에 따른 리노공업의 수혜가 기대되며, 견조한 실적 성장이 예상됨.</div>
-  </div>
-</div></a><a href="https://finance.naver.com/research/company_read.naver?nid=91261&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
-  <div class="report-header">
-    <span class="report-stock">넥스틴</span>
-    <span class="report-firm">대신증권</span>
-  </div>
-  <div class="report-title">바닥은 다졌고 위를 바라볼 때</div>
-  <div class="report-points">
-    <div class="report-point">· 반도체 업황 회복과 함께 국내외 고객사들의 투자 확대가 예상되며, 넥스틴의 웨이퍼 검사 장비 수요 증가 기대.</div>
-    <div class="report-point">· 신규 장비 개발 및 고객사 다변화를 통해 실적 개선의 바닥을 다지고 성장 모멘텀을 확보할 것으로 전망.</div>
-  </div>
-</div></a><a href="https://finance.naver.com/research/company_read.naver?nid=91267&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
-  <div class="report-header">
-    <span class="report-stock">에코프로비엠</span>
-    <span class="report-firm">교보증권</span>
-  </div>
-  <div class="report-title">헝가리 현지화 수혜</div>
-  <div class="report-points">
-    <div class="report-point">· 유럽 전기차 시장 성장에 발맞춰 헝가리 현지 생산 공장 가동을 통해 유럽 고객사향 공급 확대 및 물류 비용 절감 효과 기대.</div>
-    <div class="report-point">· IRA 및 CRMA 등 각국의 정책 변화에 유연하게 대응하며 글로벌 배터리 소재 시장에서의 경쟁 우위를 강화할 것으로 예상.</div>
+    <div class="report-point">· 엔씨소프트는 신작 출시와 기존 게임의 업데이트를 통해 실적 턴어라운드를 기대할 수 있는 시점입니다.</div>
+    <div class="report-point">· 장기적인 성장 동력 확보와 저평가된 주가 매력이 투자 포인트로 작용할 수 있습니다.</div>
   </div>
 </div></a></div>
 
@@ -423,22 +423,46 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">국내 주식 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026040624401" target="_blank">박현주 미래에셋 회장, 16년 연속 배당금 기부</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040752041" target="_blank">AI·조·방·원 리더 출격…'코스피 7000'으로 가는 투자기회 찾는다</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026040625231" target="_blank">[단독] 文정부 때 '53조' 투입했는데…출구 막힌 벤처펀드</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040752201" target="_blank">K증시 대도약의 시대…최대 '투자 축제' 열린다</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.mk.co.kr/news/economy/12009445" target="_blank">[단독] 기술금융 실적 부풀리기 의혹에 … 금감원, 은행 대출과정 검사착수</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040751791" target="_blank">실적 '호재' 전쟁 '악재' 겹쳐…주가 4.6% 널뛰기</a></div>
   
-  <div class="news-summary">금융감독원이 KB국민은행과 우리은행의 기술신용대출(기술금용) 취급 과정 전반을 들여다보는 수시검사에 착수한 것으로 확인됐다. 최근 국내 최대 기…</div>
-  <div class="news-meta">매일경제 · 4월 7일</div>
+  
+  <div class="news-meta">한국경제 · 4월 7일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040751781" target="_blank">실적은 엔비디아급, 시총은 5분의 1…"30만전자 간다"</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 4월 7일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040751831" target="_blank">제작비 뛰고, OTT에 치이고…K드라마 제작사 주가 주르륵</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 4월 7일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040751841" target="_blank">TIGER 반도체TOP10, 순자산 10兆 돌파</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 4월 7일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">국내</span>
+  <div class="news-title"><a href="https://www.mk.co.kr/news/economy/12010572" target="_blank">외국인 배당금 이달에만 12조 … 환전땐 원화값 불안</a></div>
+  
+  <div class="news-summary">상장 기업들의 실적 호전은 기쁜 일이지만 달러당 원화값에는 새로운 변수다. 정부가 원화값을 안정시키는 데 애를 먹고 있는 가운데 이달 외국인 배…</div>
+  <div class="news-meta">매일경제 · 4월 8일</div>
 </div>
   </div>
 
@@ -450,9 +474,9 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="section">
     <div class="banner up">
       <strong>🌐 해외 시황</strong><br>
-      S&amp;P500 <span class="up-txt">6,582.69</span> <span class="up-txt">▲ 7.37 (0.11%)</span> &nbsp;|&nbsp;
-      나스닥 <span class="up-txt">24,045.53</span> <span class="up-txt">▲ 25.54 (0.11%)</span><br>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">S&P500 보합 · 금 1.5% 상승</span>
+      S&amp;P500 <span class="up-txt">6,611.83</span> <span class="up-txt">▲ 29.14 (0.44%)</span> &nbsp;|&nbsp;
+      나스닥 <span class="up-txt">24,192.17</span> <span class="up-txt">▲ 146.64 (0.61%)</span><br>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">S&P500 보합</span>
     </div>
   </div>
 
@@ -461,23 +485,23 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="index-grid">
       <div class="idx-card">
         <div class="idx-name">S&amp;P 500</div>
-        <div class="idx-val"><span class="up-txt">6,582.69</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 7.37 (0.11%)</span></div>
+        <div class="idx-val"><span class="up-txt">6,611.83</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 29.14 (0.44%)</span></div>
       </div>
       <div class="idx-card">
         <div class="idx-name">나스닥 100</div>
-        <div class="idx-val"><span class="up-txt">24,045.53</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 25.54 (0.11%)</span></div>
+        <div class="idx-val"><span class="up-txt">24,192.17</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 146.64 (0.61%)</span></div>
       </div>
       <div class="idx-card">
         <div class="idx-name">다우존스</div>
-        <div class="idx-val"><span class="dn-txt">46,504.67</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 61.07 (0.13%)</span></div>
+        <div class="idx-val"><span class="up-txt">46,669.88</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 165.21 (0.36%)</span></div>
       </div>
       <div class="idx-card">
         <div class="idx-name">닛케이 225</div>
-        <div class="idx-val"><span class="up-txt">53,413.68</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 290.19 (0.55%)</span></div>
+        <div class="idx-val"><span class="up-txt">53,429.56</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 15.88 (0.03%)</span></div>
       </div>
     </div>
   </div>
@@ -487,28 +511,28 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="macro-grid">
       <div class="macro-card">
         <div class="macro-name">미 10년물</div>
-        <div class="macro-val"><span class="up-txt">4.31%</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.01%p</span></div>
+        <div class="macro-val"><span class="dn-txt">4.34%</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.02%p</span></div>
       </div>
       <div class="macro-card">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="up-txt">99.93</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.10 (0.10%)</span></div>
+        <div class="macro-val"><span class="up-txt">99.96</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 0.02 (0.02%)</span></div>
       </div>
       <div class="macro-card">
         <div class="macro-name">브렌트유</div>
-        <div class="macro-val"><span class="dn-txt">$108.1</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $0.89 (0.82%)</span></div>
+        <div class="macro-val"><span class="up-txt">$110.1</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $0.33 (0.30%)</span></div>
       </div>
       <div class="macro-card">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="up-txt">$4,719</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $67.80 (1.46%)</span></div>
+        <div class="macro-val"><span class="up-txt">$4,692</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $35.70 (0.77%)</span></div>
       </div>
       <div class="macro-card">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$69,860</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 878.12 (1.27%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$68,554</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ 305.55 (0.44%)</span></div>
       </div>
     </div>
   </div>
@@ -517,19 +541,31 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">해외 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/06/jpmorgan-ceo-jamie-dimon-annual-letter-risks.html" target="_blank">JP모건 CEO 제이미 다이먼, 연례 서한에서 지정학, AI, 사모 시장 위험 언급</a></div>
-  <div class="news-orig">JPMorgan CEO Jamie Dimon in annual letter cites risks in geopolitics, AI and pri…</div>
-  <div class="news-summary">JP모건 CEO 제이미 다이먼은 주주들에게 보낸 연례 서한에서 국가의…</div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/06/wall-street-firm-sends-analyst-to-the-strait-of-hormuz-heres-what-they-found-out.html" target="_blank">독특한 월스트리트 리서치 회사, 호르무즈 해협에 애널리스트 파견. 그들이 알아낸 것은?</a></div>
+  <div class="news-orig">Offbeat Wall Street research firm says it sent an analyst to Strait of Hormuz. H…</div>
+  <div class="news-summary">미국과 이스라엘이 이란과의 전쟁을 시작하기 전, 전 세계의 약 20%가…</div>
+  <div class="news-meta">CNBC Markets · 4월 7일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/06/stocks-making-the-biggest-moves-premarket-nflx-slno-mstr.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: 넷플릭스, 솔레노 테라퓨틱스, 스트래티지 등</a></div>
+  <div class="news-orig">Stocks making the biggest moves premarket: Netflix, Soleno Therapeutics, Strateg…</div>
+  <div class="news-summary">개장 전 가장 큰 움직임을 보이는 주식들입니다.</div>
   <div class="news-meta">CNBC Markets · 4월 6일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/02/blue-owl-private-credit-funds-redemptions-requests.html" target="_blank">블루 아울, 사모 신용 펀드 환매 요청 급증 후 5%로 제한</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/06/jpmorgan-ceo-jamie-dimon-annual-letter-risks.html" target="_blank">JP모건 CEO 제이미 다이먼, 연례 서한에서 지정학, AI, 사모 시장 위험 언급</a></div>
+  <div class="news-orig">JPMorgan CEO Jamie Dimon in annual letter cites risks in geopolitics, AI and pri…</div>
+  <div class="news-summary">JP모건 CEO 제이미 다이먼은 주주들에게 보내는 연례 서한에서 국가의…</div>
+  <div class="news-meta">CNBC Markets · 4월 6일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/02/blue-owl-private-credit-funds-redemptions-requests.html" target="_blank">블루 아울, 높은 환매 요청 수준에 따라 사모 신용 펀드 환매를 5%로 제한</a></div>
   <div class="news-orig">Blue Owl caps private credit funds redemptions at 5% after steep request levels</div>
-  <div class="news-summary">블루 아울은 평소보다 높은 요청이 "고조된 시장 우려…" 때문이라고 설명했습니다.</div>
+  <div class="news-summary">블루 아울은 평소보다 높은 요청을 "고조된 시장 우려" 때문이라고 설명했습니다.</div>
   <div class="news-meta">CNBC Markets · 4월 3일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/02/stocks-making-the-biggest-moves-premarket-.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: 엑슨모빌, 카니발, 델타, 제너럴 모터스 등</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/02/stocks-making-the-biggest-moves-premarket-.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: 엑손모빌, 카니발, 델타, 제너럴 모터스 등</a></div>
   <div class="news-orig">Stocks making the biggest moves premarket: Exxon Mobil, Carnival, Delta, General…</div>
   <div class="news-summary">개장 전 가장 큰 움직임을 보이는 주식들입니다.</div>
   <div class="news-meta">CNBC Markets · 4월 2일</div>
@@ -541,22 +577,10 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="news-meta">CNBC Markets · 4월 2일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/01/visa-ai-tools-dispute-management.html" target="_blank">비자, 차지 분쟁 관리 위한 새로운 AI 도구 출시</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/01/visa-ai-tools-dispute-management.html" target="_blank">비자, 카드 분쟁 처리 관리를 위한 새로운 AI 도구 출시</a></div>
   <div class="news-orig">Visa launches new AI tools to manage the charge dispute process</div>
-  <div class="news-summary">비자의 새로운 도구는 주요 은행 및 금융 기관의 더 큰 추진의 일환입니다.</div>
+  <div class="news-summary">비자의 새로운 도구는 주요 은행 및 금융 기관의 더 큰 추진의 일부입니다…</div>
   <div class="news-meta">CNBC Markets · 4월 2일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/01/stocks-making-the-biggest-moves-premarket-nike-rh-sandisk-more.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: 나이키, RH, 샌디스크 등</a></div>
-  <div class="news-orig">Stocks making the biggest moves premarket: Nike, RH, Sandisk & more</div>
-  <div class="news-summary">개장 전 가장 큰 움직임을 보이는 주식들입니다.</div>
-  <div class="news-meta">CNBC Markets · 4월 1일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/03/31/stocks-making-the-biggest-moves-after-hours-nke-play-rh.html" target="_blank">장 마감 후 가장 큰 움직임을 보이는 주식: 나이키, 데이브 앤 버스터즈, RH 등</a></div>
-  <div class="news-orig">Stocks making the biggest moves after hours: Nike, Dave & Buster's, RH and more</div>
-  <div class="news-summary">장 마감 후 큰 움직임을 보이는 주식들을 확인하세요.</div>
-  <div class="news-meta">CNBC Markets · 4월 1일</div>
 </div>
   </div>
 
@@ -651,46 +675,46 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">핫이슈 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604061959g" target="_blank">홈플러스, 익스프레스 매각해 3천억 확보하겠다지만…'빨간불'</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604074567g" target="_blank">"사다리꼴? 육각형?"…'돌풍' BMW 야심작의 이유있는 디자인 [모빌리티톡]</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604062707i" target="_blank">중동 휴전 기대감…글로벌 증시 조심스런 상승세</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604075350i" target="_blank">"중국, 대만의 반도체기술·인재 빼돌리기 가속화"</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604060652i" target="_blank">130년 커피 브랜드 손봤다…맥스웰하우스 캔커피 '대수술'</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040750341" target="_blank">"이제 그냥 쿠팡으로 살래요"…대형마트 결제액 '뚝'</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026040624361" target="_blank">'금융투자 어벤져스' 뭉쳤다…K-자본시장 싱크탱크 출범</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604062286i" target="_blank">"운동·숙박·식단 묶어서 산다"…유통가 흔드는 '루틴 비즈니스'</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026040624351" target="_blank">포스코청암재단, 사이언스펠로십 모집</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040752131" target="_blank">물가 관리냐, 수요 억제냐…정부 3차 최고가격제 딜레마</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026040624341" target="_blank">에쓰오일, 식목일 맞아 나무심기 봉사</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040752141" target="_blank">트럼프 논란의 발언 뭐길래…"국제법상 전쟁 범죄" 경고</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604062177i" target="_blank">"퇴직금 미지급" vs "무혐의 결론 난 사안"…쿠팡풀필먼트 재판 시작 [CEO와 법정]</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026040752211" target="_blank">서울 평균 휘발유값 2000원 돌파</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 6일</div>
+  <div class="news-meta">한국경제 · 4월 7일</div>
 </div>
   </div>
 
@@ -754,13 +778,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div>
 
 <div class="footer-note">
-  2026년 4월 6일 월요일 · 19:43 생성<br>
+  2026년 4월 7일 화요일 · 19:43 생성<br>
   부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
 var MACRO_META={"kospi": {"name": "코스피", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "", "dec": 2}, "kosdaq": {"name": "코스닥", "color": "#3b82f6", "rgb": "59,130,246", "pre": "", "suf": "", "dec": 2}, "sp500": {"name": "S&P 500", "color": "#00e896", "rgb": "0,232,150", "pre": "", "suf": "", "dec": 2}, "nasdaq": {"name": "나스닥 100", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "", "dec": 2}, "dow": {"name": "다우존스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "vix": {"name": "VIX", "color": "#ffc940", "rgb": "255,201,64", "pre": "", "suf": "", "dec": 2}, "usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
-var MACRO_HIST={"kospi": [5438.8701, 5277.2998, 5052.46, 5478.7002, 5234.0498, 5377.2998, 5450.3301], "kosdaq": [1141.51, 1107.05, 1052.39, 1116.1801, 1056.34, 1063.75, 1047.37], "sp500": [6591.8999, 6477.1602, 6368.8501, 6343.7202, 6528.52, 6575.3198, 6582.6899], "nasdaq": [24162.9805, 23586.9902, 23132.7695, 22953.3809, 23740.1895, 24019.9902, 24045.5293], "dow": [46429.4883, 45960.1094, 45166.6406, 45216.1406, 46341.5117, 46565.7383, 46504.6719], "vix": [27.44, 31.05, 30.61, 25.25, 24.54, 23.87, 24.82], "usdkrw": [1508.36, 1507.02, 1516.13, 1503.33, 1512.09, 1509.22, 1502.58], "brent": [108.01, 112.57, 112.78, 118.35, 101.16, 109.03, 108.09], "wti": [94.48, 99.64, 102.88, 101.38, 100.12, 111.54, 110.23], "tnx": [4.328, 4.416, 4.44, 4.342, 4.311, 4.319, 4.313], "gold": [4375.5, 4492.0, 4526.0, 4647.6001, 4783.2002, 4651.5, 4718.2998], "dxy": [99.9, 100.15, 100.51, 99.96, 99.65, 100.03, 99.929], "btc": [68233.3125, 68078.5547, 66888.5703, 66931.1016, 67290.5156, 68981.8984, 69860.0234]};
+var MACRO_HIST={"kospi": [5277.2998, 5052.46, 5478.7002, 5234.0498, 5377.2998, 5450.3301, 5494.7798], "kosdaq": [1107.05, 1052.39, 1116.1801, 1056.34, 1063.75, 1047.37, 1036.73], "sp500": [6477.1602, 6368.8501, 6343.7202, 6528.52, 6575.3198, 6582.6899, 6611.8301], "nasdaq": [23586.9902, 23132.7695, 22953.3809, 23740.1895, 24019.9902, 24045.5293, 24192.1699], "dow": [45960.1094, 45166.6406, 45216.1406, 46341.5117, 46565.7383, 46504.6719, 46669.8789], "vix": [31.05, 30.61, 25.25, 24.54, 23.87, 24.17, 24.71], "usdkrw": [1507.02, 1516.13, 1503.33, 1512.09, 1509.22, 1509.26, 1500.08], "brent": [112.57, 112.78, 118.35, 101.16, 109.03, 109.77, 110.1], "wti": [99.64, 102.88, 101.38, 100.12, 111.54, 112.41, 113.62], "tnx": [4.416, 4.44, 4.342, 4.311, 4.319, 4.313, 4.335], "gold": [4492.0, 4526.0, 4647.6001, 4783.2002, 4651.5, 4656.7998, 4693.6001], "dxy": [100.15, 100.51, 99.96, 99.65, 100.03, 99.98, 99.959], "btc": [68078.5547, 66888.5703, 66931.1016, 67290.5156, 68981.8984, 68859.8281, 68554.2812]};
 var _mc=null;
 function showMacroChart(k){
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
@@ -819,7 +843,7 @@ function closeMacroChart(){
   });
 })();
 var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',yt:'📺 YouTube 딥리포트'};
-var _YT_PAT='YOUR_PAT_HERE';
+var _YT_PAT='';
 function ytGenerate(){
   var url=document.getElementById('ytUrl').value.trim();
   if(!url){alert('YouTube URL을 입력해주세요');return;}
