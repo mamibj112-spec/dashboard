@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-YouTube 딥리포트 생성기
+YouTube 딥리포트 생성기 (Gemini 영상 직접 분석)
 Usage: python modules/youtube_report.py <youtube_url>
 """
 import sys
@@ -14,7 +14,6 @@ from pathlib import Path
 
 try:
     import pytz
-    from youtube_transcript_api import YouTubeTranscriptApi
 except ImportError as e:
     print(f"패키지 없음: {e}")
     print("먼저 실행: pip install -r requirements.txt")
@@ -30,54 +29,46 @@ def get_video_id(url):
     return match.group(1) if match else None
 
 
-def get_transcript(video_id):
-    # 한국어 → 영어 → 자동생성 순으로 시도
-    for langs in [['ko'], ['en'], None]:
-        try:
-            if langs:
-                entries = YouTubeTranscriptApi.get_transcript(video_id, languages=langs)
-            else:
-                entries = YouTubeTranscriptApi.get_transcript(video_id)
-            text = ' '.join(e['text'] for e in entries)
-            print(f"  자막 추출 완료 ({len(text)}자)")
-            return text
-        except Exception:
-            continue
-    raise Exception("자막을 가져올 수 없습니다. 자막이 없는 영상이거나 접근이 제한된 영상입니다.")
-
-
-def generate_report_with_gemini(transcript, video_id):
+def generate_report_with_gemini(youtube_url):
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:
         raise Exception("GEMINI_API_KEY 환경변수가 없습니다.")
 
-    prompt = f"""다음은 YouTube 영상의 자막입니다. 이 내용을 바탕으로 스토리텔링형 깊이 있는 리포트를 작성해주세요.
+    prompt = """이 YouTube 영상을 깊이 있게 분석하여 스토리텔링형 리포트를 작성해주세요.
 
 요구사항:
 - 단순 요약이 아닌 맥락, 의미, 시사점을 깊이 있게 서술
+- 영상의 시각 자료, 발표 내용, 강조점, 흐름까지 모두 반영
 - 스토리텔링 형식으로 독자가 몰입할 수 있게 작성
 - 섹션은 3~5개, 각 섹션은 소제목 + 2~4문단
-- 인사이트는 핵심적인 것 3~5개
-
-자막 (최대 8000자):
-{transcript[:8000]}
+- 핵심 인사이트 3~5개 (영상에서 가장 중요한 메시지)
 
 반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트 없이 JSON만:
-{{
+{
   "title": "임팩트 있는 제목",
   "summary": "핵심 메시지를 담은 한 문장",
   "sections": [
-    {{"heading": "섹션 소제목", "content": "섹션 내용 (2~4문단, 줄바꿈은 \\n\\n 사용)"}}
+    {"heading": "섹션 소제목", "content": "섹션 내용 (2~4문단, 줄바꿈은 \\n\\n 사용)"}
   ],
   "insights": ["인사이트1", "인사이트2", "인사이트3"]
-}}"""
+}"""
 
     body = {
-        "contents": [{"parts": [{"text": prompt}]}],
-        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 4096}
+        "contents": [{
+            "parts": [
+                {
+                    "fileData": {
+                        "mimeType": "video/*",
+                        "fileUri": youtube_url
+                    }
+                },
+                {"text": prompt}
+            ]
+        }],
+        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 8192}
     }
 
-    r = requests.post(GEMINI_URL.format(api_key), json=body, timeout=60)
+    r = requests.post(GEMINI_URL.format(api_key), json=body, timeout=120)
     r.raise_for_status()
 
     text = r.json()['candidates'][0]['content']['parts'][0]['text'].strip()
@@ -115,11 +106,8 @@ def main():
         print("❌ 유효하지 않은 YouTube URL입니다.")
         sys.exit(1)
 
-    print("자막 추출 중...")
-    transcript = get_transcript(video_id)
-
-    print("Gemini 리포트 생성 중...")
-    report_data = generate_report_with_gemini(transcript, video_id)
+    print("Gemini 영상 직접 분석 중...")
+    report_data = generate_report_with_gemini(url)
 
     now = datetime.now(KST)
     report = {
