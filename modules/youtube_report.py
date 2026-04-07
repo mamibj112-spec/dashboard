@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-YouTube 딥리포트 생성기 (Gemini 영상 직접 분석)
+YouTube 딥리포트 생성기 (자막 텍스트 → Gemini 분석)
 Usage: python modules/youtube_report.py <youtube_url>
 """
 import sys
@@ -14,6 +14,7 @@ from pathlib import Path
 
 try:
     import pytz
+    from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 except ImportError as e:
     print(f"패키지 없음: {e}")
     print("먼저 실행: pip install -r requirements.txt")
@@ -29,60 +30,67 @@ def get_video_id(url):
     return match.group(1) if match else None
 
 
-def normalize_youtube_url(url):
-    """Shorts 등 비표준 URL을 표준 watch URL로 변환"""
-    video_id = get_video_id(url)
-    if video_id:
-        return f'https://www.youtube.com/watch?v={video_id}'
-    return url
+def get_transcript(video_id):
+    """자막 가져오기 — 한국어 우선, 없으면 영어, 없으면 자동생성 순"""
+    try:
+        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+
+        for lang in ['ko', 'en']:
+            try:
+                t = transcript_list.find_transcript([lang])
+                entries = t.fetch()
+                return ' '.join(e['text'] for e in entries)
+            except Exception:
+                continue
+
+        # 자동 생성 자막 시도
+        for t in transcript_list:
+            entries = t.fetch()
+            return ' '.join(e['text'] for e in entries)
+
+    except (NoTranscriptFound, TranscriptsDisabled):
+        return None
+    except Exception:
+        return None
 
 
-def generate_report_with_gemini(youtube_url):
+def generate_report_with_gemini(video_id, transcript):
     api_key = os.environ.get('GEMINI_API_KEY')
     if not api_key:
         raise Exception("GEMINI_API_KEY 환경변수가 없습니다.")
-    youtube_url = normalize_youtube_url(youtube_url)
 
-    prompt = """이 YouTube 영상을 깊이 있게 분석하여 스토리텔링형 리포트를 작성해주세요.
+    prompt = f"""아래는 YouTube 영상의 자막 텍스트입니다. 이를 바탕으로 깊이 있는 스토리텔링형 리포트를 작성해주세요.
+
+자막:
+{transcript[:12000]}
 
 요구사항:
 - 단순 요약이 아닌 맥락, 의미, 시사점을 깊이 있게 서술
-- 영상의 시각 자료, 발표 내용, 강조점, 흐름까지 모두 반영
+- 발표 내용, 강조점, 흐름을 모두 반영
 - 스토리텔링 형식으로 독자가 몰입할 수 있게 작성
 - 섹션은 3~5개, 각 섹션은 소제목 + 2~4문단
-- 핵심 인사이트 3~5개 (영상에서 가장 중요한 메시지)
+- 핵심 인사이트 3~5개 (가장 중요한 메시지)
 
 반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트 없이 JSON만:
-{
+{{
   "title": "임팩트 있는 제목",
   "summary": "핵심 메시지를 담은 한 문장",
   "sections": [
-    {"heading": "섹션 소제목", "content": "섹션 내용 (2~4문단, 줄바꿈은 \\n\\n 사용)"}
+    {{"heading": "섹션 소제목", "content": "섹션 내용 (2~4문단, 줄바꿈은 \\n\\n 사용)"}}
   ],
   "insights": ["인사이트1", "인사이트2", "인사이트3"]
-}"""
+}}"""
 
     body = {
-        "contents": [{
-            "parts": [
-                {
-                    "fileData": {
-                        "mimeType": "video/*",
-                        "fileUri": youtube_url
-                    }
-                },
-                {"text": prompt}
-            ]
-        }],
+        "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"temperature": 0.7, "maxOutputTokens": 8192}
     }
 
-    r = requests.post(GEMINI_URL.format(api_key), json=body, timeout=300)
+    r = requests.post(GEMINI_URL.format(api_key), json=body, timeout=120)
     r.raise_for_status()
 
     text = r.json()['candidates'][0]['content']['parts'][0]['text'].strip()
 
-    # JSON 추출
     json_match = re.search(r'\{.*\}', text, re.DOTALL)
     if not json_match:
         raise Exception("Gemini 응답에서 JSON을 파싱할 수 없습니다.")
@@ -115,8 +123,15 @@ def main():
         print("❌ 유효하지 않은 YouTube URL입니다.")
         sys.exit(1)
 
-    print("Gemini 영상 직접 분석 중...")
-    report_data = generate_report_with_gemini(url)
+    print("자막 추출 중...")
+    transcript = get_transcript(video_id)
+    if not transcript:
+        print("❌ 자막을 가져올 수 없습니다. (자막 없는 영상)")
+        sys.exit(1)
+    print(f"자막 추출 완료: {len(transcript)}자")
+
+    print("Gemini 분석 중...")
+    report_data = generate_report_with_gemini(video_id, transcript)
 
     now = datetime.now(KST)
     report = {
@@ -131,7 +146,7 @@ def main():
     }
 
     reports = load_reports()
-    reports.insert(0, report)  # 최신순
+    reports.insert(0, report)
     save_reports(reports)
 
     print(f"✅ 저장 완료: {REPORTS_PATH}")
