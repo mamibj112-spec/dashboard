@@ -1009,7 +1009,7 @@ def _make_reports_html(reports):
     return '\n'.join(items)
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, reports=None, github_pat=''):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, reports=None):
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
 
@@ -1576,6 +1576,15 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 
   <div class="section">
+    <div class="section-label">GitHub PAT 설정</div>
+    <div class="yt-input-row">
+      <input id="ytPat" type="password" class="yt-input" placeholder="GitHub PAT (최초 1회 입력, 브라우저에 저장됨)">
+      <button class="yt-gen-btn" onclick="ytSavePat()">저장</button>
+    </div>
+    <div id="ytPatStatus" class="yt-status"></div>
+  </div>
+
+  <div class="section">
     <div class="section-label">새 리포트 생성</div>
     <div class="yt-input-row">
       <input id="ytUrl" type="url" class="yt-input" placeholder="https://youtube.com/watch?v=...">
@@ -1667,15 +1676,28 @@ function closeMacroChart(){{
   }});
 }})();
 var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',yt:'📺 YouTube 딥리포트'}};
-var _YT_PAT='{github_pat}';
+(function(){{
+  var pat=localStorage.getItem('yt_gh_pat');
+  if(pat){{document.getElementById('ytPatStatus').textContent='✅ PAT 저장됨';}}
+  else{{document.getElementById('ytPatStatus').textContent='⚠️ PAT 미설정 — 위에 입력 후 저장해주세요';}}
+}})();
+function ytSavePat(){{
+  var pat=document.getElementById('ytPat').value.trim();
+  if(!pat){{alert('PAT를 입력해주세요');return;}}
+  localStorage.setItem('yt_gh_pat',pat);
+  document.getElementById('ytPat').value='';
+  document.getElementById('ytPatStatus').textContent='✅ PAT 저장됨';
+}}
 function ytGenerate(){{
+  var pat=localStorage.getItem('yt_gh_pat');
+  if(!pat){{alert('먼저 GitHub PAT를 설정해주세요');return;}}
   var url=document.getElementById('ytUrl').value.trim();
   if(!url){{alert('YouTube URL을 입력해주세요');return;}}
   var st=document.getElementById('ytStatus');
   st.textContent='요청 중...';
   fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/youtube_report.yml/dispatches',{{
     method:'POST',
-    headers:{{'Authorization':'token '+_YT_PAT,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}},
+    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}},
     body:JSON.stringify({{ref:'main',inputs:{{youtube_url:url}}}})
   }}).then(function(r){{
     if(r.status===204){{
@@ -1744,9 +1766,7 @@ def main():
 
     reports_path = Path(__file__).parent / 'reports.json'
     reports = json.loads(reports_path.read_text(encoding='utf-8')) if reports_path.exists() else []
-    github_pat = os.environ.get('GH_PAT', '')
-
-    html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, reports=reports, github_pat=github_pat)
+    html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, reports=reports)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
