@@ -1027,9 +1027,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .yt-ins-list{margin-top:10px;padding-left:0;list-style:none;border-top:1px solid var(--border);padding-top:8px}
 .yt-ins{font-size:11.5px;color:var(--t2);padding:5px 0 5px 16px;position:relative}
 .yt-ins::before{content:'→';position:absolute;left:0;color:var(--blue)}
-.us-grid{display:flex;gap:8px;padding:4px 0 12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
-.us-grid::-webkit-scrollbar{display:none}
-.us-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;min-width:145px;flex-shrink:0}
+.us-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:4px 0 12px}
+.us-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
 .us-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .us-name-wrap{display:flex;flex-direction:column}
 .us-name{font-size:10px;color:var(--t3);font-weight:600}
