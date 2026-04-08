@@ -8,6 +8,10 @@ on:
     - cron: '30 21 * * *'
   workflow_dispatch:  # 수동 실행 버튼
 
+concurrency:
+  group: dashboard-update
+  cancel-in-progress: true
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -38,5 +42,5 @@ jobs:
           git config user.email "bot@dashboard.local"
           git add index.html icon-192.png icon-512.png || true
           git diff --staged --quiet || git commit -m "대시보드 업데이트 $(TZ='Asia/Seoul' date '+%Y년 %m월 %d일 %H:%M')"
-          git pull --rebase origin main
+          git pull --rebase -X theirs origin main
           git push
