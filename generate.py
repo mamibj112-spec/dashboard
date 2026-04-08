@@ -2312,7 +2312,7 @@ function renderWatchlist(q){{
     var cls=s.change_pct>=0?'up':'dn';
     var sign=s.change_pct>=0?'+':'';
     var cur=s.currency==='KRW'?'₩':'$';
-    return'<div class="wl-card" onclick="showStock(\''+s.ticker+'\')">'+
+    return'<div class="wl-card" data-ticker="'+s.ticker+'" onclick="showStock(this.dataset.ticker)">'+
       '<div class="wl-card-top">'+
         '<div><div class="wl-name">'+s.name+'</div>'+
         '<div class="wl-ticker"><span class="wl-mkt-badge">'+s.market+'</span> '+s.ticker+'</div></div>'+
