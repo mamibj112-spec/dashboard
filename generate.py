@@ -814,8 +814,9 @@ def _fetch_ticker_news(yf_ticker, limit=5):
 
 
 def fetch_watchlist_data(watchlist):
-    """관심 종목 상세 데이터 수집 (yfinance)"""
+    """관심 종목 상세 데이터 수집 (yfinance 5년 히스토리)"""
     import pandas as _pd
+    from datetime import datetime as _dt2
     results = []
     for item in watchlist:
         ticker = item['ticker']
@@ -824,86 +825,165 @@ def fetch_watchlist_data(watchlist):
         try:
             t    = yf.Ticker(ticker)
             info = t.info
-            hist = t.history(period='1y')
+            hist = t.history(period='5y')
             if hist.empty or len(hist) < 2:
-                print(f"  [{ticker}] 히스토리 없음")
-                continue
+                print(f"  [{ticker}] 히스토리 없음"); continue
+
             closes = hist['Close'].tolist()
+            highs  = hist['High'].tolist()
+            lows   = hist['Low'].tolist()
             curr   = closes[-1]
             prev   = closes[-2]
             change     = round(curr - prev, 4)
             change_pct = round(change / prev * 100, 2) if prev else 0
+            currency   = info.get('currency', 'USD')
 
-            # RSI
-            rsi = round(calculate_rsi(closes), 1)
-
-            # SMA vs 현재가 괴리율
-            s = _pd.Series(closes)
-            def sma_gap(n):
-                if len(closes) < n: return None
-                v = s.rolling(n).mean().iloc[-1]
-                return round((curr - v) / v * 100, 2) if v else None
-
-            # 기간별 수익률
-            def ret(days):
-                if len(closes) < days + 1: return None
-                old = closes[-(days + 1)]
-                return round((curr - old) / old * 100, 2) if old else None
-
-            currency = info.get('currency', 'USD')
-            mc = info.get('marketCap')
-            def fmt_cap(v):
+            # ── 헬퍼 ──
+            def _r(key, dec=2):
+                v = info.get(key)
+                return round(v, dec) if v is not None else None
+            def _pf(key):
+                v = info.get(key)
+                return round(v * 100, 2) if v is not None else None
+            def _cap(v):
                 if v is None: return 'N/A'
                 if currency == 'KRW':
                     return f'{v/1e12:.1f}조원' if v >= 1e12 else f'{v/1e8:.0f}억원'
                 if v >= 1e12: return f'${v/1e12:.2f}T'
                 if v >= 1e9:  return f'${v/1e9:.1f}B'
                 return f'${v/1e6:.0f}M'
+            def _cash(v):
+                if v is None: return 'N/A'
+                if currency == 'KRW':
+                    return f'{v/1e8:.0f}억원'
+                if v >= 1e9: return f'${v/1e9:.1f}B'
+                return f'${v/1e6:.0f}M'
 
-            def pct_fmt(v):
-                return round(v * 100, 2) if v is not None else None
+            # ── RSI ──
+            rsi = round(calculate_rsi(closes), 1)
+
+            # ── SMA 괴리율 ──
+            s = _pd.Series(closes)
+            def sma_gap(n):
+                if len(closes) < n: return None
+                v = s.rolling(n).mean().iloc[-1]
+                return round((curr - v) / v * 100, 2) if v else None
+
+            # ── 기간별 수익률 ──
+            def ret(days):
+                if len(closes) < days + 1: return None
+                old = closes[-(days + 1)]
+                return round((curr - old) / old * 100, 2) if old else None
+
+            # YTD
+            try:
+                year_start = _dt2(hist.index[-1].year, 1, 1)
+                ytd_closes = [c for d2, c in zip(hist.index, closes) if d2.replace(tzinfo=None) >= year_start]
+                ret_ytd = round((curr - ytd_closes[0]) / ytd_closes[0] * 100, 2) if ytd_closes else None
+            except:
+                ret_ytd = None
+
+            ret_3y = round((curr - closes[-(252*3+1)]) / closes[-(252*3+1)] * 100, 2) if len(closes) >= 252*3+1 else None
+            ret_5y = round((curr - closes[0]) / closes[0] * 100, 2) if len(closes) >= 252*4 else None
+
+            # ── ATR(14) ──
+            try:
+                atrs = []
+                for i in range(1, min(15, len(closes))):
+                    tr = max(highs[-i] - lows[-i],
+                             abs(highs[-i] - closes[-i-1]),
+                             abs(lows[-i]  - closes[-i-1]))
+                    atrs.append(tr)
+                atr = round(sum(atrs) / len(atrs), 2) if atrs else None
+            except:
+                atr = None
+
+            # ── 변동성 (연율화) ──
+            try:
+                import math as _math
+                rets = _pd.Series(closes).pct_change().dropna()
+                vol_weekly  = round(float(rets.tail(52).std()  * _math.sqrt(52)  * 100), 2)
+                vol_monthly = round(float(rets.tail(252).std() * _math.sqrt(252) * 100), 2)
+            except:
+                vol_weekly = vol_monthly = None
+
+            # ── 상대 거래량 ──
+            vol   = info.get('volume') or info.get('regularMarketVolume')
+            avg_v = info.get('averageVolume')
+            rel_vol = round(vol / avg_v, 2) if vol and avg_v else None
+
+            # ── IPO 날짜 ──
+            try:
+                ipo_ts = info.get('firstTradeDateEpochUtc') or info.get('firstTradeDate')
+                ipo_date = _dt2.fromtimestamp(ipo_ts).strftime('%Y-%m-%d') if ipo_ts else None
+            except:
+                ipo_date = None
 
             results.append({
-                'ticker':       ticker,
-                'name':         name,
-                'market':       market,
-                'price':        round(curr, 4),
-                'change':       change,
-                'change_pct':   change_pct,
-                'currency':     currency,
-                'market_cap':   fmt_cap(mc),
-                'pe':           round(info.get('trailingPE'), 2)    if info.get('trailingPE')  else None,
-                'forward_pe':   round(info.get('forwardPE'), 2)     if info.get('forwardPE')   else None,
-                'pb':           round(info.get('priceToBook'), 2)   if info.get('priceToBook') else None,
-                'peg':          round(info.get('pegRatio'), 2)      if info.get('pegRatio')    else None,
-                'eps':          round(info.get('trailingEps'), 4)   if info.get('trailingEps') else None,
-                'target':       round(info.get('targetMeanPrice'),2) if info.get('targetMeanPrice') else None,
-                'high52':       round(info.get('fiftyTwoWeekHigh'), 4) if info.get('fiftyTwoWeekHigh') else None,
-                'low52':        round(info.get('fiftyTwoWeekLow'), 4)  if info.get('fiftyTwoWeekLow')  else None,
-                'beta':         round(info.get('beta'), 2)           if info.get('beta')        else None,
-                'volume':       info.get('volume'),
-                'avg_volume':   info.get('averageVolume'),
-                'div_yield':    pct_fmt(info.get('dividendYield')),
-                'op_margin':    pct_fmt(info.get('operatingMargins')),
-                'profit_margin':pct_fmt(info.get('profitMargins')),
-                'gross_margin': pct_fmt(info.get('grossMargins')),
-                'roe':          pct_fmt(info.get('returnOnEquity')),
-                'roa':          pct_fmt(info.get('returnOnAssets')),
-                'current_ratio':round(info.get('currentRatio'), 2)  if info.get('currentRatio') else None,
-                'debt_equity':  round(info.get('debtToEquity'), 2)  if info.get('debtToEquity') else None,
-                'sector':       info.get('sector', ''),
-                'industry':     info.get('industry', ''),
-                'desc':         (info.get('longBusinessSummary') or '')[:180],
-                'rsi':          rsi,
-                'sma20_gap':    sma_gap(20),
-                'sma50_gap':    sma_gap(50),
-                'sma200_gap':   sma_gap(200),
-                'ret_1w':       ret(5),
-                'ret_1m':       ret(21),
-                'ret_3m':       ret(63),
-                'ret_6m':       ret(126),
-                'ret_1y':       round((curr - closes[0]) / closes[0] * 100, 2) if closes[0] else None,
-                'news':         translate_news_to_korean(_fetch_ticker_news(t)),
+                # 기본
+                'ticker': ticker, 'name': name, 'market': market,
+                'price': round(curr, 4), 'change': change, 'change_pct': change_pct,
+                'currency': currency,
+                # 주요지표
+                'market_cap':   _cap(info.get('marketCap')),
+                'ev':           _cap(info.get('enterpriseValue')),
+                'pe':           _r('trailingPE'),
+                'forward_pe':   _r('forwardPE'),
+                'pb':           _r('priceToBook'),
+                'ps':           _r('priceToSalesTrailing12Months'),
+                'peg':          _r('pegRatio'),
+                'eps':          _r('trailingEps', 4),
+                'shares_out':   _cap(info.get('sharesOutstanding')),
+                'float_shares': _cap(info.get('floatShares')),
+                # 수익성
+                'op_margin':    _pf('operatingMargins'),
+                'profit_margin':_pf('profitMargins'),
+                'gross_margin': _pf('grossMargins'),
+                'roe':          _pf('returnOnEquity'),
+                'roa':          _pf('returnOnAssets'),
+                # 성장성
+                'rev_growth':   _pf('revenueGrowth'),
+                'earn_growth':  _pf('earningsGrowth'),
+                'rev_q_growth': _pf('revenueQuarterlyGrowth'),
+                'earn_q_growth':_pf('earningsQuarterlyGrowth'),
+                # 재무건전성
+                'current_ratio':_r('currentRatio'),
+                'quick_ratio':  _r('quickRatio'),
+                'debt_equity':  _r('debtToEquity'),
+                'total_debt':   _cash(info.get('totalDebt')),
+                'total_cash':   _cash(info.get('totalCash')),
+                'fcf':          _cash(info.get('freeCashflow')),
+                # 배당
+                'div_yield':    _pf('dividendYield'),
+                'div_rate':     _r('dividendRate', 4),
+                'payout_ratio': _pf('payoutRatio'),
+                'ex_div_date':  str(info.get('exDividendDate',''))[:10] if info.get('exDividendDate') else None,
+                # 주가 성과
+                'high52': _r('fiftyTwoWeekHigh', 4), 'low52': _r('fiftyTwoWeekLow', 4),
+                'target': _r('targetMeanPrice'),
+                'ret_1w': ret(5),  'ret_1m': ret(21), 'ret_3m': ret(63),
+                'ret_6m': ret(126),'ret_ytd': ret_ytd,'ret_1y': ret(252),
+                'ret_3y': ret_3y,  'ret_5y': ret_5y,
+                # 기술적지표
+                'rsi': rsi, 'beta': _r('beta'),
+                'sma20_gap': sma_gap(20), 'sma50_gap': sma_gap(50), 'sma200_gap': sma_gap(200),
+                'atr': atr, 'vol_weekly': vol_weekly, 'vol_monthly': vol_monthly,
+                # 거래정보
+                'volume': vol, 'avg_volume': avg_v, 'rel_volume': rel_vol,
+                'exchange': info.get('exchange',''),
+                # 지분구조
+                'inst_pct':    _pf('institutionsPercentHeld'),
+                'insider_pct': _pf('heldPercentInsiders'),
+                'short_float': _pf('shortPercentOfFloat'),
+                # 기타
+                'sector': info.get('sector',''), 'industry': info.get('industry',''),
+                'employees': info.get('fullTimeEmployees'),
+                'country':   info.get('country',''),
+                'ipo_date':  ipo_date,
+                'website':   info.get('website',''),
+                'desc':      (info.get('longBusinessSummary') or '')[:250],
+                # 뉴스
+                'news': translate_news_to_korean(_fetch_ticker_news(t)),
             })
             print(f"  [{ticker}] 수집 완료")
         except Exception as e:
@@ -2242,60 +2322,106 @@ function showStock(ticker){{
   var p=s.price.toLocaleString(undefined,{{maximumFractionDigits:2}});
   function row(label,val){{return'<div class="sk-row"><span class="sk-label">'+label+'</span><span class="sk-val">'+val+'</span></div>';}}
   function sec(label){{return'<div class="sk-sec">'+label+'</div>';}}
+  function v(x,suf){{return x!==null&&x!==undefined?x+(suf||''):'N/A';}}
+  function pv(x){{
+    if(x===null||x===undefined)return'N/A';
+    var c=x>=0?'var(--up)':'var(--dn)';
+    return'<span style="color:'+c+'">'+(x>=0?'+':'')+x+'%</span>';
+  }}
   var html=
+    // ── 헤더 ──
     '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">'+
       '<div>'+
         '<div style="font-size:15px;font-weight:700;color:var(--t1);">'+s.name+'</div>'+
-        '<div style="font-size:10.5px;color:var(--t3);margin-top:2px;"><span class="wl-mkt-badge">'+s.market+'</span> '+s.ticker+(s.sector?' · '+s.sector:'')+'</div>'+
+        '<div style="font-size:10.5px;color:var(--t3);margin-top:2px;">'+
+          '<span class="wl-mkt-badge">'+s.market+'</span> '+s.ticker+
+          (s.exchange?' · '+s.exchange:'')+
+          (s.sector?' · '+s.sector:'')+
+        '</div>'+
       '</div>'+
       '<button onclick="closeStockModal()" style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;padding:0;line-height:1;">✕</button>'+
     '</div>'+
-    '<div style="background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:12px;">'+
+    // ── 가격 카드 ──
+    '<div style="background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:4px;">'+
       '<div class="sk-price '+cls+'-txt">'+cur+p+'</div>'+
       '<div style="font-size:12px;color:var(--'+cls+');margin-top:2px;">'+sign+s.change_pct.toFixed(2)+'% ('+sign+cur+Math.abs(s.change).toFixed(2)+')</div>'+
-      '<div style="font-size:10px;color:var(--t3);margin-top:6px;">시총 '+s.market_cap+' &nbsp;|&nbsp; 52주 '+cur+(s.low52||'N/A')+' ~ '+cur+(s.high52||'N/A')+'</div>'+
-      (s.target?'<div style="font-size:10px;color:var(--t3);margin-top:2px;">목표주가 '+cur+s.target+' &nbsp;|&nbsp; 베타 '+(s.beta||'N/A')+'</div>':'')+
+      '<div style="font-size:10px;color:var(--t3);margin-top:6px;">시총 '+s.market_cap+' &nbsp;|&nbsp; EV '+s.ev+'</div>'+
+      '<div style="font-size:10px;color:var(--t3);margin-top:3px;">52주 '+cur+(s.low52||'N/A')+' ~ '+cur+(s.high52||'N/A')+'</div>'+
+      (s.target?'<div style="font-size:10px;color:var(--t3);margin-top:3px;">목표주가 '+cur+s.target+'</div>':'')+
     '</div>'+
-    sec('수익률')+
-    '<div class="perf-grid">'+
-      ['1W','1M','3M','6M','1Y'].map(function(p,i){{
-        var v=[s.ret_1w,s.ret_1m,s.ret_3m,s.ret_6m,s.ret_1y][i];
-        var c=v===null||v===undefined?'var(--t3)':v>=0?'var(--up)':'var(--dn)';
-        var tx=v===null||v===undefined?'N/A':(v>=0?'+':'')+v.toFixed(1)+'%';
-        return'<div class="perf-cell"><div class="perf-period">'+p+'</div><div class="perf-val" style="color:'+c+'">'+tx+'</div></div>';
+    // ── 1. 주요 지표 ──
+    sec('📊 주요 지표')+
+    row('P/E (TTM)',v(s.pe))+row('Forward P/E',v(s.forward_pe))+
+    row('P/B',v(s.pb))+row('P/S',v(s.ps))+row('PEG',v(s.peg))+
+    row('EPS (TTM)',s.eps!==null?cur+s.eps:'N/A')+
+    row('유통주식수',v(s.float_shares))+row('발행주식수',v(s.shares_out))+
+    // ── 2. 수익성 ──
+    sec('💰 수익성')+
+    row('영업이익률',v(s.op_margin,'%'))+row('순이익률',v(s.profit_margin,'%'))+
+    row('매출총이익률',v(s.gross_margin,'%'))+row('ROE',v(s.roe,'%'))+row('ROA',v(s.roa,'%'))+
+    // ── 3. 성장성 ──
+    sec('📈 성장성 (YoY)')+
+    row('매출 성장률',pv(s.rev_growth))+row('이익 성장률',pv(s.earn_growth))+
+    row('분기 매출 성장',pv(s.rev_q_growth))+row('분기 이익 성장',pv(s.earn_q_growth))+
+    // ── 4. 재무 건전성 ──
+    sec('🏦 재무 건전성')+
+    row('유동비율',v(s.current_ratio))+row('당좌비율',v(s.quick_ratio))+
+    row('부채비율(D/E)',v(s.debt_equity))+row('총부채',v(s.total_debt))+
+    row('현금성 자산',v(s.total_cash))+row('잉여현금흐름',v(s.fcf))+
+    // ── 5. 배당 ──
+    sec('💵 배당')+
+    row('배당수익률',s.div_yield?s.div_yield+'%':'없음')+
+    row('주당 배당금',s.div_rate?cur+s.div_rate:'없음')+
+    row('배당성향',s.payout_ratio?s.payout_ratio+'%':'N/A')+
+    row('배당락일',v(s.ex_div_date))+
+    // ── 6. 주가 성과 ──
+    sec('📉 주가 성과')+
+    '<div class="perf-grid" style="grid-template-columns:repeat(4,1fr);">'+
+      ['1W','1M','3M','6M'].map(function(lbl,i){{
+        var rv=[s.ret_1w,s.ret_1m,s.ret_3m,s.ret_6m][i];
+        var c=rv===null||rv===undefined?'var(--t3)':rv>=0?'var(--up)':'var(--dn)';
+        return'<div class="perf-cell"><div class="perf-period">'+lbl+'</div><div class="perf-val" style="color:'+c+'">'+(rv!==null&&rv!==undefined?(rv>=0?'+':'')+rv.toFixed(1)+'%':'N/A')+'</div></div>';
       }}).join('')+
     '</div>'+
-    sec('기술적 분석')+
-    row('RSI (14)',s.rsi)+
-    row('SMA 20 괴리율',s.sma20_gap!==null&&s.sma20_gap!==undefined?(s.sma20_gap>=0?'+':'')+s.sma20_gap+'%':'N/A')+
-    row('SMA 50 괴리율',s.sma50_gap!==null&&s.sma50_gap!==undefined?(s.sma50_gap>=0?'+':'')+s.sma50_gap+'%':'N/A')+
-    row('SMA 200 괴리율',s.sma200_gap!==null&&s.sma200_gap!==undefined?(s.sma200_gap>=0?'+':'')+s.sma200_gap+'%':'N/A')+
-    sec('밸류에이션')+
-    row('P/E (TTM)',_fmt(s.pe))+
-    row('Forward P/E',_fmt(s.forward_pe))+
-    row('P/B',_fmt(s.pb))+
-    row('PEG',_fmt(s.peg))+
-    row('EPS (TTM)',s.eps!==null&&s.eps!==undefined?cur+s.eps:'N/A')+
-    sec('수익성')+
-    row('영업이익률',s.op_margin!==null?s.op_margin+'%':'N/A')+
-    row('순이익률',s.profit_margin!==null?s.profit_margin+'%':'N/A')+
-    row('매출총이익률',s.gross_margin!==null?s.gross_margin+'%':'N/A')+
-    row('ROE',s.roe!==null?s.roe+'%':'N/A')+
-    row('ROA',s.roa!==null?s.roa+'%':'N/A')+
-    sec('재무 건전성')+
-    row('유동비율',_fmt(s.current_ratio))+
-    row('부채비율',_fmt(s.debt_equity))+
-    row('배당수익률',s.div_yield!==null&&s.div_yield!==0?s.div_yield+'%':'없음')+
-    (s.desc?'<div style="font-size:10.5px;color:var(--t3);margin-top:12px;line-height:1.6;">'+s.desc+'</div>':'')+
+    '<div class="perf-grid" style="grid-template-columns:repeat(4,1fr);margin-top:4px;">'+
+      ['YTD','1Y','3Y','5Y'].map(function(lbl,i){{
+        var rv=[s.ret_ytd,s.ret_1y,s.ret_3y,s.ret_5y][i];
+        var c=rv===null||rv===undefined?'var(--t3)':rv>=0?'var(--up)':'var(--dn)';
+        return'<div class="perf-cell"><div class="perf-period">'+lbl+'</div><div class="perf-val" style="color:'+c+'">'+(rv!==null&&rv!==undefined?(rv>=0?'+':'')+rv.toFixed(1)+'%':'N/A')+'</div></div>';
+      }}).join('')+
+    '</div>'+
+    // ── 7. 기술적 지표 ──
+    sec('🔧 기술적 지표')+
+    row('RSI (14)',v(s.rsi))+row('베타',v(s.beta))+
+    row('ATR (14)',s.atr!==null?cur+s.atr:'N/A')+
+    row('변동성 (주간)',v(s.vol_weekly,'%'))+row('변동성 (월간)',v(s.vol_monthly,'%'))+
+    row('SMA20 괴리율',pv(s.sma20_gap))+row('SMA50 괴리율',pv(s.sma50_gap))+row('SMA200 괴리율',pv(s.sma200_gap))+
+    // ── 8. 거래 정보 ──
+    sec('📋 거래 정보')+
+    row('거래량',s.volume?s.volume.toLocaleString():'N/A')+
+    row('평균 거래량(3M)',s.avg_volume?s.avg_volume.toLocaleString():'N/A')+
+    row('상대 거래량',v(s.rel_volume))+
+    row('거래소',v(s.exchange))+
+    // ── 9. 지분 구조 ──
+    sec('👥 지분 구조')+
+    row('기관 보유',v(s.inst_pct,'%'))+row('내부자 보유',v(s.insider_pct,'%'))+row('공매도 비율',v(s.short_float,'%'))+
+    // ── 10. 기타 정보 ──
+    sec('ℹ️ 기타 정보')+
+    row('업종',v(s.sector))+row('세부 업종',v(s.industry))+
+    row('국가',v(s.country))+row('임직원 수',s.employees?s.employees.toLocaleString()+'명':'N/A')+
+    row('상장일',v(s.ipo_date))+
+    (s.website?row('웹사이트','<a href="'+s.website+'" target="_blank" style="color:var(--blue)">'+s.website.replace('https://','')+'</a>'):'')+
+    (s.desc?'<div style="font-size:10.5px;color:var(--t3);margin-top:10px;line-height:1.6;padding:8px;background:var(--bg);border-radius:8px;">'+s.desc+'</div>':'')+
+    // ── 관련 뉴스 ──
     (s.news&&s.news.length?
-      sec('관련 뉴스')+
+      sec('📰 관련 뉴스')+
       s.news.map(function(n){{
         return'<a href="'+n.link+'" target="_blank" style="display:block;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);">'+
           '<div style="font-size:12px;color:var(--t1);line-height:1.5;margin-bottom:3px;">'+n.title+'</div>'+
           '<div style="font-size:10px;color:var(--t3);">'+n.publisher+(n.date?' · '+n.date:'')+'</div>'+
         '</a>';
       }}).join('')
-    : '');
+    :'');
   document.getElementById('stockModal').innerHTML=html;
   document.getElementById('stockOverlay').style.display='block';
   setTimeout(function(){{
