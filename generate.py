@@ -932,6 +932,7 @@ def fetch_watchlist_data(watchlist):
                 'pb':           _r('priceToBook'),
                 'ps':           _r('priceToSalesTrailing12Months'),
                 'peg':          _r('pegRatio'),
+                'ev_ebitda':    _r('enterpriseToEbitda'),
                 'eps':          _r('trailingEps', 4),
                 'shares_out':   _cap(info.get('sharesOutstanding')),
                 'float_shares': _cap(info.get('floatShares')),
@@ -2351,8 +2352,10 @@ function showStock(ticker){{
     '</div>'+
     // ── 1. 주요 지표 ──
     sec('📊 주요 지표')+
+    row('시가총액',v(s.market_cap))+
     row('P/E (TTM)',v(s.pe))+row('Forward P/E',v(s.forward_pe))+
-    row('P/B',v(s.pb))+row('P/S',v(s.ps))+row('PEG',v(s.peg))+
+    row('PEG',v(s.peg))+row('P/S',v(s.ps))+row('P/B',v(s.pb))+
+    row('EV/EBITDA',v(s.ev_ebitda))+
     row('EPS (TTM)',s.eps!==null?cur+s.eps:'N/A')+
     row('유통주식수',v(s.float_shares))+row('발행주식수',v(s.shares_out))+
     // ── 2. 수익성 ──
