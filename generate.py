@@ -865,6 +865,7 @@ def fetch_news():
         news[cat] = items[:7]
     # 해외 뉴스 한국어 번역
     if news.get('international'):
+        import time as _time; _time.sleep(5)
         news['international'] = translate_news_to_korean(news['international'])
     return news
 
@@ -2397,12 +2398,17 @@ def main():
     market   = fetch_market()
     news     = fetch_news()
     stocks   = fetch_market_stocks()
+    import time as _time
     ai_brief = fetch_ai_briefing(market, news)
+    _time.sleep(5)
     us_ai_brief = fetch_us_ai_briefing(market, news)
+    _time.sleep(5)
 
     research_reports = fetch_research_reports()
     research_summary = fetch_research_summary(research_reports)
+    _time.sleep(5)
     stock_story = fetch_stock_story(stocks)
+    _time.sleep(5)
 
     usdkrw_week = fetch_usdkrw_week()
     macro_hist  = fetch_macro_history()
