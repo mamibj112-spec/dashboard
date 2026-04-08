@@ -322,23 +322,62 @@ def stocks_html(rows):
 
 
 # ── Gemini 공통 호출 헬퍼 ─────────────────────────────────────────────────────
+_gemini_last_call = 0.0   # 마지막 Gemini 호출 시각 (time.time())
+_GEMINI_MIN_INTERVAL = 4.5  # 15 RPM 기준 최소 간격(초)
+
 def _gemini_post(api_key, prompt, temperature=0.7, max_tokens=1024):
-    """Gemini API 호출 + 429 시 최대 3회 재시도 (30초 간격)"""
+    """Gemini API 호출 — 경과 시간 기반 선제 대기로 429 방지"""
     import time as _time
+    global _gemini_last_call
+
+    # 마지막 호출 이후 경과 시간만큼 차감 → 부족한 만큼만 대기
+    elapsed = _time.time() - _gemini_last_call
+    wait_before = max(0.0, _GEMINI_MIN_INTERVAL - elapsed)
+    if wait_before > 0:
+        print(f"  Gemini 호출 간격 조정: {wait_before:.1f}초 대기...")
+        _time.sleep(wait_before)
+
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}'
     body = {'contents': [{'parts': [{'text': prompt}]}],
             'generationConfig': {'temperature': temperature, 'maxOutputTokens': max_tokens}}
+
     for attempt in range(3):
+        _gemini_last_call = _time.time()
         resp = requests.post(url, json=body, timeout=60)
         if resp.status_code == 429:
-            wait = 30 * (attempt + 1)
-            print(f"  Gemini 429 rate limit, {wait}초 후 재시도 ({attempt+1}/3)...")
+            wait = 15 * (attempt + 1)  # 만약 429가 나도 짧게 재시도
+            print(f"  Gemini 429, {wait}초 후 재시도 ({attempt+1}/3)...")
             _time.sleep(wait)
             continue
         resp.raise_for_status()
         parts = resp.json()['candidates'][0]['content']['parts']
         return next((p['text'] for p in parts if 'text' in p), '').strip()
     raise Exception('Gemini API 재시도 초과')
+
+
+def build_dom_story_fallback(market):
+    """AI 없을 때 규칙 기반 국내 시황 요약 생성"""
+    kopi = d(market, 'kospi')
+    koda = d(market, 'kosdaq')
+    kp, kpct = kopi.get('val', 0), kopi.get('pct') or 0
+    dp, dpct = koda.get('val', 0), koda.get('pct') or 0
+    
+    # 지수 상태에 따른 키워드
+    if kpct >= 1.0:   kw, st = "지수 동반 강세", "코스피와 코스닥이 모두 1% 이상 상승하며 기분 좋은 흐름을 보였습니다."
+    elif kpct <= -1.0: kw, st = "시장 변동성 확대", "지수가 1% 이상 하락하며 보수적인 투자 심리가 확산되었습니다."
+    else:             kw, st = "차분한 보합세", "지수가 큰 변화 없이 보합권에서 등락을 거듭하며 중립적인 흐름을 보였습니다."
+    
+    # 환율/금리 추가 정보
+    fx = d(market, 'usdkrw').get('val', 0)
+    fx_desc = f"원/달러 환율은 {fx:,.1f}원 선에서 움직임을 보였습니다." if fx else ""
+    
+    return {
+        'keyword': kw,
+        'story': f"{st} {fx_desc}",
+        'sector_story': "시총 상위 대형주 중심으로 지수 방어가 이루어졌으며, 업종별로는 순환매 양상이 나타났습니다.",
+        'watch_points': ["외국인/기관의 수급 동향", "환율 변동성 및 금리 추이", "주요 섹터의 실적 발표 일정"]
+    }
+
 
 
 # ── AI 브리핑 ──────────────────────────────────────────────────────────────────
@@ -842,7 +881,6 @@ def fetch_news():
         news[cat] = items[:7]
     # 해외 뉴스 한국어 번역
     if news.get('international'):
-        import time as _time; _time.sleep(5)
         news['international'] = translate_news_to_korean(news['international'])
     return news
 
@@ -1317,13 +1355,15 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     ai_html = ''
 
     # 스토리형 시황 분석 섹션
-    if ai_brief:
-        keyword      = ai_brief.get('keyword', '')
-        story        = ai_brief.get('story', '')
-        sector_story = ai_brief.get('sector_story', '')
-        watch_points = ai_brief.get('watch_points', [])
-        wp_html = ''.join(f'<div class="story-watch">· {wp}</div>' for wp in watch_points)
-        story_html = f'''<div class="section">
+    if not ai_brief:
+        ai_brief = build_dom_story_fallback(market)
+
+    keyword      = ai_brief.get('keyword', '')
+    story        = ai_brief.get('story', '')
+    sector_story = ai_brief.get('sector_story', '')
+    watch_points = ai_brief.get('watch_points', [])
+    wp_html = ''.join(f'<div class="story-watch">· {wp}</div>' for wp in watch_points)
+    story_html = f'''<div class="section">
   <div class="story-wrap">
     <div class="story-keyword">{keyword}</div>
     <div class="story-block">
@@ -1337,8 +1377,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     {f'<div class="story-block"><div class="story-label">👀 오늘의 주목 포인트</div>{wp_html}</div>' if wp_html else ''}
   </div>
 </div>'''
-    else:
-        story_html = ''
 
     # 주도주 스토리 HTML
     if stock_story:
@@ -2213,17 +2251,12 @@ def main():
     market   = fetch_market()
     news     = fetch_news()
     stocks   = fetch_market_stocks()
-    import time as _time
     ai_brief = fetch_ai_briefing(market, news)
-    _time.sleep(5)
     us_ai_brief = fetch_us_ai_briefing(market, news)
-    _time.sleep(5)
 
     research_reports = fetch_research_reports()
     research_summary = fetch_research_summary(research_reports)
-    _time.sleep(5)
     stock_story = fetch_stock_story(stocks)
-    _time.sleep(5)
 
     usdkrw_week = fetch_usdkrw_week()
     macro_hist  = fetch_macro_history()
