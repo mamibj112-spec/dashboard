@@ -50,6 +50,39 @@ TICKERS = {
     'vix':    '^VIX',
     'rut':    '^RUT',
     'soxx':   'SOXX',
+    'xlk':    'XLK',
+    'xle':    'XLE',
+    'xlv':    'XLV',
+    'xlp':    'XLP',
+    'xly':    'XLY',
+    'xlf':    'XLF',
+    'xli':    'XLI',
+    'xlb':    'XLB',
+    'xlre':   'XLRE',
+    'xlu':    'XLU',
+    'unh':    'UNH',
+    'avgo':   'AVGO',
+    'anet':   'ANET',
+    'wmt':    'WMT',
+    'arm':    'ARM',
+    'pfe':    'PFE',
+    'panw':   'PANW',
+    'intc':   'INTC',
+    'nvda':   'NVDA',
+    'aapl':   'AAPL',
+    'msft':   'MSFT',
+    'meta':   'META',
+}
+
+US_SECTOR_MAP = {
+    'xlk': 'IT/기술', 'xle': '에너지', 'xlv': '헬스케어', 'xlp': '필수소비재', 
+    'xly': '경기소비재', 'xlf': '금융', 'xli': '산업재', 'xlb': '소재', 
+    'xlre': '부동산', 'xlu': '유틸리티'
+}
+US_STOCK_MAP = {
+    'unh': '유나이티드헬스', 'avgo': '브로드컴', 'anet': '아리스타', 'wmt': '월마트', 
+    'arm': 'ARM', 'pfe': '화이자', 'panw': '팔로알토', 'intc': '인텔', 
+    'nvda': '엔비디아', 'aapl': '애플', 'msft': '마이크로소프트', 'meta': '메타'
 }
 
 def calculate_rsi(prices, period=14):
@@ -357,6 +390,81 @@ def fetch_ai_briefing(market, news):
         return None
     except Exception as e:
         print(f"  AI 브리핑 오류: {e}")
+        return None
+
+
+def fetch_us_ai_briefing(market, news):
+    """Gemini API로 미국 증시 AI 브리핑 생성"""
+    import os
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not api_key:
+        return None
+    try:
+        print("  해외 AI 브리핑 생성 중...")
+
+        def mv(name):
+            item = d(market, name)
+            v, pct = item.get('val'), item.get('pct') or 0
+            if v is None: return 'N/A'
+            sign = '▲' if pct >= 0 else '▼'
+            return f"{v:,.2f} ({sign}{abs(pct):.2f}%)"
+
+        sector_data = ""
+        for k, name in US_SECTOR_MAP.items():
+            sector_data += f"- {name}: {mv(k)}\n"
+
+        stock_data = ""
+        for k, name in US_STOCK_MAP.items():
+            stock_data += f"- {name}: {mv(k)}\n"
+
+        headlines = []
+        for item in news.get('international', [])[:6]:
+            headlines.append(item['title'])
+
+        prompt = f"""오늘 미국 주식시장 데이터 (현지 종가 기준):
+주요 지수:
+- S&P500: {mv('sp500')}
+- 나스닥: {mv('nasdaq')}
+- 다우존스: {mv('dow')}
+- VIX 공포지수: {mv('vix')}
+
+섹터별 동향:
+{sector_data}
+
+주요 종목 동향:
+{stock_data}
+
+주요 뉴스 헤드라인:
+{chr(10).join(f"- {h}" for h in headlines)}
+
+위 데이터를 바탕으로 단순 나열이 아닌, 지표 간 인과관계와 섹터/종목별 흐름이 있는 시황 분석을 작성하세요.
+한국어 뉴스레터 형식으로 작성하며, 투자자들이 오늘 무엇에 집중해야 했는지 명확히 설명하세요.
+아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
+{{
+  "keyword": "오늘 미국 시장 핵심 키워드 (이모지 포함, 20자 이내)",
+  "story": "전체적인 시장 분위기와 지수 움직임의 원인 (3~4문장)",
+  "sector_story": "섹터 및 주요 종목들의 특징적인 움직임과 이유 (3문장)",
+  "outlook": "향후 주목해야 할 이벤트나 투자 포인트 (2문장)"
+}}"""
+
+        resp = requests.post(
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
+            json={'contents': [{'parts': [{'text': prompt}]}],
+                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 1024}},
+            timeout=60
+        )
+        resp.raise_for_status()
+        parts = resp.json()['candidates'][0]['content']['parts']
+        text = next((p['text'] for p in parts if 'text' in p), '').strip()
+        import json, re
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            data = json.loads(m.group(0))
+            print(f"  해외 AI 브리핑 완료")
+            return data
+        return None
+    except Exception as e:
+        print(f"  해외 AI 브리핑 오류: {e}")
         return None
 
 
@@ -1048,6 +1156,29 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .fg-info{display:flex;flex-direction:column}
 .fg-label{font-size:10px;color:var(--t3);margin-bottom:2px}
 .fg-val-txt{font-size:18px;font-weight:800}
+.us-fg-banner{border-radius:12px;padding:14px 16px;margin-top:12px;display:flex;align-items:center;gap:14px}
+.us-fg-big{font-size:36px;line-height:1}
+.us-fg-right{flex:1}
+.us-fg-label{font-size:11px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;font-weight:600}
+.us-fg-score{font-size:28px;font-weight:800;line-height:1.1}
+.us-fg-desc{font-size:11px;margin-top:4px;opacity:.8}
+.sector-bar-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.sector-bar-row:last-child{border-bottom:none}
+.sector-bar-name{font-size:11px;color:var(--t2);width:72px;flex-shrink:0}
+.sector-bar-wrap{flex:1;height:12px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.sector-bar-fill{height:100%;border-radius:3px}
+.sector-bar-pct{font-size:10.5px;font-weight:700;width:48px;text-align:right;flex-shrink:0}
+.top3-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.top3-row:last-child{border-bottom:none}
+.top3-rank{font-size:11px;color:var(--t3);width:16px;flex-shrink:0;text-align:center}
+.top3-name{flex:1;font-size:12px;font-weight:600}
+.top3-ticker{font-size:10px;color:var(--t3);margin-top:1px}
+.top3-pct{font-size:13px;font-weight:700;flex-shrink:0}
+.tech-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.tech-row:last-child{border-bottom:none}
+.tech-name{font-size:11.5px;color:var(--t2)}
+.tech-val{font-size:11px;font-weight:600}
+.tech-sig{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700;margin-left:6px}
 """
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
@@ -1076,7 +1207,8 @@ def _make_reports_html(reports):
     return '\n'.join(items)
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, reports=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, reports=None, us_ai_brief=None):
+    """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
 
@@ -1298,6 +1430,165 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     else:
         us_fg_emoji, us_fg_label, us_fg_color = '🤑', '극탐욕', '#ef4444'
 
+    # 해외 AI 브리핑 HTML
+    if us_ai_brief:
+        u_kw   = us_ai_brief.get('keyword', '')
+        u_st   = us_ai_brief.get('story', '')
+        u_sec  = us_ai_brief.get('sector_story', '')
+        u_out  = us_ai_brief.get('outlook', '')
+        us_story_html = f'''<div class="section">
+  <div class="story-wrap" style="background: linear-gradient(135deg, rgba(77, 166, 255, 0.1), rgba(167, 139, 250, 0.05)); border-color: rgba(77, 166, 255, 0.3);">
+    <div class="story-keyword" style="color: var(--blue); border-bottom-color: rgba(77, 166, 255, 0.2);">{u_kw}</div>
+    <div class="story-block">
+      <div class="story-label" style="color: var(--blue);">🌍 시장 서사</div>
+      <div class="story-text">{u_st}</div>
+    </div>
+    <div class="story-block">
+      <div class="story-label" style="color: var(--blue);">📈 섹터/종목 흐름</div>
+      <div class="story-text">{u_sec}</div>
+    </div>
+    <div class="story-block">
+      <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
+      <div class="story-text">{u_out}</div>
+    </div>
+  </div>
+</div>'''
+    else:
+        us_story_html = ''
+
+    # 해외 섹터 HTML (색상 막대 바)
+    sector_pct_list = [abs(d(market, k).get('pct', 0)) for k in US_SECTOR_MAP]
+    max_sector_pct = max(sector_pct_list) if sector_pct_list else 5
+    us_sectors_html = ''
+    for k, name in US_SECTOR_MAP.items():
+        item = d(market, k)
+        pct = item.get('pct', 0)
+        cls = 'up-txt' if pct >= 0 else 'dn-txt'
+        bar_color = 'var(--up)' if pct >= 0 else 'var(--dn)'
+        bar_width = min(abs(pct) / max(max_sector_pct, 0.01) * 100, 100)
+        sign = '+' if pct >= 0 else ''
+        us_sectors_html += f'''<div class="sector-bar-row">
+  <div class="sector-bar-name">{name}</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:{bar_width:.1f}%;background:{bar_color}"></div></div>
+  <div class="sector-bar-pct {cls}">{sign}{pct:.2f}%</div>
+</div>'''
+
+    # 해외 주요 종목 HTML
+    us_stocks_html = ''
+    for k, name in US_STOCK_MAP.items():
+        item = d(market, k)
+        pct = item.get('pct', 0)
+        cls = 'up-txt' if pct >= 0 else 'dn-txt'
+        sign = '+' if pct >= 0 else ''
+        us_stocks_html += f'''<div class="stock-row" style="padding: 6px 10px;">
+      <div class="stock-name" style="font-size:10.5px; max-width: 85px;">{name}</div>
+      <div class="stock-right">
+        <span class="{cls}" style="font-size:10.5px; font-weight:700;">{sign}{pct:.2f}%</span>
+      </div>
+    </div>'''
+
+    # 급등/급락 Top 3
+    us_stock_sorted = sorted(
+        [(k, name, d(market, k).get('pct', 0)) for k, name in US_STOCK_MAP.items()],
+        key=lambda x: x[2], reverse=True
+    )
+    def _top3_row(rank, k, name, pct):
+        cls = 'up-txt' if pct >= 0 else 'dn-txt'
+        sign = '+' if pct >= 0 else ''
+        return f'''<div class="top3-row">
+  <div class="top3-rank">{rank}</div>
+  <div><div class="top3-name">{name}</div><div class="top3-ticker">{k.upper()}</div></div>
+  <div class="top3-pct {cls}">{sign}{pct:.2f}%</div>
+</div>'''
+
+    us_gainers_html = ''.join(_top3_row(i+1, k, n, p) for i, (k, n, p) in enumerate(us_stock_sorted[:3]))
+    us_losers_html  = ''.join(_top3_row(i+1, k, n, p) for i, (k, n, p) in enumerate(us_stock_sorted[-3:][::-1]))
+
+    # 기술적 신호
+    def _rsi_signal(rsi):
+        if rsi >= 70:   return '과매수', '#ff4060', 'rgba(255,64,96,.15)'
+        elif rsi <= 30: return '과매도', '#00e896', 'rgba(0,232,150,.15)'
+        elif rsi >= 60: return '강세',   '#00e896', 'rgba(0,232,150,.12)'
+        elif rsi <= 40: return '약세',   '#ff8c3a', 'rgba(255,140,58,.15)'
+        else:           return '중립',   '#a3a3a3', 'rgba(163,163,163,.12)'
+
+    def _macd_signal(pct):
+        if pct > 0.5:    return '골든크로스', '#00e896', 'rgba(0,232,150,.15)'
+        elif pct < -0.5: return '데드크로스', '#ff4060', 'rgba(255,64,96,.15)'
+        else:            return '수렴',       '#a3a3a3', 'rgba(163,163,163,.12)'
+
+    sp_rsi = d(market,'sp500').get('rsi', 50)
+    nd_rsi = d(market,'nasdaq').get('rsi', 50)
+    dw_rsi = d(market,'dow').get('rsi', 50)
+    sp_pct = d(market,'sp500').get('pct', 0)
+    nd_pct = d(market,'nasdaq').get('pct', 0)
+    sp_rsi_lbl, sp_rsi_col, sp_rsi_bg = _rsi_signal(sp_rsi)
+    nd_rsi_lbl, nd_rsi_col, nd_rsi_bg = _rsi_signal(nd_rsi)
+    dw_rsi_lbl, dw_rsi_col, dw_rsi_bg = _rsi_signal(dw_rsi)
+    sp_macd_lbl, sp_macd_col, sp_macd_bg = _macd_signal(sp_pct)
+    nd_macd_lbl, nd_macd_col, nd_macd_bg = _macd_signal(nd_pct)
+
+    # BB 신호: VIX 기반
+    vix_val = d(market,'vix').get('val', 20)
+    if vix_val > 30:   bb_lbl, bb_col, bb_bg = '하단밴드 이탈', '#ff4060', 'rgba(255,64,96,.15)'
+    elif vix_val < 15: bb_lbl, bb_col, bb_bg = '상단밴드 근접', '#f97316', 'rgba(255,140,58,.15)'
+    else:              bb_lbl, bb_col, bb_bg = '밴드 내 정상',  '#a3a3a3', 'rgba(163,163,163,.12)'
+
+    us_tech_html = f'''<div class="tech-row">
+  <div class="tech-name">S&amp;P 500 RSI ({sp_rsi})</div>
+  <div style="display:flex;align-items:center">
+    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:{sp_rsi}%"></div></div>
+    <span class="tech-sig" style="background:{sp_rsi_bg};color:{sp_rsi_col}">{sp_rsi_lbl}</span>
+  </div>
+</div>
+<div class="tech-row">
+  <div class="tech-name">나스닥 RSI ({nd_rsi})</div>
+  <div style="display:flex;align-items:center">
+    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:{nd_rsi}%"></div></div>
+    <span class="tech-sig" style="background:{nd_rsi_bg};color:{nd_rsi_col}">{nd_rsi_lbl}</span>
+  </div>
+</div>
+<div class="tech-row">
+  <div class="tech-name">다우존스 RSI ({dw_rsi})</div>
+  <div style="display:flex;align-items:center">
+    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:{dw_rsi}%"></div></div>
+    <span class="tech-sig" style="background:{dw_rsi_bg};color:{dw_rsi_col}">{dw_rsi_lbl}</span>
+  </div>
+</div>
+<div class="tech-row">
+  <div class="tech-name">S&amp;P 500 MACD</div>
+  <span class="tech-sig" style="background:{sp_macd_bg};color:{sp_macd_col}">{sp_macd_lbl}</span>
+</div>
+<div class="tech-row">
+  <div class="tech-name">나스닥 MACD</div>
+  <span class="tech-sig" style="background:{nd_macd_bg};color:{nd_macd_col}">{nd_macd_lbl}</span>
+</div>
+<div class="tech-row">
+  <div class="tech-name">볼린저밴드 (VIX {vix_val:.1f})</div>
+  <span class="tech-sig" style="background:{bb_bg};color:{bb_col}">{bb_lbl}</span>
+</div>'''
+
+    # 공포/탐욕 큰 배너 HTML
+    if us_fg <= 25:
+        fg_bg = 'rgba(59,130,246,.12)'; fg_border = '#3b82f6'; fg_label = '극도 공포'
+    elif us_fg <= 45:
+        fg_bg = 'rgba(96,165,250,.1)';  fg_border = '#60a5fa'; fg_label = '공포'
+    elif us_fg <= 55:
+        fg_bg = 'rgba(163,163,163,.1)'; fg_border = '#a3a3a3'; fg_label = '중립'
+    elif us_fg <= 75:
+        fg_bg = 'rgba(249,115,22,.1)';  fg_border = '#f97316'; fg_label = '탐욕'
+    else:
+        fg_bg = 'rgba(239,68,68,.12)';  fg_border = '#ef4444'; fg_label = '극도 탐욕'
+
+    us_fg_banner_html = f'''<div class="us-fg-banner" style="background:{fg_bg};border:1px solid {fg_border};">
+  <div class="us-fg-big">{us_fg_emoji}</div>
+  <div class="us-fg-right">
+    <div class="us-fg-label" style="color:{fg_border}">미국 공포/탐욕 지수</div>
+    <div class="us-fg-score" style="color:{fg_border}">{us_fg} <span style="font-size:16px">{fg_label}</span></div>
+    <div class="us-fg-desc" style="color:{fg_border}">VIX {vix_val:.1f} &nbsp;·&nbsp; S&amp;P RSI {sp_rsi} &nbsp;·&nbsp; 나스닥 모멘텀 {nd_pct:+.2f}%</div>
+  </div>
+</div>'''
+
     return f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -1471,23 +1762,12 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
       나스닥 {vdisp(market,'nasdaq')} {cdisp(market,'nasdaq')}<br>
       <span style="font-size:11.5px;opacity:.9;line-height:1.6">{us_summary}</span>
     </div>
+    {us_fg_banner_html}
   </div>
 
   <div class="section">
-    <div class="section-label">미국 시장 모니터링</div>
-    
-    <div class="fg-card-mini">
-      <div class="fg-emoji">{us_fg_emoji}</div>
-      <div class="fg-info">
-        <div class="fg-label">미국 공포/탐욕 지수</div>
-        <div class="fg-val-txt" style="color:{us_fg_color}">
-          {us_fg} <span style="font-size:13px;margin-left:4px">{us_fg_label}</span>
-        </div>
-      </div>
-    </div>
-
+    <div class="section-label">주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
     <div class="us-grid">
-      <!-- S&P 500 -->
       <div class="us-card" onclick="showMacroChart('sp500')">
         <div class="us-card-top">
           <div class="us-name-wrap"><span class="us-name">S&amp;P 500</span><span class="us-ticker-badge">SPX</span></div>
@@ -1495,17 +1775,13 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         </div>
         <div class="us-val-row">
           <span class="us-val">{d(market,'sp500').get('val',0):,.2f}</span>
-          <span class="us-pct-box { 'up' if d(market,'sp500').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'sp500').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'sp500').get('pct',0) >= 0 else 'var(--dn)' };">
-            {d(market,'sp500').get('pct',0):+.2f}%
-          </span>
+          <span class="us-pct-box {'up' if d(market,'sp500').get('pct',0)>=0 else 'dn'}">{d(market,'sp500').get('pct',0):+.2f}%</span>
         </div>
         <div class="rsi-wrap">
           <div class="rsi-head"><span>RSI</span><span>{d(market,'sp500').get('rsi',50)}</span></div>
           <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'sp500').get('rsi',50)}%"></div></div>
         </div>
       </div>
-
-      <!-- 나스닥 -->
       <div class="us-card" onclick="showMacroChart('nasdaq')">
         <div class="us-card-top">
           <div class="us-name-wrap"><span class="us-name">나스닥 100</span><span class="us-ticker-badge">NDX</span></div>
@@ -1513,75 +1789,83 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         </div>
         <div class="us-val-row">
           <span class="us-val">{d(market,'nasdaq').get('val',0):,.2f}</span>
-          <span class="us-pct-box { 'up' if d(market,'nasdaq').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'nasdaq').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'nasdaq').get('pct',0) >= 0 else 'var(--dn)' };">
-            {d(market,'nasdaq').get('pct',0):+.2f}%
-          </span>
+          <span class="us-pct-box {'up' if d(market,'nasdaq').get('pct',0)>=0 else 'dn'}">{d(market,'nasdaq').get('pct',0):+.2f}%</span>
         </div>
         <div class="rsi-wrap">
           <div class="rsi-head"><span>RSI</span><span>{d(market,'nasdaq').get('rsi',50)}</span></div>
           <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'nasdaq').get('rsi',50)}%"></div></div>
         </div>
       </div>
-
-      <!-- 다우 -->
       <div class="us-card" onclick="showMacroChart('dow')">
         <div class="us-card-top">
           <div class="us-name-wrap"><span class="us-name">다우존스</span><span class="us-ticker-badge">DJI</span></div>
           <span style="font-size:14px">🏛️</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">{d(market,'dow').get('val',0):,.2f}</span>
-          <span class="us-pct-box { 'up' if d(market,'dow').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'dow').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'dow').get('pct',0) >= 0 else 'var(--dn)' };">
-            {d(market,'dow').get('pct',0):+.2f}%
-          </span>
+          <span class="us-val">{d(market,'dow').get('val',0):,.0f}</span>
+          <span class="us-pct-box {'up' if d(market,'dow').get('pct',0)>=0 else 'dn'}">{d(market,'dow').get('pct',0):+.2f}%</span>
         </div>
         <div class="rsi-wrap">
           <div class="rsi-head"><span>RSI</span><span>{d(market,'dow').get('rsi',50)}</span></div>
           <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'dow').get('rsi',50)}%"></div></div>
         </div>
       </div>
-
-      <!-- 러셀2000 -->
-      <div class="us-card" onclick="showMacroChart('rut')">
+      <div class="us-card" onclick="showMacroChart('vix')">
         <div class="us-card-top">
-          <div class="us-name-wrap"><span class="us-name">러셀 2000</span><span class="us-ticker-badge">RUT</span></div>
-          <span style="font-size:14px">🏢</span>
+          <div class="us-name-wrap"><span class="us-name">공포지수 VIX</span><span class="us-ticker-badge">VIX</span></div>
+          <span style="font-size:14px">😰</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">{d(market,'rut').get('val',0):,.2f}</span>
-          <span class="us-pct-box { 'up' if d(market,'rut').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'rut').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'rut').get('pct',0) >= 0 else 'var(--dn)' };">
-            {d(market,'rut').get('pct',0):+.2f}%
-          </span>
+          <span class="us-val">{d(market,'vix').get('val',0):.2f}</span>
+          <span class="us-pct-box {'dn' if d(market,'vix').get('pct',0)>=0 else 'up'}">{d(market,'vix').get('pct',0):+.2f}%</span>
         </div>
         <div class="rsi-wrap">
-          <div class="rsi-head"><span>RSI</span><span>{d(market,'rut').get('rsi',50)}</span></div>
-          <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'rut').get('rsi',50)}%"></div></div>
+          <div class="rsi-head"><span>RSI</span><span>{d(market,'vix').get('rsi',50)}</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'vix').get('rsi',50)}%"></div></div>
         </div>
       </div>
-
-      <!-- 반도체 -->
-      <div class="us-card" onclick="showMacroChart('soxx')">
-        <div class="us-card-top">
-          <div class="us-name-wrap"><span class="us-name">반도체</span><span class="us-ticker-badge">SOXX</span></div>
-          <span style="font-size:14px">💾</span>
-        </div>
-        <div class="us-val-row">
-          <span class="us-val">{d(market,'soxx').get('val',0):,.2f}</span>
-          <span class="us-pct-box { 'up' if d(market,'soxx').get('pct',0) >= 0 else 'dn' }" style="background:{ 'rgba(0,232,150,0.1)' if d(market,'soxx').get('pct',0) >= 0 else 'rgba(255,64,96,0.15)' };color:{ 'var(--up)' if d(market,'soxx').get('pct',0) >= 0 else 'var(--dn)' };">
-            {d(market,'soxx').get('pct',0):+.2f}%
-          </span>
-        </div>
-        <div class="rsi-wrap">
-          <div class="rsi-head"><span>RSI</span><span>{d(market,'soxx').get('rsi',50)}</span></div>
-          <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'soxx').get('rsi',50)}%"></div></div>
-        </div>
-      </div>
-
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">글로벌 매크로 지표</div>
+    <div class="section-label">섹터별 성적표</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
+      {us_sectors_html}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">급등 / 급락 Top 3</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:var(--card);border:1px solid rgba(0,232,150,.2);border-radius:12px;padding:10px 12px;">
+        <div style="font-size:10px;color:var(--up);font-weight:700;margin-bottom:6px;">🚀 급등</div>
+        {us_gainers_html}
+      </div>
+      <div style="background:var(--card);border:1px solid rgba(255,64,96,.2);border-radius:12px;padding:10px 12px;">
+        <div style="font-size:10px;color:var(--dn);font-weight:700;margin-bottom:6px;">📉 급락</div>
+        {us_losers_html}
+      </div>
+    </div>
+  </div>
+
+  {us_story_html}
+
+  <div class="section">
+    <div class="section-label">주요 종목 동향</div>
+    <div style="display:grid;grid-template-columns: 1fr 1fr; gap: 6px;">
+      {us_stocks_html}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">기술적 신호 리포트</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
+      {us_tech_html}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">데이터 및 매크로</div>
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('tnx')">
         <div class="macro-name">미 10년물</div>
@@ -1592,11 +1876,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         <div class="macro-name">달러 인덱스</div>
         <div class="macro-val">{vdisp(market,'dxy')}</div>
         <div class="macro-chg">{cdisp(market,'dxy')}</div>
-      </div>
-      <div class="macro-card" onclick="showMacroChart('brent')">
-        <div class="macro-name">브렌트유</div>
-        <div class="macro-val">{vdisp(market,'brent')}</div>
-        <div class="macro-chg">{cdisp(market,'brent')}</div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
@@ -2024,16 +2303,18 @@ def main():
     news     = fetch_news()
     stocks   = fetch_market_stocks()
     ai_brief = fetch_ai_briefing(market, news)
+    us_ai_brief = fetch_us_ai_briefing(market, news)
 
     research_reports = fetch_research_reports()
     research_summary = fetch_research_summary(research_reports)
     stock_story = fetch_stock_story(stocks)
 
+    usdkrw_week = fetch_usdkrw_week()
     macro_hist  = fetch_macro_history()
 
     reports_path = Path(__file__).parent / 'reports.json'
     reports = json.loads(reports_path.read_text(encoding='utf-8')) if reports_path.exists() else []
-    html = generate_html(market, news, stocks, ai_brief, dt, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, reports=reports)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, reports=reports, us_ai_brief=us_ai_brief)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
