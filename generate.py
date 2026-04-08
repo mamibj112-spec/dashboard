@@ -1529,7 +1529,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     nd_macd_lbl, nd_macd_col, nd_macd_bg = _macd_signal(nd_pct)
 
     # BB 신호: VIX 기반
-    vix_val = d(market,'vix').get('val', 20)
+    vix_val = d(market,'vix').get('val') or 20
     if vix_val > 30:   bb_lbl, bb_col, bb_bg = '하단밴드 이탈', '#ff4060', 'rgba(255,64,96,.15)'
     elif vix_val < 15: bb_lbl, bb_col, bb_bg = '상단밴드 근접', '#f97316', 'rgba(255,140,58,.15)'
     else:              bb_lbl, bb_col, bb_bg = '밴드 내 정상',  '#a3a3a3', 'rgba(163,163,163,.12)'
@@ -1816,8 +1816,8 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
           <span style="font-size:14px">😰</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">{d(market,'vix').get('val',0):.2f}</span>
-          <span class="us-pct-box {'dn' if d(market,'vix').get('pct',0)>=0 else 'up'}">{d(market,'vix').get('pct',0):+.2f}%</span>
+          <span class="us-val">{d(market,'vix').get('val') or 0:.2f}</span>
+          <span class="us-pct-box {'dn' if (d(market,'vix').get('pct') or 0)>=0 else 'up'}">{d(market,'vix').get('pct') or 0:+.2f}%</span>
         </div>
         <div class="rsi-wrap">
           <div class="rsi-head"><span>RSI</span><span>{d(market,'vix').get('rsi',50)}</span></div>
