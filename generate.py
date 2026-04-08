@@ -1449,7 +1449,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
       </div>
       <canvas id="fxChart" height="90"></canvas>
     </div>'''
-        fx_script = f'''(function(){{
+        fx_script = f'''try{{(function(){{
   var c=document.getElementById('fxChart').getContext('2d');
   var v={fx_vals_json};
   var g=c.createLinearGradient(0,0,0,80);
@@ -1477,7 +1477,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
       }}
     }}
   }});
-}})();'''
+}})();}}catch(e){{console.warn('fxChart init failed:',e);}}'''
     else:
         fx_card   = ''
         fx_script = ''
@@ -2260,7 +2260,7 @@ function closeMacroChart(){{
   document.getElementById('macroModal').classList.remove('open');
   setTimeout(function(){{document.getElementById('macroOverlay').style.display='none';}},280);
 }}
-(function(){{
+try{{(function(){{
   var ctx=document.getElementById('sectorChart').getContext('2d');
   var vals=[3.2,2.1,1.4,0.8,-0.5,-1.1,-1.8,-2.3];
   var lbls=['반도체','2차전지','자동차','금융','바이오','화학','철강','에너지'];
@@ -2291,7 +2291,7 @@ function closeMacroChart(){{
     }},
     plugins:[ChartDataLabels]
   }});
-}})();
+}})();}}catch(e){{console.warn('sectorChart init failed:',e);}}
 var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목'}};
 var WATCHLIST={watchlist_json};
 function _fmt(v,dec,suf){{if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}}
