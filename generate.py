@@ -80,10 +80,15 @@ US_SECTOR_MAP = {
     'xlre': '부동산', 'xlu': '유틸리티'
 }
 US_STOCK_MAP = {
-    'unh': '유나이티드헬스', 'avgo': '브로드컴', 'anet': '아리스타', 'wmt': '월마트', 
-    'arm': 'ARM', 'pfe': '화이자', 'panw': '팔로알토', 'intc': '인텔', 
+    'unh': '유나이티드헬스', 'avgo': '브로드컴', 'anet': '아리스타', 'wmt': '월마트',
+    'arm': 'ARM', 'pfe': '화이자', 'panw': '팔로알토', 'intc': '인텔',
     'nvda': '엔비디아', 'aapl': '애플', 'msft': '마이크로소프트', 'meta': '메타'
 }
+
+# 관심 종목 목록 — 티커/이름/시장(US or KR)
+WATCHLIST = [
+    {'ticker': 'SNDK',    'name': '샌디스크',   'market': 'US'},
+]
 
 def calculate_rsi(prices, period=14):
     """RSI(상대강도지수) 계산"""
@@ -322,62 +327,23 @@ def stocks_html(rows):
 
 
 # ── Gemini 공통 호출 헬퍼 ─────────────────────────────────────────────────────
-_gemini_last_call = 0.0   # 마지막 Gemini 호출 시각 (time.time())
-_GEMINI_MIN_INTERVAL = 4.5  # 15 RPM 기준 최소 간격(초)
-
 def _gemini_post(api_key, prompt, temperature=0.7, max_tokens=1024):
-    """Gemini API 호출 — 경과 시간 기반 선제 대기로 429 방지"""
+    """Gemini API 호출 + 429 시 최대 3회 재시도 (30초 간격)"""
     import time as _time
-    global _gemini_last_call
-
-    # 마지막 호출 이후 경과 시간만큼 차감 → 부족한 만큼만 대기
-    elapsed = _time.time() - _gemini_last_call
-    wait_before = max(0.0, _GEMINI_MIN_INTERVAL - elapsed)
-    if wait_before > 0:
-        print(f"  Gemini 호출 간격 조정: {wait_before:.1f}초 대기...")
-        _time.sleep(wait_before)
-
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}'
     body = {'contents': [{'parts': [{'text': prompt}]}],
             'generationConfig': {'temperature': temperature, 'maxOutputTokens': max_tokens}}
-
     for attempt in range(3):
-        _gemini_last_call = _time.time()
         resp = requests.post(url, json=body, timeout=60)
         if resp.status_code == 429:
-            wait = 15 * (attempt + 1)  # 만약 429가 나도 짧게 재시도
-            print(f"  Gemini 429, {wait}초 후 재시도 ({attempt+1}/3)...")
+            wait = 30 * (attempt + 1)
+            print(f"  Gemini 429 rate limit, {wait}초 후 재시도 ({attempt+1}/3)...")
             _time.sleep(wait)
             continue
         resp.raise_for_status()
         parts = resp.json()['candidates'][0]['content']['parts']
         return next((p['text'] for p in parts if 'text' in p), '').strip()
     raise Exception('Gemini API 재시도 초과')
-
-
-def build_dom_story_fallback(market):
-    """AI 없을 때 규칙 기반 국내 시황 요약 생성"""
-    kopi = d(market, 'kospi')
-    koda = d(market, 'kosdaq')
-    kp, kpct = kopi.get('val', 0), kopi.get('pct') or 0
-    dp, dpct = koda.get('val', 0), koda.get('pct') or 0
-    
-    # 지수 상태에 따른 키워드
-    if kpct >= 1.0:   kw, st = "지수 동반 강세", "코스피와 코스닥이 모두 1% 이상 상승하며 기분 좋은 흐름을 보였습니다."
-    elif kpct <= -1.0: kw, st = "시장 변동성 확대", "지수가 1% 이상 하락하며 보수적인 투자 심리가 확산되었습니다."
-    else:             kw, st = "차분한 보합세", "지수가 큰 변화 없이 보합권에서 등락을 거듭하며 중립적인 흐름을 보였습니다."
-    
-    # 환율/금리 추가 정보
-    fx = d(market, 'usdkrw').get('val', 0)
-    fx_desc = f"원/달러 환율은 {fx:,.1f}원 선에서 움직임을 보였습니다." if fx else ""
-    
-    return {
-        'keyword': kw,
-        'story': f"{st} {fx_desc}",
-        'sector_story': "시총 상위 대형주 중심으로 지수 방어가 이루어졌으며, 업종별로는 순환매 양상이 나타났습니다.",
-        'watch_points': ["외국인/기관의 수급 동향", "환율 변동성 및 금리 추이", "주요 섹터의 실적 발표 일정"]
-    }
-
 
 
 # ── AI 브리핑 ──────────────────────────────────────────────────────────────────
@@ -881,8 +847,108 @@ def fetch_news():
         news[cat] = items[:7]
     # 해외 뉴스 한국어 번역
     if news.get('international'):
+        import time as _time; _time.sleep(5)
         news['international'] = translate_news_to_korean(news['international'])
     return news
+
+# ── 관심 종목 ──────────────────────────────────────────────────────────────────
+
+def fetch_watchlist_data(watchlist):
+    """관심 종목 상세 데이터 수집 (yfinance)"""
+    import pandas as _pd
+    results = []
+    for item in watchlist:
+        ticker = item['ticker']
+        name   = item['name']
+        market = item['market']
+        try:
+            t    = yf.Ticker(ticker)
+            info = t.info
+            hist = t.history(period='1y')
+            if hist.empty or len(hist) < 2:
+                print(f"  [{ticker}] 히스토리 없음")
+                continue
+            closes = hist['Close'].tolist()
+            curr   = closes[-1]
+            prev   = closes[-2]
+            change     = round(curr - prev, 4)
+            change_pct = round(change / prev * 100, 2) if prev else 0
+
+            # RSI
+            rsi = round(calculate_rsi(closes), 1)
+
+            # SMA vs 현재가 괴리율
+            s = _pd.Series(closes)
+            def sma_gap(n):
+                if len(closes) < n: return None
+                v = s.rolling(n).mean().iloc[-1]
+                return round((curr - v) / v * 100, 2) if v else None
+
+            # 기간별 수익률
+            def ret(days):
+                if len(closes) < days + 1: return None
+                old = closes[-(days + 1)]
+                return round((curr - old) / old * 100, 2) if old else None
+
+            currency = info.get('currency', 'USD')
+            mc = info.get('marketCap')
+            def fmt_cap(v):
+                if v is None: return 'N/A'
+                if currency == 'KRW':
+                    return f'{v/1e12:.1f}조원' if v >= 1e12 else f'{v/1e8:.0f}억원'
+                if v >= 1e12: return f'${v/1e12:.2f}T'
+                if v >= 1e9:  return f'${v/1e9:.1f}B'
+                return f'${v/1e6:.0f}M'
+
+            def pct_fmt(v):
+                return round(v * 100, 2) if v is not None else None
+
+            results.append({
+                'ticker':       ticker,
+                'name':         name,
+                'market':       market,
+                'price':        round(curr, 4),
+                'change':       change,
+                'change_pct':   change_pct,
+                'currency':     currency,
+                'market_cap':   fmt_cap(mc),
+                'pe':           round(info.get('trailingPE'), 2)    if info.get('trailingPE')  else None,
+                'forward_pe':   round(info.get('forwardPE'), 2)     if info.get('forwardPE')   else None,
+                'pb':           round(info.get('priceToBook'), 2)   if info.get('priceToBook') else None,
+                'peg':          round(info.get('pegRatio'), 2)      if info.get('pegRatio')    else None,
+                'eps':          round(info.get('trailingEps'), 4)   if info.get('trailingEps') else None,
+                'target':       round(info.get('targetMeanPrice'),2) if info.get('targetMeanPrice') else None,
+                'high52':       round(info.get('fiftyTwoWeekHigh'), 4) if info.get('fiftyTwoWeekHigh') else None,
+                'low52':        round(info.get('fiftyTwoWeekLow'), 4)  if info.get('fiftyTwoWeekLow')  else None,
+                'beta':         round(info.get('beta'), 2)           if info.get('beta')        else None,
+                'volume':       info.get('volume'),
+                'avg_volume':   info.get('averageVolume'),
+                'div_yield':    pct_fmt(info.get('dividendYield')),
+                'op_margin':    pct_fmt(info.get('operatingMargins')),
+                'profit_margin':pct_fmt(info.get('profitMargins')),
+                'gross_margin': pct_fmt(info.get('grossMargins')),
+                'roe':          pct_fmt(info.get('returnOnEquity')),
+                'roa':          pct_fmt(info.get('returnOnAssets')),
+                'current_ratio':round(info.get('currentRatio'), 2)  if info.get('currentRatio') else None,
+                'debt_equity':  round(info.get('debtToEquity'), 2)  if info.get('debtToEquity') else None,
+                'sector':       info.get('sector', ''),
+                'industry':     info.get('industry', ''),
+                'desc':         (info.get('longBusinessSummary') or '')[:180],
+                'rsi':          rsi,
+                'sma20_gap':    sma_gap(20),
+                'sma50_gap':    sma_gap(50),
+                'sma200_gap':   sma_gap(200),
+                'ret_1w':       ret(5),
+                'ret_1m':       ret(21),
+                'ret_3m':       ret(63),
+                'ret_6m':       ret(126),
+                'ret_1y':       round((curr - closes[0]) / closes[0] * 100, 2) if closes[0] else None,
+            })
+            print(f"  [{ticker}] 수집 완료")
+        except Exception as e:
+            print(f"  [{ticker}] 오류: {e}")
+    return results
+
 
 # ── 시황 요약 ──────────────────────────────────────────────────────────────────
 
@@ -1250,14 +1316,43 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .tech-name{font-size:11.5px;color:var(--t2)}
 .tech-val{font-size:11px;font-weight:600}
 .tech-sig{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700;margin-left:6px}
+.wl-search{width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--t1);outline:none;margin-bottom:2px}
+.wl-search:focus{border-color:var(--blue)}
+.wl-grid{display:flex;flex-direction:column;gap:8px}
+.wl-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .15s}
+.wl-card:active{border-color:var(--blue)}
+.wl-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.wl-name{font-size:13px;font-weight:700;color:var(--t1)}
+.wl-ticker{font-size:10.5px;color:var(--t3);margin-top:2px}
+.wl-mkt-badge{background:rgba(77,166,255,.15);color:var(--blue);font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700}
+.wl-price{font-size:16px;font-weight:700}
+.wl-pct{font-size:11px;font-weight:600;text-align:right}
+.wl-card-bot{display:flex;gap:12px;font-size:10.5px;color:var(--t3)}
+#stockOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;transition:opacity .2s;opacity:0}
+#stockOverlay.open{opacity:1}
+#stockModal{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px;z-index:301;max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s ease}
+#stockModal.open{transform:translateY(0)}
+.sk-price{font-size:24px;font-weight:800}
+.sk-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.sk-row:last-child{border-bottom:none}
+.sk-label{color:var(--t3)}
+.sk-val{font-weight:600;color:var(--t1)}
+.sk-sec{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin:12px 0 4px;padding-left:2px}
+.perf-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:4px}
+.perf-cell{background:var(--bg);border-radius:7px;padding:6px 4px;text-align:center}
+.perf-period{font-size:9px;color:var(--t3);margin-bottom:2px}
+.perf-val{font-size:11px;font-weight:700}
 """
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, us_ai_brief=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, us_ai_brief=None, watchlist=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
+
+    import json as _json_wl
+    watchlist_json = _json_wl.dumps(watchlist or [], ensure_ascii=False)
 
     kospi_pct = d(market, 'kospi').get('pct') or 0
     if kospi_pct >= 1.0:
@@ -1355,15 +1450,13 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     ai_html = ''
 
     # 스토리형 시황 분석 섹션
-    if not ai_brief:
-        ai_brief = build_dom_story_fallback(market)
-
-    keyword      = ai_brief.get('keyword', '')
-    story        = ai_brief.get('story', '')
-    sector_story = ai_brief.get('sector_story', '')
-    watch_points = ai_brief.get('watch_points', [])
-    wp_html = ''.join(f'<div class="story-watch">· {wp}</div>' for wp in watch_points)
-    story_html = f'''<div class="section">
+    if ai_brief:
+        keyword      = ai_brief.get('keyword', '')
+        story        = ai_brief.get('story', '')
+        sector_story = ai_brief.get('sector_story', '')
+        watch_points = ai_brief.get('watch_points', [])
+        wp_html = ''.join(f'<div class="story-watch">· {wp}</div>' for wp in watch_points)
+        story_html = f'''<div class="section">
   <div class="story-wrap">
     <div class="story-keyword">{keyword}</div>
     <div class="story-block">
@@ -1377,6 +1470,8 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     {f'<div class="story-block"><div class="story-label">👀 오늘의 주목 포인트</div>{wp_html}</div>' if wp_html else ''}
   </div>
 </div>'''
+    else:
+        story_html = ''
 
     # 주도주 스토리 HTML
     if stock_story:
@@ -1687,6 +1782,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <button class="tab-btn" onclick="sw('re',this)">🏠 부동산</button>
   <button class="tab-btn" onclick="sw('hot',this)">🔥 핫이슈</button>
   <button class="tab-btn" onclick="sw('cal',this)">📅 일정</button>
+  <button class="tab-btn" onclick="sw('watch',this)">📊 종목</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -2072,6 +2168,20 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 </div>
 
 
+<!-- ===== 종목 탭 ===== -->
+<div id="tab-watch" class="tab-panel">
+  <div class="section">
+    <input type="text" id="watchSearch" class="wl-search" placeholder="종목명 또는 티커 검색..." oninput="renderWatchlist(this.value)">
+  </div>
+  <div class="section">
+    <div id="watchGrid" class="wl-grid"></div>
+  </div>
+</div>
+
+<!-- 종목 상세 모달 -->
+<div id="stockOverlay" onclick="closeStockModal()"></div>
+<div id="stockModal"></div>
+
 <div id="macroOverlay" onclick="closeMacroChart()"></div>
 <div id="macroModal">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -2147,7 +2257,110 @@ function closeMacroChart(){{
     plugins:[ChartDataLabels]
   }});
 }})();
-var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정'}};
+var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목'}};
+var WATCHLIST={watchlist_json};
+function _fmt(v,dec,suf){{if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}}
+function _pctColor(v){{
+  if(v===null||v===undefined)return'<span style="color:var(--t3)">N/A</span>';
+  var c=v>=0?'var(--up)':'var(--dn)';
+  return'<span style="color:'+c+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</span>';
+}}
+function renderWatchlist(q){{
+  var grid=document.getElementById('watchGrid');
+  if(!grid)return;
+  var list=WATCHLIST.filter(function(s){{
+    var t=(q||'').toLowerCase();
+    return!t||s.ticker.toLowerCase().includes(t)||s.name.toLowerCase().includes(t);
+  }});
+  if(!list.length){{grid.innerHTML='<div style="color:var(--t3);font-size:12px;padding:16px 0;text-align:center;">검색 결과 없음</div>';return;}}
+  grid.innerHTML=list.map(function(s){{
+    var cls=s.change_pct>=0?'up':'dn';
+    var sign=s.change_pct>=0?'+':'';
+    var cur=s.currency==='KRW'?'₩':'$';
+    return'<div class="wl-card" onclick="showStock(\''+s.ticker+'\')">'+
+      '<div class="wl-card-top">'+
+        '<div><div class="wl-name">'+s.name+'</div>'+
+        '<div class="wl-ticker"><span class="wl-mkt-badge">'+s.market+'</span> '+s.ticker+'</div></div>'+
+        '<div style="text-align:right">'+
+          '<div class="wl-price '+cls+'-txt">'+cur+s.price.toLocaleString(undefined,{{maximumFractionDigits:2}})+'</div>'+
+          '<div class="wl-pct '+cls+'-txt">'+sign+s.change_pct.toFixed(2)+'%</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="wl-card-bot">'+
+        '<span>시총 '+s.market_cap+'</span>'+
+        '<span>P/E '+(s.pe?s.pe:'N/A')+'</span>'+
+        '<span>RSI '+s.rsi+'</span>'+
+      '</div>'+
+    '</div>';
+  }}).join('');
+}}
+function showStock(ticker){{
+  var s=WATCHLIST.find(function(x){{return x.ticker===ticker;}});
+  if(!s)return;
+  var cls=s.change_pct>=0?'up':'dn';
+  var sign=s.change_pct>=0?'+':'';
+  var cur=s.currency==='KRW'?'₩':'$';
+  var p=s.price.toLocaleString(undefined,{{maximumFractionDigits:2}});
+  function row(label,val){{return'<div class="sk-row"><span class="sk-label">'+label+'</span><span class="sk-val">'+val+'</span></div>';}}
+  function sec(label){{return'<div class="sk-sec">'+label+'</div>';}}
+  var html=
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">'+
+      '<div>'+
+        '<div style="font-size:15px;font-weight:700;color:var(--t1);">'+s.name+'</div>'+
+        '<div style="font-size:10.5px;color:var(--t3);margin-top:2px;"><span class="wl-mkt-badge">'+s.market+'</span> '+s.ticker+(s.sector?' · '+s.sector:'')+'</div>'+
+      '</div>'+
+      '<button onclick="closeStockModal()" style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;padding:0;line-height:1;">✕</button>'+
+    '</div>'+
+    '<div style="background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:12px;">'+
+      '<div class="sk-price '+cls+'-txt">'+cur+p+'</div>'+
+      '<div style="font-size:12px;color:var(--'+cls+');margin-top:2px;">'+sign+s.change_pct.toFixed(2)+'% ('+sign+cur+Math.abs(s.change).toFixed(2)+')</div>'+
+      '<div style="font-size:10px;color:var(--t3);margin-top:6px;">시총 '+s.market_cap+' &nbsp;|&nbsp; 52주 '+cur+(s.low52||'N/A')+' ~ '+cur+(s.high52||'N/A')+'</div>'+
+      (s.target?'<div style="font-size:10px;color:var(--t3);margin-top:2px;">목표주가 '+cur+s.target+' &nbsp;|&nbsp; 베타 '+(s.beta||'N/A')+'</div>':'')+
+    '</div>'+
+    sec('수익률')+
+    '<div class="perf-grid">'+
+      ['1W','1M','3M','6M','1Y'].map(function(p,i){{
+        var v=[s.ret_1w,s.ret_1m,s.ret_3m,s.ret_6m,s.ret_1y][i];
+        var c=v===null||v===undefined?'var(--t3)':v>=0?'var(--up)':'var(--dn)';
+        var tx=v===null||v===undefined?'N/A':(v>=0?'+':'')+v.toFixed(1)+'%';
+        return'<div class="perf-cell"><div class="perf-period">'+p+'</div><div class="perf-val" style="color:'+c+'">'+tx+'</div></div>';
+      }}).join('')+
+    '</div>'+
+    sec('기술적 분석')+
+    row('RSI (14)',s.rsi)+
+    row('SMA 20 괴리율',s.sma20_gap!==null&&s.sma20_gap!==undefined?(s.sma20_gap>=0?'+':'')+s.sma20_gap+'%':'N/A')+
+    row('SMA 50 괴리율',s.sma50_gap!==null&&s.sma50_gap!==undefined?(s.sma50_gap>=0?'+':'')+s.sma50_gap+'%':'N/A')+
+    row('SMA 200 괴리율',s.sma200_gap!==null&&s.sma200_gap!==undefined?(s.sma200_gap>=0?'+':'')+s.sma200_gap+'%':'N/A')+
+    sec('밸류에이션')+
+    row('P/E (TTM)',_fmt(s.pe))+
+    row('Forward P/E',_fmt(s.forward_pe))+
+    row('P/B',_fmt(s.pb))+
+    row('PEG',_fmt(s.peg))+
+    row('EPS (TTM)',s.eps!==null&&s.eps!==undefined?cur+s.eps:'N/A')+
+    sec('수익성')+
+    row('영업이익률',s.op_margin!==null?s.op_margin+'%':'N/A')+
+    row('순이익률',s.profit_margin!==null?s.profit_margin+'%':'N/A')+
+    row('매출총이익률',s.gross_margin!==null?s.gross_margin+'%':'N/A')+
+    row('ROE',s.roe!==null?s.roe+'%':'N/A')+
+    row('ROA',s.roa!==null?s.roa+'%':'N/A')+
+    sec('재무 건전성')+
+    row('유동비율',_fmt(s.current_ratio))+
+    row('부채비율',_fmt(s.debt_equity))+
+    row('배당수익률',s.div_yield!==null&&s.div_yield!==0?s.div_yield+'%':'없음')+
+    (s.desc?'<div style="font-size:10.5px;color:var(--t3);margin-top:12px;line-height:1.6;">'+s.desc+'</div>':'')+
+    '';
+  document.getElementById('stockModal').innerHTML=html;
+  document.getElementById('stockOverlay').style.display='block';
+  setTimeout(function(){{
+    document.getElementById('stockOverlay').classList.add('open');
+    document.getElementById('stockModal').classList.add('open');
+  }},10);
+}}
+function closeStockModal(){{
+  document.getElementById('stockOverlay').classList.remove('open');
+  document.getElementById('stockModal').classList.remove('open');
+  setTimeout(function(){{document.getElementById('stockOverlay').style.display='none';}},250);
+}}
 var _dashRunId=null,_dashPollTimer=null;
 function _dashSetBusy(busy){{
   var btn=document.getElementById('dashUpdateBtn');
@@ -2209,6 +2422,7 @@ function sw(id, btn) {{
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
   document.querySelector('.header-title').textContent=_tabTitles[id]||'국장 데일리 대시보드';
+  if(id==='watch') renderWatchlist('');
 }}
 if ('serviceWorker' in navigator) {{
   navigator.serviceWorker.register('sw.js').catch(() => {{}});
@@ -2251,17 +2465,20 @@ def main():
     market   = fetch_market()
     news     = fetch_news()
     stocks   = fetch_market_stocks()
-    ai_brief = fetch_ai_briefing(market, news)
-    us_ai_brief = fetch_us_ai_briefing(market, news)
+    ai_brief     = fetch_ai_briefing(market, news)
+    us_ai_brief  = fetch_us_ai_briefing(market, news)
 
     research_reports = fetch_research_reports()
     research_summary = fetch_research_summary(research_reports)
-    stock_story = fetch_stock_story(stocks)
+    stock_story      = fetch_stock_story(stocks)
 
-    usdkrw_week = fetch_usdkrw_week()
-    macro_hist  = fetch_macro_history()
+    usdkrw_week  = fetch_usdkrw_week()
+    macro_hist   = fetch_macro_history()
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, us_ai_brief=us_ai_brief)
+    print("관심 종목 수집 중...")
+    watchlist = fetch_watchlist_data(WATCHLIST)
+
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, us_ai_brief=us_ai_brief, watchlist=watchlist)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
