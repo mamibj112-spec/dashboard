@@ -327,23 +327,47 @@ def stocks_html(rows):
 
 
 # ── Gemini 공통 호출 헬퍼 ─────────────────────────────────────────────────────
+import threading as _threading, time as _time, collections as _collections
+
+class _GeminiRateLimiter:
+    """호출 간격을 강제해 429가 구조적으로 발생하지 않도록 함 (10 RPM = 6초 간격)"""
+    def __init__(self, rpm=10):
+        self._lock = _threading.Lock()
+        self._timestamps = _collections.deque()
+        self._interval = 60.0 / rpm  # 6초
+        self._rpm = rpm
+
+    def acquire(self):
+        with self._lock:
+            now = _time.time()
+            # 1분 이상 된 기록 제거
+            while self._timestamps and now - self._timestamps[0] > 60:
+                self._timestamps.popleft()
+            # 분당 한도 초과 시 대기
+            if len(self._timestamps) >= self._rpm:
+                sleep = 60 - (now - self._timestamps[0]) + 0.5
+                print(f"  Gemini rate limit 예방 대기 {sleep:.0f}초...")
+                _time.sleep(sleep)
+                now = _time.time()
+            # 최소 호출 간격 보장
+            if self._timestamps:
+                elapsed = now - self._timestamps[-1]
+                if elapsed < self._interval:
+                    _time.sleep(self._interval - elapsed)
+            self._timestamps.append(_time.time())
+
+_GEMINI_LIMITER = _GeminiRateLimiter(rpm=10)
+
 def _gemini_post(api_key, prompt, temperature=0.7, max_tokens=1024):
-    """Gemini API 호출 + 429 시 최대 3회 재시도 (30초 간격)"""
-    import time as _time
+    """Gemini API 호출 (Rate Limiter로 429 원천 차단)"""
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}'
     body = {'contents': [{'parts': [{'text': prompt}]}],
             'generationConfig': {'temperature': temperature, 'maxOutputTokens': max_tokens}}
-    for attempt in range(3):
-        resp = requests.post(url, json=body, timeout=60)
-        if resp.status_code == 429:
-            wait = 30 * (attempt + 1)
-            print(f"  Gemini 429 rate limit, {wait}초 후 재시도 ({attempt+1}/3)...")
-            _time.sleep(wait)
-            continue
-        resp.raise_for_status()
-        parts = resp.json()['candidates'][0]['content']['parts']
-        return next((p['text'] for p in parts if 'text' in p), '').strip()
-    raise Exception('Gemini API 재시도 초과')
+    _GEMINI_LIMITER.acquire()
+    resp = requests.post(url, json=body, timeout=60)
+    resp.raise_for_status()
+    parts = resp.json()['candidates'][0]['content']['parts']
+    return next((p['text'] for p in parts if 'text' in p), '').strip()
 
 
 # ── AI 브리핑 ──────────────────────────────────────────────────────────────────
