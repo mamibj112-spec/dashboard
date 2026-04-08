@@ -371,9 +371,9 @@ def fetch_ai_briefing(market, news):
 }}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
-                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 1024, 'thinkingConfig': {'thinkingBudget': 0}}},
+                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 1024}},
             timeout=60
         )
         resp.raise_for_status()
@@ -448,7 +448,7 @@ def fetch_us_ai_briefing(market, news):
 }}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
                   'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 1024,
                                        'thinkingConfig': {'thinkingBudget': 0}}},
@@ -559,9 +559,9 @@ def translate_news_to_korean(items):
 {json.dumps(summaries, ensure_ascii=False)}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
-                  'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024, 'thinkingConfig': {'thinkingBudget': 0}}},
+                  'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024}},
             timeout=60
         )
         resp.raise_for_status()
@@ -720,9 +720,9 @@ JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 �
 }}"""
 
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
-                  'generationConfig': {'temperature': 0.5, 'maxOutputTokens': 1024, 'thinkingConfig': {'thinkingBudget': 0}}},
+                  'generationConfig': {'temperature': 0.5, 'maxOutputTokens': 1024}},
             timeout=60
         )
         resp.raise_for_status()
@@ -797,9 +797,9 @@ def fetch_research_summary(reports):
   ]
 }}"""
         resp = requests.post(
-            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
+            f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
-                  'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024, 'thinkingConfig': {'thinkingBudget': 0}}},
+                  'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 1024}},
             timeout=60
         )
         resp.raise_for_status()
