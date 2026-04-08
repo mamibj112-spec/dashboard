@@ -853,6 +853,31 @@ def fetch_news():
 
 # ── 관심 종목 ──────────────────────────────────────────────────────────────────
 
+def _fetch_ticker_news(yf_ticker, limit=5):
+    """yfinance Ticker 객체에서 최신 뉴스 가져오기"""
+    from datetime import datetime as _dt
+    try:
+        items = []
+        for n in (yf_ticker.news or [])[:limit]:
+            ts = n.get('providerPublishTime') or n.get('pubDate')
+            if ts:
+                try:
+                    date_str = _dt.fromtimestamp(ts).strftime('%m/%d %H:%M')
+                except:
+                    date_str = ''
+            else:
+                date_str = ''
+            content = n.get('content') or {}
+            title = n.get('title') or content.get('title', '')
+            link  = n.get('link')  or (content.get('clickThroughUrl') or {}).get('url', '#')
+            publisher = n.get('publisher') or (content.get('provider') or {}).get('displayName', '')
+            if title:
+                items.append({'title': title, 'link': link, 'publisher': publisher, 'date': date_str})
+        return items
+    except:
+        return []
+
+
 def fetch_watchlist_data(watchlist):
     """관심 종목 상세 데이터 수집 (yfinance)"""
     import pandas as _pd
@@ -943,6 +968,7 @@ def fetch_watchlist_data(watchlist):
                 'ret_3m':       ret(63),
                 'ret_6m':       ret(126),
                 'ret_1y':       round((curr - closes[0]) / closes[0] * 100, 2) if closes[0] else None,
+                'news':         _fetch_ticker_news(t),
             })
             print(f"  [{ticker}] 수집 완료")
         except Exception as e:
@@ -2348,7 +2374,15 @@ function showStock(ticker){{
     row('부채비율',_fmt(s.debt_equity))+
     row('배당수익률',s.div_yield!==null&&s.div_yield!==0?s.div_yield+'%':'없음')+
     (s.desc?'<div style="font-size:10.5px;color:var(--t3);margin-top:12px;line-height:1.6;">'+s.desc+'</div>':'')+
-    '';
+    (s.news&&s.news.length?
+      sec('관련 뉴스')+
+      s.news.map(function(n){{
+        return'<a href="'+n.link+'" target="_blank" style="display:block;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);">'+
+          '<div style="font-size:12px;color:var(--t1);line-height:1.5;margin-bottom:3px;">'+n.title+'</div>'+
+          '<div style="font-size:10px;color:var(--t3);">'+n.publisher+(n.date?' · '+n.date:'')+'</div>'+
+        '</a>';
+      }}).join('')
+    : '');
   document.getElementById('stockModal').innerHTML=html;
   document.getElementById('stockOverlay').style.display='block';
   setTimeout(function(){{
