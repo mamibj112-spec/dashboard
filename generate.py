@@ -2541,24 +2541,42 @@ def create_icons():
 # ── 메인 ──────────────────────────────────────────────────────────────────────
 
 def main():
+    from concurrent.futures import ThreadPoolExecutor
+
     dt = now_kst()
     print(f"대시보드 생성 중: {korean_date(dt)}")
 
-    market   = fetch_market()
-    news     = fetch_news()
-    stocks   = fetch_market_stocks()
-    ai_brief     = fetch_ai_briefing(market, news)
-    us_ai_brief  = fetch_us_ai_briefing(market, news)
+    # 1단계: 데이터 수집 (병렬 — Gemini 호출 없음)
+    print("데이터 수집 중 (병렬)...")
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        f_market          = ex.submit(fetch_market)
+        f_news            = ex.submit(fetch_news)
+        f_stocks          = ex.submit(fetch_market_stocks)
+        f_usdkrw          = ex.submit(fetch_usdkrw_week)
+        f_macro           = ex.submit(fetch_macro_history)
+        f_research_reports = ex.submit(fetch_research_reports)
 
-    research_reports = fetch_research_reports()
-    research_summary = fetch_research_summary(research_reports)
-    stock_story      = fetch_stock_story(stocks)
+    market           = f_market.result()
+    news             = f_news.result()
+    stocks           = f_stocks.result()
+    usdkrw_week      = f_usdkrw.result()
+    macro_hist       = f_macro.result()
+    research_reports = f_research_reports.result()
 
-    usdkrw_week  = fetch_usdkrw_week()
-    macro_hist   = fetch_macro_history()
+    # 2단계: AI 분석 (병렬 — Gemini 호출)
+    print("AI 분석 중 (병렬)...")
+    with ThreadPoolExecutor(max_workers=5) as ex:
+        f_ai_brief        = ex.submit(fetch_ai_briefing, market, news)
+        f_us_ai_brief     = ex.submit(fetch_us_ai_briefing, market, news)
+        f_research_summary = ex.submit(fetch_research_summary, research_reports)
+        f_stock_story     = ex.submit(fetch_stock_story, stocks)
+        f_watchlist       = ex.submit(fetch_watchlist_data, WATCHLIST)
 
-    print("관심 종목 수집 중...")
-    watchlist = fetch_watchlist_data(WATCHLIST)
+    ai_brief         = f_ai_brief.result()
+    us_ai_brief      = f_us_ai_brief.result()
+    research_summary = f_research_summary.result()
+    stock_story      = f_stock_story.result()
+    watchlist        = f_watchlist.result()
 
     html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, us_ai_brief=us_ai_brief, watchlist=watchlist)
 
