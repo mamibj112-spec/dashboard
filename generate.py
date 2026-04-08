@@ -968,7 +968,7 @@ def fetch_watchlist_data(watchlist):
                 'ret_3m':       ret(63),
                 'ret_6m':       ret(126),
                 'ret_1y':       round((curr - closes[0]) / closes[0] * 100, 2) if closes[0] else None,
-                'news':         _fetch_ticker_news(t),
+                'news':         translate_news_to_korean(_fetch_ticker_news(t)),
             })
             print(f"  [{ticker}] 수집 완료")
         except Exception as e:
