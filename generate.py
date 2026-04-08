@@ -450,7 +450,8 @@ def fetch_us_ai_briefing(market, news):
         resp = requests.post(
             f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}',
             json={'contents': [{'parts': [{'text': prompt}]}],
-                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 1024}},
+                  'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 1024,
+                                       'thinkingConfig': {'thinkingBudget': 0}}},
             timeout=60
         )
         resp.raise_for_status()
@@ -466,6 +467,72 @@ def fetch_us_ai_briefing(market, news):
     except Exception as e:
         print(f"  해외 AI 브리핑 오류: {e}")
         return None
+
+
+def build_us_story_fallback(market):
+    """AI 없을 때 규칙 기반 미국 시황 요약 생성"""
+    sp500_pct  = d(market, 'sp500').get('pct') or 0
+    nasdaq_pct = d(market, 'nasdaq').get('pct') or 0
+    dow_pct    = d(market, 'dow').get('pct') or 0
+    vix_val    = d(market, 'vix').get('val') or 20
+    sp_rsi     = d(market, 'sp500').get('rsi') or 50
+    tnx_val    = d(market, 'tnx').get('val')
+    dxy_pct    = d(market, 'dxy').get('pct') or 0
+    gold_pct   = d(market, 'gold').get('pct') or 0
+    btc_pct    = d(market, 'btc').get('pct') or 0
+
+    # 지수 흐름
+    if abs(sp500_pct) >= 2.0:
+        idx_desc = f'S&P500이 {abs(sp500_pct):.1f}% {"급등"if sp500_pct>0 else "급락"}하며 큰 변동성을 보였습니다.'
+    elif abs(sp500_pct) >= 1.0:
+        idx_desc = f'S&P500이 {abs(sp500_pct):.1f}% {"상승"if sp500_pct>0 else "하락"}하였습니다.'
+    else:
+        idx_desc = f'S&P500이 {sp500_pct:+.2f}%로 보합권에서 마감하였습니다.'
+
+    # 기술주 vs 다우
+    gap = nasdaq_pct - dow_pct
+    if gap > 1.0:
+        tech_desc = f'나스닥이 다우 대비 강세를 보이며 기술주가 시장을 주도했습니다.'
+    elif gap < -1.0:
+        tech_desc = f'나스닥이 다우 대비 약세로 기술주 부진이 두드러졌습니다.'
+    else:
+        tech_desc = f'나스닥({nasdaq_pct:+.2f}%)과 다우({dow_pct:+.2f}%)가 비슷한 흐름을 보였습니다.'
+
+    # 공포지수
+    if vix_val >= 30:
+        vix_desc = f'VIX 공포지수가 {vix_val:.1f}로 고조되어 시장 불안이 큽니다.'
+    elif vix_val <= 15:
+        vix_desc = f'VIX 공포지수가 {vix_val:.1f}로 낮아 시장이 안정적입니다.'
+    else:
+        vix_desc = f'VIX 공포지수는 {vix_val:.1f}로 보통 수준입니다.'
+
+    # 매크로
+    macro_pts = []
+    if tnx_val:
+        macro_pts.append(f'미 10년물 금리 {tnx_val:.2f}%')
+    if abs(dxy_pct) >= 0.3:
+        macro_pts.append(f'달러 인덱스 {"강세" if dxy_pct > 0 else "약세"}({dxy_pct:+.1f}%)')
+    if abs(gold_pct) >= 0.5:
+        macro_pts.append(f'금 {"상승" if gold_pct > 0 else "하락"}({gold_pct:+.1f}%)')
+    if abs(btc_pct) >= 2.0:
+        macro_pts.append(f'비트코인 {"급등" if btc_pct > 0 else "급락"}({btc_pct:+.1f}%)')
+    macro_desc = ' · '.join(macro_pts) if macro_pts else ''
+
+    # RSI 상태
+    if sp_rsi >= 70:
+        rsi_desc = f'S&P500 RSI {sp_rsi}로 과매수 구간 진입, 단기 조정 주의가 필요합니다.'
+    elif sp_rsi <= 30:
+        rsi_desc = f'S&P500 RSI {sp_rsi}로 과매도 구간으로 반등 가능성을 주시하세요.'
+    else:
+        rsi_desc = f'S&P500 RSI {sp_rsi}로 중립 구간에서 추세를 확인 중입니다.'
+
+    story = f'{idx_desc} {tech_desc}'
+    sector = vix_desc
+    if macro_desc:
+        sector += f' 매크로 지표: {macro_desc}.'
+    outlook = rsi_desc
+
+    return {'keyword': '📊 오늘의 미국 증시', 'story': story, 'sector_story': sector, 'outlook': outlook}
 
 
 def translate_news_to_korean(items):
@@ -1460,7 +1527,29 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 </div>'''
     else:
-        us_story_html = ''
+        # AI 없을 때 규칙 기반 폴백
+        fb = build_us_story_fallback(market)
+        u_kw  = fb.get('keyword', '')
+        u_st  = fb.get('story', '')
+        u_sec = fb.get('sector_story', '')
+        u_out = fb.get('outlook', '')
+        us_story_html = f'''<div class="section">
+  <div class="story-wrap" style="background: linear-gradient(135deg, rgba(77, 166, 255, 0.1), rgba(167, 139, 250, 0.05)); border-color: rgba(77, 166, 255, 0.3);">
+    <div class="story-keyword" style="color: var(--blue); border-bottom-color: rgba(77, 166, 255, 0.2);">{u_kw}</div>
+    <div class="story-block">
+      <div class="story-label" style="color: var(--blue);">🌍 시장 서사</div>
+      <div class="story-text">{u_st}</div>
+    </div>
+    <div class="story-block">
+      <div class="story-label" style="color: var(--blue);">📈 매크로 / 변동성</div>
+      <div class="story-text">{u_sec}</div>
+    </div>
+    <div class="story-block">
+      <div class="story-label" style="color: var(--blue);">🔭 기술적 포인트</div>
+      <div class="story-text">{u_out}</div>
+    </div>
+  </div>
+</div>'''
 
     # 해외 섹터 HTML (색상 막대 바)
     sector_pct_list = [abs(d(market, k).get('pct', 0)) for k in US_SECTOR_MAP]
