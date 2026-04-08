@@ -1169,24 +1169,6 @@ background:var(--card2);border-radius:16px;padding:16px 16px 24px;z-index:100;
 box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(calc(100% + 28px));
 transition:transform .28s cubic-bezier(.4,0,.2,1)}
 #macroModal.open{transform:translateY(0)}
-.yt-input-row{display:flex;gap:8px;margin-bottom:8px}
-.yt-input{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--t1);font-size:12px;outline:none}
-.yt-input:focus{border-color:var(--blue)}
-.yt-gen-btn{padding:9px 14px;background:var(--blue);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
-.yt-gen-btn:active{opacity:.8}
-.yt-status{font-size:11px;color:var(--t3);min-height:16px;margin-bottom:4px}
-.yt-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
-.yt-meta{font-size:10px;color:var(--t3);margin-bottom:6px}
-.yt-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px;line-height:1.4}
-.yt-summary{font-size:12px;color:var(--blue);margin-bottom:10px;line-height:1.5;font-style:italic}
-.yt-toggle{font-size:11px;color:var(--t3);cursor:pointer;list-style:none;padding:4px 0;user-select:none}
-.yt-toggle::-webkit-details-marker{display:none}
-.yt-body{margin-top:10px}
-.yt-sec-head{font-size:12px;font-weight:700;color:var(--t1);margin:12px 0 4px}
-.yt-sec-body{font-size:11.5px;color:var(--t2);line-height:1.75;margin-bottom:4px;white-space:pre-line}
-.yt-ins-list{margin-top:10px;padding-left:0;list-style:none;border-top:1px solid var(--border);padding-top:8px}
-.yt-ins{font-size:11.5px;color:var(--t2);padding:5px 0 5px 16px;position:relative}
-.yt-ins::before{content:'→';position:absolute;left:0;color:var(--blue)}
 .us-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:4px 0 12px}
 .us-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
 .us-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
@@ -1234,31 +1216,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
-def _make_reports_html(reports):
-    if not reports:
-        return '<div style="color:var(--t3);font-size:12px;padding:8px 0;">아직 생성된 리포트가 없습니다</div>'
-    items = []
-    for r in reports:
-        secs = ''.join(
-            f'<div class="yt-sec-head">{s["heading"]}</div>'
-            f'<p class="yt-sec-body">{s["content"]}</p>'
-            for s in r.get('sections', [])
-        )
-        ins = ''.join(f'<li class="yt-ins">{i}</li>' for i in r.get('insights', []))
-        items.append(
-            f'<div class="yt-card">'
-            f'<div class="yt-meta">{r["created_at"]} &nbsp;·&nbsp; <a href="{r["url"]}" target="_blank">원본 영상 ↗</a></div>'
-            f'<div class="yt-title">{r["title"]}</div>'
-            f'<div class="yt-summary">{r["summary"]}</div>'
-            f'<details><summary class="yt-toggle">전체 리포트 보기 ▾</summary>'
-            f'<div class="yt-body">{secs}</div>'
-            f'<ul class="yt-ins-list">{ins}</ul>'
-            f'</details></div>'
-        )
-    return '\n'.join(items)
-
-
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, reports=None, us_ai_brief=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, us_ai_brief=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -1450,10 +1408,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         breadth_html  = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>'
         top_amt_html  = breadth_html
         top_gain_html = breadth_html
-
-    # 리포트
-    reports_html = _make_reports_html(reports or [])
-    reports_count = len(reports) if reports else 0
 
     # 캘린더
     cal_events = get_weekly_calendar(dt)
@@ -1695,7 +1649,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <button class="tab-btn" onclick="sw('re',this)">🏠 부동산</button>
   <button class="tab-btn" onclick="sw('hot',this)">🔥 핫이슈</button>
   <button class="tab-btn" onclick="sw('cal',this)">📅 일정</button>
-  <button class="tab-btn" onclick="sw('yt',this)">📺 리포트</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -2080,41 +2033,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
 </div>
 
-<!-- ===== 리포트 탭 ===== -->
-<div id="tab-yt" class="tab-panel">
-
-  <div class="section">
-    <div class="banner blue">
-      <strong>📺 YouTube 딥리포트</strong><br>
-      영상 URL 입력 후 생성 버튼을 누르면 1~2분 후 리포트가 쌓입니다
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">GitHub PAT 설정</div>
-    <div class="yt-input-row">
-      <input id="ytPat" type="password" class="yt-input" placeholder="GitHub PAT (최초 1회 입력, 브라우저에 저장됨)">
-      <button class="yt-gen-btn" onclick="ytSavePat()">저장</button>
-    </div>
-    <div id="ytPatStatus" class="yt-status"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">새 리포트 생성</div>
-    <div class="yt-input-row">
-      <input id="ytUrl" type="url" class="yt-input" placeholder="https://youtube.com/watch?v=...">
-      <button id="ytGenBtn" class="yt-gen-btn" onclick="ytGenerate()">생성</button>
-      <button id="ytStopBtn" class="yt-gen-btn" style="display:none;background:#ef4444;" onclick="ytStop()">STOP</button>
-    </div>
-    <div id="ytStatus" class="yt-status"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">저장된 리포트 ({reports_count}개)</div>
-    {reports_html}
-  </div>
-
-</div>
 
 <div id="macroOverlay" onclick="closeMacroChart()"></div>
 <div id="macroModal">
@@ -2191,88 +2109,7 @@ function closeMacroChart(){{
     plugins:[ChartDataLabels]
   }});
 }})();
-var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',yt:'📺 YouTube 딥리포트'}};
-(function(){{
-  var pat=localStorage.getItem('yt_gh_pat');
-  if(pat){{document.getElementById('ytPatStatus').textContent='✅ PAT 저장됨';}}
-  else{{document.getElementById('ytPatStatus').textContent='⚠️ PAT 미설정 — 위에 입력 후 저장해주세요';}}
-}})();
-function ytSavePat(){{
-  var pat=document.getElementById('ytPat').value.trim();
-  if(!pat){{alert('PAT를 입력해주세요');return;}}
-  localStorage.setItem('yt_gh_pat',pat);
-  document.getElementById('ytPat').value='';
-  document.getElementById('ytPatStatus').textContent='✅ PAT 저장됨';
-}}
-var _ytRunId=null,_ytPollTimer=null;
-function _ytSetBusy(busy){{
-  document.getElementById('ytGenBtn').style.display=busy?'none':'';
-  document.getElementById('ytStopBtn').style.display=busy?'':'none';
-  document.getElementById('ytUrl').disabled=busy;
-}}
-function _ytStatus(msg){{document.getElementById('ytStatus').innerHTML=msg;}}
-function _ytPoll(pat){{
-  if(!_ytRunId)return;
-  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_ytRunId,{{
-    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
-  }}).then(function(r){{return r.json();}}).then(function(d){{
-    var s=d.status,c=d.conclusion;
-    if(s==='queued'){{_ytStatus('⏳ 대기 중...');}}
-    else if(s==='in_progress'){{_ytStatus('⚙️ 생성 중... (Gemini 분석 중)');}}
-    else if(s==='completed'){{
-      _ytSetBusy(false);
-      clearInterval(_ytPollTimer);_ytPollTimer=null;_ytRunId=null;
-      if(c==='success'){{_ytStatus('✅ 완료! <a href="javascript:location.reload()" style="color:#60a5fa;">새로고침</a>하면 리포트가 나타납니다.');}}
-      else{{_ytStatus('❌ 실패 (결론: '+c+')');}}
-    }}
-  }}).catch(function(){{_ytStatus('⚠️ 상태 확인 중 오류 — 잠시 후 재시도');}});
-}}
-function ytGenerate(){{
-  var pat=localStorage.getItem('yt_gh_pat');
-  if(!pat){{alert('먼저 GitHub PAT를 설정해주세요');return;}}
-  var url=document.getElementById('ytUrl').value.trim();
-  if(!url){{alert('YouTube URL을 입력해주세요');return;}}
-  _ytSetBusy(true);
-  _ytStatus('요청 중...');
-  var triggerTime=new Date().toISOString();
-  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/youtube_report.yml/dispatches',{{
-    method:'POST',
-    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}},
-    body:JSON.stringify({{ref:'main',inputs:{{youtube_url:url}}}})
-  }}).then(function(r){{
-    if(r.status===204){{
-      document.getElementById('ytUrl').value='';
-      _ytStatus('⏳ 워크플로우 시작 중...');
-      setTimeout(function(){{
-        fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/youtube_report.yml/runs?per_page=5',{{
-          headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
-        }}).then(function(r){{return r.json();}}).then(function(d){{
-          var run=(d.workflow_runs||[])[0];
-          if(run){{
-            _ytRunId=run.id;
-            _ytPollTimer=setInterval(function(){{_ytPoll(pat);}},5000);
-            _ytPoll(pat);
-          }}else{{_ytStatus('⚠️ 실행 중 — 상태 추적 실패, 1~2분 후 새로고침하세요');}}
-        }}).catch(function(){{_ytStatus('⚠️ 실행 중 — 1~2분 후 새로고침하세요');}});
-      }},5000);
-    }}else{{
-      _ytSetBusy(false);
-      r.json().then(function(d){{_ytStatus('❌ 실패: '+(d.message||r.status));}}).catch(function(){{_ytStatus('❌ 실패 (PAT 권한 확인 필요)');}});
-    }}
-  }}).catch(function(){{_ytSetBusy(false);_ytStatus('❌ 네트워크 오류');}});
-}}
-function ytStop(){{
-  var pat=localStorage.getItem('yt_gh_pat');
-  if(!_ytRunId||!pat)return;
-  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_ytRunId+'/cancel',{{
-    method:'POST',
-    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
-  }}).then(function(){{
-    clearInterval(_ytPollTimer);_ytPollTimer=null;_ytRunId=null;
-    _ytSetBusy(false);
-    _ytStatus('🛑 중단됨');
-  }}).catch(function(){{_ytStatus('❌ 중단 실패');}});
-}}
+var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정'}};
 var _dashRunId=null,_dashPollTimer=null;
 function _dashSetBusy(busy){{
   var btn=document.getElementById('dashUpdateBtn');
@@ -2282,8 +2119,9 @@ function _dashSetBusy(busy){{
 function _dashStatus(msg){{document.getElementById('dashUpdateStatus').innerHTML=msg;}}
 function _dashPoll(pat){{
   if(!_dashRunId)return;
+  var p=pat||localStorage.getItem('dash_gh_pat');
   fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_dashRunId,{{
-    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}}
+    headers:{{'Authorization':'token '+p,'Accept':'application/vnd.github.v3+json'}}
   }}).then(function(r){{return r.json();}}).then(function(d){{
     var s=d.status,c=d.conclusion;
     if(s==='queued'){{_dashStatus('⏳ 대기 중...');}}
@@ -2297,8 +2135,8 @@ function _dashPoll(pat){{
   }}).catch(function(){{_dashStatus('⚠️ 상태 확인 오류');}});
 }}
 function dashUpdate(){{
-  var pat=localStorage.getItem('yt_gh_pat');
-  if(!pat){{alert('먼저 📺 리포트 탭에서 GitHub PAT를 설정해주세요');return;}}
+  var pat=localStorage.getItem('dash_gh_pat');
+  if(!pat){{pat=prompt('GitHub PAT를 입력하세요 (repo workflow 권한 필요):');if(!pat)return;localStorage.setItem('dash_gh_pat',pat);}}
   _dashSetBusy(true);
   _dashStatus('요청 중...');
   var triggerTime=new Date().toISOString();
@@ -2390,9 +2228,7 @@ def main():
     usdkrw_week = fetch_usdkrw_week()
     macro_hist  = fetch_macro_history()
 
-    reports_path = Path(__file__).parent / 'reports.json'
-    reports = json.loads(reports_path.read_text(encoding='utf-8')) if reports_path.exists() else []
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, reports=reports, us_ai_brief=us_ai_brief)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, us_ai_brief=us_ai_brief)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')

@@ -134,24 +134,6 @@ background:var(--card2);border-radius:16px;padding:16px 16px 24px;z-index:100;
 box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(calc(100% + 28px));
 transition:transform .28s cubic-bezier(.4,0,.2,1)}
 #macroModal.open{transform:translateY(0)}
-.yt-input-row{display:flex;gap:8px;margin-bottom:8px}
-.yt-input{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--t1);font-size:12px;outline:none}
-.yt-input:focus{border-color:var(--blue)}
-.yt-gen-btn{padding:9px 14px;background:var(--blue);color:#000;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
-.yt-gen-btn:active{opacity:.8}
-.yt-status{font-size:11px;color:var(--t3);min-height:16px;margin-bottom:4px}
-.yt-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
-.yt-meta{font-size:10px;color:var(--t3);margin-bottom:6px}
-.yt-title{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px;line-height:1.4}
-.yt-summary{font-size:12px;color:var(--blue);margin-bottom:10px;line-height:1.5;font-style:italic}
-.yt-toggle{font-size:11px;color:var(--t3);cursor:pointer;list-style:none;padding:4px 0;user-select:none}
-.yt-toggle::-webkit-details-marker{display:none}
-.yt-body{margin-top:10px}
-.yt-sec-head{font-size:12px;font-weight:700;color:var(--t1);margin:12px 0 4px}
-.yt-sec-body{font-size:11.5px;color:var(--t2);line-height:1.75;margin-bottom:4px;white-space:pre-line}
-.yt-ins-list{margin-top:10px;padding-left:0;list-style:none;border-top:1px solid var(--border);padding-top:8px}
-.yt-ins{font-size:11.5px;color:var(--t2);padding:5px 0 5px 16px;position:relative}
-.yt-ins::before{content:'→';position:absolute;left:0;color:var(--blue)}
 .us-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:4px 0 12px}
 .us-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
 .us-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
@@ -207,7 +189,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="header-date">2026년 4월 8일 수요일</div>
     <div class="header-day">장 마감 기준</div>
   </div>
-  <div class="header-right">22:08 생성<br><button class="update-btn" id="dashUpdateBtn" onclick="dashUpdate()">지금 업데이트</button><span class="update-status" id="dashUpdateStatus"></span></div>
+  <div class="header-right">22:20 생성<br><button class="update-btn" id="dashUpdateBtn" onclick="dashUpdate()">지금 업데이트</button><span class="update-status" id="dashUpdateStatus"></span></div>
 </div>
 
 <nav class="tab-nav">
@@ -216,7 +198,6 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <button class="tab-btn" onclick="sw('re',this)">🏠 부동산</button>
   <button class="tab-btn" onclick="sw('hot',this)">🔥 핫이슈</button>
   <button class="tab-btn" onclick="sw('cal',this)">📅 일정</button>
-  <button class="tab-btn" onclick="sw('yt',this)">📺 리포트</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -227,7 +208,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <strong>📈 오늘 시황</strong><br>
       <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong><span class="up-txt">5,872.34</span></strong> &nbsp;<span class="up-txt">▲ 377.56 (6.87%)</span></span>
       <span style="display:block;margin-bottom:6px;">코스닥 &nbsp;<strong><span class="up-txt">1,089.85</span></strong> &nbsp;<span class="up-txt">▲ 53.12 (5.12%)</span></span>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 6.9% 급등 · 코스닥 상대 약세 · 원/달러 1,472원 고환율 부담 · 브렌트유 16.4% 급락</span>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 6.9% 급등 · 코스닥 상대 약세 · 원/달러 1,474원 고환율 부담 · 브렌트유 16.8% 급락</span>
     </div>
   </div>
 
@@ -280,33 +261,33 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('usdkrw')">
         <div class="macro-name">USD/KRW</div>
-        <div class="macro-val"><span class="up-txt">1,472.4원</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 35.5 (2.35%)</span></div>
+        <div class="macro-val"><span class="up-txt">1,473.6원</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 34.3 (2.27%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('brent')">
         <div class="macro-name">브렌트유</div>
-        <div class="macro-val"><span class="dn-txt">$91.3</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $17.96 (16.44%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$90.9</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $18.32 (16.77%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('wti')">
         <div class="macro-name">WTI</div>
-        <div class="macro-val"><span class="dn-txt">$92.7</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $20.28 (17.95%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$92.4</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $20.59 (18.23%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="up-txt">$4,827</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $169.70 (3.64%)</span></div>
+        <div class="macro-val"><span class="up-txt">$4,824</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $166.50 (3.58%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="up-txt">98.58</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 1.06 (1.07%)</span></div>
+        <div class="macro-val"><span class="up-txt">98.57</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 1.07 (1.07%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$72,121</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 180.49 (0.25%)</span></div>
+        <div class="macro-val"><span class="up-txt">$72,700</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 759.44 (1.06%)</span></div>
       </div>
     </div>
   </div>
@@ -755,22 +736,22 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="macro-card" onclick="showMacroChart('tnx')">
         <div class="macro-name">미 10년물</div>
         <div class="macro-val"><span class="up-txt">4.24%</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.10%p</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 0.11%p</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="up-txt">98.58</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 1.06 (1.07%)</span></div>
+        <div class="macro-val"><span class="up-txt">98.57</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 1.07 (1.07%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="up-txt">$4,827</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $169.70 (3.64%)</span></div>
+        <div class="macro-val"><span class="up-txt">$4,824</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $166.50 (3.58%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$72,121</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 180.49 (0.25%)</span></div>
+        <div class="macro-val"><span class="up-txt">$72,700</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 759.44 (1.06%)</span></div>
       </div>
     </div>
   </div>
@@ -979,41 +960,6 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 
 </div>
 
-<!-- ===== 리포트 탭 ===== -->
-<div id="tab-yt" class="tab-panel">
-
-  <div class="section">
-    <div class="banner blue">
-      <strong>📺 YouTube 딥리포트</strong><br>
-      영상 URL 입력 후 생성 버튼을 누르면 1~2분 후 리포트가 쌓입니다
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">GitHub PAT 설정</div>
-    <div class="yt-input-row">
-      <input id="ytPat" type="password" class="yt-input" placeholder="GitHub PAT (최초 1회 입력, 브라우저에 저장됨)">
-      <button class="yt-gen-btn" onclick="ytSavePat()">저장</button>
-    </div>
-    <div id="ytPatStatus" class="yt-status"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">새 리포트 생성</div>
-    <div class="yt-input-row">
-      <input id="ytUrl" type="url" class="yt-input" placeholder="https://youtube.com/watch?v=...">
-      <button id="ytGenBtn" class="yt-gen-btn" onclick="ytGenerate()">생성</button>
-      <button id="ytStopBtn" class="yt-gen-btn" style="display:none;background:#ef4444;" onclick="ytStop()">STOP</button>
-    </div>
-    <div id="ytStatus" class="yt-status"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">저장된 리포트 (1개)</div>
-    <div class="yt-card"><div class="yt-meta">2026년 04월 07일 23:02 &nbsp;·&nbsp; <a href="https://youtu.be/Ba18LIQHyPg?si=Y-VhOtnCXBHtFE9O" target="_blank">원본 영상 ↗</a></div><div class="yt-title">GE Vernova: 전력 슈퍼 사이클의 강자, 에너지 전환 시대의 핵심 플레이어</div><div class="yt-summary">GE Vernova는 제너럴 일렉트릭의 전략적 분사를 통해 탄생한 에너지 거인으로, 전 세계 전력의 25%를 생산하며 AI 데이터센터, 전기화 등 메가트렌드 속에서 전례 없는 '전력 슈퍼 사이클'을 주도하는 핵심 기업으로 부상하고 있습니다.</div><details><summary class="yt-toggle">전체 리포트 보기 ▾</summary><div class="yt-body"><div class="yt-sec-head">에너지 거인의 탄생과 스콧 스트라직 CEO의 비전</div><p class="yt-sec-body">GE Vernova는 헬스케어, 에너지, 항공우주 세 부문으로 나뉜 제너럴 일렉트릭의 에너지 부문이 독립하여 탄생한 기업입니다. 스콧 스트라직 CEO는 20년 이상 GE에서 경력을 쌓은 베테랑으로, GE 항공 엔진 및 가스 파워 시스템즈의 CFO를 역임했습니다. 그는 전 세계 에너지 시스템이 대전환기에 있으며, 이는 '인터넷 등장'에 비견될 만한 수십 년에 걸친 대규모 투자 사이클, 즉 '전력 슈퍼 사이클'이라고 강조합니다. GE Vernova라는 이름은 'General Electric'의 'GE', 라틴어로 '녹색'을 의미하는 'Verde'에서 따온 'Ver', 그리고 '새로운 시작'을 의미하는 'Nova'를 결합한 것으로, 친환경적이고 혁신적인 에너지 미래를 지향하는 기업의 정체성을 보여줍니다.</p><div class="yt-sec-head">전기화(Electrification) 시대의 독보적인 위상</div><p class="yt-sec-body">GE Vernova는 전 세계 전기의 25%를 생산하며, 중국을 제외하면 약 3분의 1, 미국 내에서는 거의 절반에 가까운 전력을 책임지는 독보적인 위치를 차지하고 있습니다. 이는 단순한 발전기 제조업체를 넘어, 전력 시스템 전반에 걸친 통합 솔루션을 제공하는 기업으로 성장했음을 의미합니다. 스콧 스트라직 CEO는 산업화, 첨단 제조업, AI 데이터센터, 건물, 교통 등 모든 것이 전기화되면서 전력 수요가 폭발적으로 증가하고 있다고 설명합니다. 이러한 전례 없는 전력 수요는 GE Vernova에게 막대한 성장 기회를 제공하며, 특히 재생에너지의 간헐성을 보완하고 대규모 AI 데이터센터에 안정적인 전력을 공급하는 '그리드 밸런싱(Grid Balancing)' 기술이 핵심 경쟁력으로 부각되고 있습니다.</p><div class="yt-sec-head">글로벌 확장과 미래 기술 투자</div><p class="yt-sec-body">GE Vernova는 HA 가스터빈을 필두로 전 세계 각국에서 대규모 계약을 수주하고 있습니다. 사우디아라비아, 대만, 멕시코, 말레이시아, 폴란드, 쿠웨이트, 이라크, 알제리, 독일, 호주, 인도, 루마니아 등 다양한 국가에서 가스터빈 및 그리드 장비 주문이 급증하고 있으며, 이는 지역적 편중 리스크를 낮추고 안정적인 성장을 가능하게 합니다. 또한, 미국과 일본 정부의 1천억 달러 규모 SMR(소형모듈원자로) MOU 체결에 참여하고, MIT와 5천만 달러 규모의 에너지-기후 기술 연구 제휴를 맺는 등 차세대 전력 산업 리더 양성과 탄소 포집 기술 개발에도 적극적으로 투자하고 있습니다. 이러한 투자는 미래 에너지 기술 시장에서의 선도적인 위치를 확보하려는 전략의 일환입니다.</p><div class="yt-sec-head">재무 성과, 시장 평가 및 주요 리스크</div><p class="yt-sec-body">2025년 애뉴얼 리포트에 따르면, GE Vernova는 593억 달러의 수주, 380억 달러의 매출, 32억 달러의 EBITDA, 37억 달러의 잉여현금흐름을 기록하며 견고한 재무 성과를 보여주었습니다. 특히 순이익은 전년 대비 33억 달러 증가한 49억 달러를 달성했으며, 자사주 매입 및 배당금 상향 등 주주 친화적인 정책을 펼치고 있습니다. 그러나 해상 풍력 부문에서의 지속적인 적자, 육상 풍력 시장의 정책 불확실성, 장기적인 가스터빈 납기 지연 등은 잠재적 리스크로 남아있습니다. 현재 주가는 상장 첫날 100달러에서 900달러 이상으로 급등하며 높은 시장 기대를 반영하고 있으며, 대부분의 애널리스트는 '매수' 의견을 제시하고 있으나, 높은 PER은 다소 부담스러운 요인으로 작용할 수 있습니다.</p></div><ul class="yt-ins-list"><li class="yt-ins">GE Vernova는 에너지 전환과 AI 데이터센터 확산이라는 거대한 메가트렌드에 직접적으로 연결된 핵심 수혜 기업으로, 단순한 발전기 제조업체를 넘어 전력 시스템 전체를 아우르는 통합 솔루션을 제공합니다.</li><li class="yt-ins">재생에너지의 간헐성을 보완하고 급증하는 AI 데이터센터의 전력 수요를 충족시키기 위한 '그리드 밸런싱' 기술은 GE Vernova의 독점적인 경쟁 우위이며, 하드웨어와 소프트웨어를 결합한 솔루션으로 글로벌 시장을 선도하고 있습니다.</li><li class="yt-ins">소형모듈원자로(SMR) 및 탄소 포집 기술과 같은 차세대 에너지 기술에 대한 선제적인 연구 개발 투자는 GE Vernova의 장기적인 성장 동력을 확보하며, 미래 에너지 시장의 리더십을 강화할 잠재력을 보여줍니다.</li><li class="yt-ins">GE Vernova는 견고한 재무 성과와 적극적인 주주 환원 정책을 통해 투자 매력을 높이고 있으나, 해상 풍력 부문의 손실과 같은 특정 사업 부문의 리스크, 그리고 높은 시장 기대에 따른 밸류에이션 부담은 투자 시 고려해야 할 요소입니다.</li><li class="yt-ins">전력 산업의 특성상 장기적인 프로젝트 계약과 정부 간 협력이 중요하며, GE Vernova는 이러한 환경에서 안정적인 수주를 확보하고 글로벌 시장에서 입지를 공고히 하고 있어, 단기적인 시장 변동성보다는 장기적인 관점에서의 접근이 유효합니다.</li></ul></details></div>
-  </div>
-
-</div>
 
 <div id="macroOverlay" onclick="closeMacroChart()"></div>
 <div id="macroModal">
@@ -1026,13 +972,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div>
 
 <div class="footer-note">
-  2026년 4월 8일 수요일 · 22:08 생성<br>
+  2026년 4월 8일 수요일 · 22:20 생성<br>
   부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
 var MACRO_META={"kospi": {"name": "코스피", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "", "dec": 2}, "kosdaq": {"name": "코스닥", "color": "#3b82f6", "rgb": "59,130,246", "pre": "", "suf": "", "dec": 2}, "sp500": {"name": "S&P 500", "color": "#00e896", "rgb": "0,232,150", "pre": "", "suf": "", "dec": 2}, "nasdaq": {"name": "나스닥 100", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "", "dec": 2}, "dow": {"name": "다우존스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "vix": {"name": "VIX", "color": "#ffc940", "rgb": "255,201,64", "pre": "", "suf": "", "dec": 2}, "usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
-var MACRO_HIST={"kospi": [5052.46, 5478.7002, 5234.0498, 5377.2998, 5450.3301, 5494.7798, 5872.3398], "kosdaq": [1052.39, 1116.1801, 1056.34, 1063.75, 1047.37, 1036.73, 1089.85], "sp500": [6368.8501, 6343.7202, 6528.52, 6575.3198, 6582.6899, 6611.8301, 6616.8501], "nasdaq": [23132.7695, 22953.3809, 23740.1895, 24019.9902, 24045.5293, 24192.1699, 24202.3691], "dow": [45166.6406, 45216.1406, 46341.5117, 46565.7383, 46504.6719, 46669.8789, 46584.4609], "vix": [30.61, 25.25, 24.54, 23.87, 24.17, 25.78, 20.19], "usdkrw": [1516.13, 1503.33, 1512.09, 1509.22, 1509.26, 1507.85, 1473.1801], "brent": [112.78, 118.35, 101.16, 109.03, 109.77, 109.27, 91.22], "wti": [102.88, 101.38, 100.12, 111.54, 112.41, 112.95, 92.54], "tnx": [4.342, 4.311, 4.319, 4.313, 4.335, 4.343, 4.24], "gold": [4526.0, 4647.6001, 4783.2002, 4651.5, 4656.7998, 4657.1001, 4826.6001], "dxy": [100.51, 99.96, 99.65, 100.03, 99.98, 99.64, 98.579], "btc": [66888.5703, 66931.1016, 67290.5156, 68981.8984, 68859.8281, 71940.7031, 72113.3125]};
+var MACRO_HIST={"kospi": [5052.46, 5478.7002, 5234.0498, 5377.2998, 5450.3301, 5494.7798, 5872.3398], "kosdaq": [1052.39, 1116.1801, 1056.34, 1063.75, 1047.37, 1036.73, 1089.85], "sp500": [6368.8501, 6343.7202, 6528.52, 6575.3198, 6582.6899, 6611.8301, 6616.8501], "nasdaq": [23132.7695, 22953.3809, 23740.1895, 24019.9902, 24045.5293, 24192.1699, 24202.3691], "dow": [45166.6406, 45216.1406, 46341.5117, 46565.7383, 46504.6719, 46669.8789, 46584.4609], "vix": [30.61, 25.25, 24.54, 23.87, 24.17, 25.78, 20.18], "usdkrw": [1516.13, 1503.33, 1512.09, 1509.22, 1509.26, 1507.85, 1474.48], "brent": [112.78, 118.35, 101.16, 109.03, 109.77, 109.27, 91.0], "wti": [102.88, 101.38, 100.12, 111.54, 112.41, 112.95, 92.4], "tnx": [4.342, 4.311, 4.319, 4.313, 4.335, 4.343, 4.238], "gold": [4526.0, 4647.6001, 4783.2002, 4651.5, 4656.7998, 4657.1001, 4820.8999], "dxy": [100.51, 99.96, 99.65, 100.03, 99.98, 99.64, 98.589], "btc": [66888.5703, 66931.1016, 67290.5156, 68981.8984, 68859.8281, 71940.7031, 72700.1406]};
 var _mc=null;
 function showMacroChart(k){
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
@@ -1090,88 +1036,7 @@ function closeMacroChart(){
     plugins:[ChartDataLabels]
   });
 })();
-var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',yt:'📺 YouTube 딥리포트'};
-(function(){
-  var pat=localStorage.getItem('yt_gh_pat');
-  if(pat){document.getElementById('ytPatStatus').textContent='✅ PAT 저장됨';}
-  else{document.getElementById('ytPatStatus').textContent='⚠️ PAT 미설정 — 위에 입력 후 저장해주세요';}
-})();
-function ytSavePat(){
-  var pat=document.getElementById('ytPat').value.trim();
-  if(!pat){alert('PAT를 입력해주세요');return;}
-  localStorage.setItem('yt_gh_pat',pat);
-  document.getElementById('ytPat').value='';
-  document.getElementById('ytPatStatus').textContent='✅ PAT 저장됨';
-}
-var _ytRunId=null,_ytPollTimer=null;
-function _ytSetBusy(busy){
-  document.getElementById('ytGenBtn').style.display=busy?'none':'';
-  document.getElementById('ytStopBtn').style.display=busy?'':'none';
-  document.getElementById('ytUrl').disabled=busy;
-}
-function _ytStatus(msg){document.getElementById('ytStatus').innerHTML=msg;}
-function _ytPoll(pat){
-  if(!_ytRunId)return;
-  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_ytRunId,{
-    headers:{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}
-  }).then(function(r){return r.json();}).then(function(d){
-    var s=d.status,c=d.conclusion;
-    if(s==='queued'){_ytStatus('⏳ 대기 중...');}
-    else if(s==='in_progress'){_ytStatus('⚙️ 생성 중... (Gemini 분석 중)');}
-    else if(s==='completed'){
-      _ytSetBusy(false);
-      clearInterval(_ytPollTimer);_ytPollTimer=null;_ytRunId=null;
-      if(c==='success'){_ytStatus('✅ 완료! <a href="javascript:location.reload()" style="color:#60a5fa;">새로고침</a>하면 리포트가 나타납니다.');}
-      else{_ytStatus('❌ 실패 (결론: '+c+')');}
-    }
-  }).catch(function(){_ytStatus('⚠️ 상태 확인 중 오류 — 잠시 후 재시도');});
-}
-function ytGenerate(){
-  var pat=localStorage.getItem('yt_gh_pat');
-  if(!pat){alert('먼저 GitHub PAT를 설정해주세요');return;}
-  var url=document.getElementById('ytUrl').value.trim();
-  if(!url){alert('YouTube URL을 입력해주세요');return;}
-  _ytSetBusy(true);
-  _ytStatus('요청 중...');
-  var triggerTime=new Date().toISOString();
-  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/youtube_report.yml/dispatches',{
-    method:'POST',
-    headers:{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
-    body:JSON.stringify({ref:'main',inputs:{youtube_url:url}})
-  }).then(function(r){
-    if(r.status===204){
-      document.getElementById('ytUrl').value='';
-      _ytStatus('⏳ 워크플로우 시작 중...');
-      setTimeout(function(){
-        fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/youtube_report.yml/runs?per_page=5',{
-          headers:{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}
-        }).then(function(r){return r.json();}).then(function(d){
-          var run=(d.workflow_runs||[])[0];
-          if(run){
-            _ytRunId=run.id;
-            _ytPollTimer=setInterval(function(){_ytPoll(pat);},5000);
-            _ytPoll(pat);
-          }else{_ytStatus('⚠️ 실행 중 — 상태 추적 실패, 1~2분 후 새로고침하세요');}
-        }).catch(function(){_ytStatus('⚠️ 실행 중 — 1~2분 후 새로고침하세요');});
-      },5000);
-    }else{
-      _ytSetBusy(false);
-      r.json().then(function(d){_ytStatus('❌ 실패: '+(d.message||r.status));}).catch(function(){_ytStatus('❌ 실패 (PAT 권한 확인 필요)');});
-    }
-  }).catch(function(){_ytSetBusy(false);_ytStatus('❌ 네트워크 오류');});
-}
-function ytStop(){
-  var pat=localStorage.getItem('yt_gh_pat');
-  if(!_ytRunId||!pat)return;
-  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_ytRunId+'/cancel',{
-    method:'POST',
-    headers:{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}
-  }).then(function(){
-    clearInterval(_ytPollTimer);_ytPollTimer=null;_ytRunId=null;
-    _ytSetBusy(false);
-    _ytStatus('🛑 중단됨');
-  }).catch(function(){_ytStatus('❌ 중단 실패');});
-}
+var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정'};
 var _dashRunId=null,_dashPollTimer=null;
 function _dashSetBusy(busy){
   var btn=document.getElementById('dashUpdateBtn');
@@ -1181,8 +1046,9 @@ function _dashSetBusy(busy){
 function _dashStatus(msg){document.getElementById('dashUpdateStatus').innerHTML=msg;}
 function _dashPoll(pat){
   if(!_dashRunId)return;
+  var p=pat||localStorage.getItem('dash_gh_pat');
   fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/runs/'+_dashRunId,{
-    headers:{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json'}
+    headers:{'Authorization':'token '+p,'Accept':'application/vnd.github.v3+json'}
   }).then(function(r){return r.json();}).then(function(d){
     var s=d.status,c=d.conclusion;
     if(s==='queued'){_dashStatus('⏳ 대기 중...');}
@@ -1196,8 +1062,8 @@ function _dashPoll(pat){
   }).catch(function(){_dashStatus('⚠️ 상태 확인 오류');});
 }
 function dashUpdate(){
-  var pat=localStorage.getItem('yt_gh_pat');
-  if(!pat){alert('먼저 📺 리포트 탭에서 GitHub PAT를 설정해주세요');return;}
+  var pat=localStorage.getItem('dash_gh_pat');
+  if(!pat){pat=prompt('GitHub PAT를 입력하세요 (repo workflow 권한 필요):');if(!pat)return;localStorage.setItem('dash_gh_pat',pat);}
   _dashSetBusy(true);
   _dashStatus('요청 중...');
   var triggerTime=new Date().toISOString();
