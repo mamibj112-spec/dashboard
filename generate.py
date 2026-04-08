@@ -614,6 +614,7 @@ RSS_FEEDS = {
 
 REALESTATE_KEYWORDS = ['부동산','아파트','전세','청약','분양','재건축','재개발','임대','빌라','오피스텔','주택','토지','상가','부지','공시지가','임차']
 STOCK_KEYWORDS = ['주식','증시','코스피','코스닥','주가','상장','IPO','공모','실적','매수','매도','외국인','기관투자','수급','ETF','펀드','공매도','선물','옵션','배당','증권','반도체','2차전지','바이오','상한가','하한가','급등','급락','시총','거래대금','테마주','코스닥','코스피','금투','기업공개','자사주','유상증자','무상증자','상장폐지','감사의견','영업이익','매출','PER','ROE','지수','장세','개미','동학','서학']
+INTL_STOCK_KEYWORDS = ['stock','market','nasdaq','s&p','dow','shares','equity','earnings','ipo','etf','fund','trader','wall street','nyse','fed','rate','inflation','gdp','treasury','yield','bitcoin','crypto','rally','selloff','bull','bear','dividend','buyback','merger','acquisition','invest','portfolio','hedge','futures','options','sec','bond','tariff','trade','china','economy','recession','growth','profit','revenue','quarter','fiscal','index','indices','sector','tech','energy','bank','finance','financial']
 
 
 def fetch_stock_story(stocks):
@@ -763,7 +764,7 @@ def fetch_news():
         for source, url in feeds:
             try:
                 f = feedparser.parse(url, request_headers={'User-Agent': 'Mozilla/5.0'})
-                for entry in f.entries[:10]:
+                for entry in f.entries[:15]:
                     title = entry.get('title', '').strip()
                     link = entry.get('link', '#')
                     published = entry.get('published', '')
@@ -774,6 +775,11 @@ def fetch_news():
                         if any(kw in title for kw in REALESTATE_KEYWORDS):
                             continue
                         if not any(kw in title for kw in STOCK_KEYWORDS):
+                            continue
+                    # 해외 뉴스는 주식/금융 관련 영어 키워드 포함된 것만
+                    if cat == 'international':
+                        title_lower = title.lower()
+                        if not any(kw in title_lower for kw in INTL_STOCK_KEYWORDS):
                             continue
                     date_str = ''
                     if published:
