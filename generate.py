@@ -502,7 +502,7 @@ def fetch_us_ai_briefing(market, news):
 
 
 def translate_news_to_korean(items):
-    """Gemini API로 해외 뉴스 제목/요약을 한국어로 번역"""
+    """Gemini API로 해외 뉴스 제목을 한국어로 번역"""
     import os, json, re
     api_key = os.environ.get('GEMINI_API_KEY', '').strip()
     if not api_key or not items:
@@ -510,32 +510,20 @@ def translate_news_to_korean(items):
     try:
         print("  해외 뉴스 번역 중...")
         titles = [item['title'] for item in items]
-        summaries = [item.get('summary', '') for item in items]
-        prompt = f"""아래 영어 주식/금융 뉴스 제목과 요약을 자연스러운 한국어로 번역하세요.
+        prompt = f"""아래 영어 주식/금융 뉴스 제목을 자연스러운 한국어로 번역하세요.
 반드시 아래 JSON 형식으로만 응답하고, 다른 텍스트는 포함하지 마세요.
-{{
-  "titles": ["번역된 제목1", "번역된 제목2", ...],
-  "summaries": ["번역된 요약1", "번역된 요약2", ...]
-}}
+{{"titles": ["번역된 제목1", "번역된 제목2", ...]}}
 
-제목 목록:
-{json.dumps(titles, ensure_ascii=False)}
-
-요약 목록:
-{json.dumps(summaries, ensure_ascii=False)}"""
+{json.dumps(titles, ensure_ascii=False)}"""
 
         text = _gemini_post(api_key, prompt, temperature=0.3)
         m = re.search(r'\{.*\}', text, re.DOTALL)
         if m:
-            data = json.loads(m.group(0))
-            ko_titles = data.get('titles', [])
-            ko_summaries = data.get('summaries', [])
+            ko_titles = json.loads(m.group(0)).get('titles', [])
             for i, item in enumerate(items):
                 if i < len(ko_titles) and ko_titles[i]:
                     item['title_orig'] = item['title']
                     item['title'] = ko_titles[i]
-                if i < len(ko_summaries) and ko_summaries[i]:
-                    item['summary'] = ko_summaries[i]
             print(f"  해외 뉴스 번역 완료 ({len(items)}건)")
     except Exception as e:
         print(f"  해외 뉴스 번역 오류: {e}")
