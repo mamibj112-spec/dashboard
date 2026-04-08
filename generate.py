@@ -937,11 +937,14 @@ def fetch_watchlist_data(watchlist):
                 'shares_out':   _cap(info.get('sharesOutstanding')),
                 'float_shares': _cap(info.get('floatShares')),
                 # 수익성
+                'revenue':      _cash(info.get('totalRevenue')),
+                'net_income':   _cash(info.get('netIncomeToCommon')),
                 'op_margin':    _pf('operatingMargins'),
                 'profit_margin':_pf('profitMargins'),
                 'gross_margin': _pf('grossMargins'),
                 'roe':          _pf('returnOnEquity'),
                 'roa':          _pf('returnOnAssets'),
+                'roic':         _pf('returnOnCapital'),
                 # 성장성
                 'rev_growth':   _pf('revenueGrowth'),
                 'earn_growth':  _pf('earningsGrowth'),
@@ -2360,8 +2363,11 @@ function showStock(ticker){{
     row('유통주식수',v(s.float_shares))+row('발행주식수',v(s.shares_out))+
     // ── 2. 수익성 ──
     sec('💰 수익성')+
-    row('영업이익률',v(s.op_margin,'%'))+row('순이익률',v(s.profit_margin,'%'))+
-    row('매출총이익률',v(s.gross_margin,'%'))+row('ROE',v(s.roe,'%'))+row('ROA',v(s.roa,'%'))+
+    row('EPS (TTM)',s.eps!==null?cur+s.eps:'N/A')+
+    row('매출',v(s.revenue))+row('순이익',v(s.net_income))+
+    row('매출총이익률',v(s.gross_margin,'%'))+row('영업이익률',v(s.op_margin,'%'))+
+    row('순이익률',v(s.profit_margin,'%'))+
+    row('ROE',v(s.roe,'%'))+row('ROA',v(s.roa,'%'))+row('ROIC',v(s.roic,'%'))+
     // ── 3. 성장성 ──
     sec('📈 성장성 (YoY)')+
     row('매출 성장률',pv(s.rev_growth))+row('이익 성장률',pv(s.earn_growth))+
