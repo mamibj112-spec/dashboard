@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="국장 대시보드">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>국장 대시보드 · 4월 23일</title>
+<title>국장 대시보드 · 4월 24일</title>
 <style>
 :root{--bg:#080b10;--card:#0f1318;--card2:#151a22;--border:rgba(255,255,255,.08);
 --up:#00e896;--dn:#ff4060;--blue:#4da6ff;--gold:#ffc940;--orange:#ff8c3a;
@@ -212,10 +212,10 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 <div class="header">
   <div>
     <div class="header-title">📈 국내 주식</div>
-    <div class="header-date">2026년 4월 23일 목요일</div>
+    <div class="header-date">2026년 4월 24일 금요일</div>
     <div class="header-day">장 마감 기준</div>
   </div>
-  <div class="header-right">20:41 생성<br><button class="update-btn" id="dashUpdateBtn" onclick="dashUpdate()">지금 업데이트</button><span class="update-status" id="dashUpdateStatus"></span></div>
+  <div class="header-right">09:05 생성<br><button class="update-btn" id="dashUpdateBtn" onclick="dashUpdate()">지금 업데이트</button><span class="update-status" id="dashUpdateStatus"></span></div>
 </div>
 
 <nav class="tab-nav">
@@ -233,9 +233,9 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="section">
     <div class="banner blue">
       <strong>➖ 오늘 시황</strong><br>
-      <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong><span class="up-txt">6,475.81</span></strong> &nbsp;<span class="up-txt">▲ 57.88 (0.90%)</span></span>
-      <span style="display:block;margin-bottom:6px;">코스닥 &nbsp;<strong><span class="dn-txt">1,174.31</span></strong> &nbsp;<span class="dn-txt">▼ 6.81 (0.58%)</span></span>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 보합권 · 코스닥 상대 약세 · 원/달러 1,482원 고환율 부담 · 브렌트유 4.5% 급락</span>
+      <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong><span class="up-txt">6,417.93</span></strong> &nbsp;<span class="up-txt">▲ 29.46 (0.46%)</span></span>
+      <span style="display:block;margin-bottom:6px;">코스닥 &nbsp;<strong><span class="up-txt">1,181.12</span></strong> &nbsp;<span class="up-txt">▲ 2.09 (0.18%)</span></span>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 보합권 · 원/달러 1,483원 고환율 부담 · 브렌트유 4.1% 급등</span>
     </div>
   </div>
 
@@ -246,13 +246,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="index-grid">
       <div class="idx-card" onclick="showMacroChart('kospi')" style="cursor:pointer">
         <div class="idx-name">코스피 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
-        <div class="idx-val"><span class="up-txt">6,475.81</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 57.88 (0.90%)</span></div>
+        <div class="idx-val"><span class="up-txt">6,417.93</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 29.46 (0.46%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('kosdaq')" style="cursor:pointer">
         <div class="idx-name">코스닥 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
-        <div class="idx-val"><span class="dn-txt">1,174.31</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 6.81 (0.58%)</span></div>
+        <div class="idx-val"><span class="up-txt">1,181.12</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 2.09 (0.18%)</span></div>
       </div>
     </div>
   </div>
@@ -262,23 +262,23 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="index-grid">
       <div class="idx-card" onclick="showMacroChart('nasdaq')" style="cursor:pointer">
         <div class="idx-name">나스닥 100</div>
-        <div class="idx-val"><span class="up-txt">26,937.28</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 457.81 (1.73%)</span></div>
+        <div class="idx-val"><span class="dn-txt">26,782.62</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 154.65 (0.57%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('sp500')" style="cursor:pointer">
         <div class="idx-name">S&amp;P 500</div>
-        <div class="idx-val"><span class="up-txt">7,137.90</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 73.89 (1.05%)</span></div>
+        <div class="idx-val"><span class="dn-txt">7,108.40</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 29.50 (0.41%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
         <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
-        <div class="idx-val">19.63</div>
-        <div class="idx-chg"><span class="up-txt">▲ 0.71 (3.75%)</span></div>
+        <div class="idx-val">19.31</div>
+        <div class="idx-chg"><span class="up-txt">▲ 0.39 (2.06%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
         <div class="idx-name">다우존스</div>
-        <div class="idx-val"><span class="up-txt">49,490.03</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 340.65 (0.69%)</span></div>
+        <div class="idx-val"><span class="dn-txt">49,310.32</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 179.71 (0.36%)</span></div>
       </div>
     </div>
   </div>
@@ -288,33 +288,33 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('usdkrw')">
         <div class="macro-name">USD/KRW</div>
-        <div class="macro-val"><span class="up-txt">1,481.7원</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 4.1 (0.28%)</span></div>
+        <div class="macro-val"><span class="dn-txt">1,482.9원</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 4.9 (0.33%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('brent')">
         <div class="macro-name">브렌트유</div>
-        <div class="macro-val"><span class="dn-txt">$97.4</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $4.55 (4.46%)</span></div>
+        <div class="macro-val"><span class="up-txt">$106.1</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $4.18 (4.10%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('wti')">
         <div class="macro-name">WTI</div>
-        <div class="macro-val"><span class="up-txt">$93.9</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $0.99 (1.06%)</span></div>
+        <div class="macro-val"><span class="up-txt">$96.8</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $3.82 (4.11%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="dn-txt">$4,717</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $15.20 (0.32%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$4,712</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $20.10 (0.42%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="dn-txt">98.77</span></div>
-        <div class="macro-chg"><span class="dn-txt">▲ 0.18 (0.18%)</span></div>
+        <div class="macro-val"><span class="dn-txt">98.82</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.23 (0.23%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="dn-txt">$77,570</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ 633.10 (0.81%)</span></div>
+        <div class="macro-val"><span class="up-txt">$78,227</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 23.49 (0.03%)</span></div>
       </div>
     </div>
   </div>
@@ -328,86 +328,16 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 
   <div class="section">
     <div class="section-label">📊 시장 체감 온도</div>
-    <div class="breadth-wrap">
-  <div class="breadth-bar">
-    <div class="breadth-up" style="width:34.3%"></div>
-  </div>
-  <div class="breadth-label">
-    <span class="up-txt">▲ 888개 상승</span>
-    <span style="color:var(--t3);margin:0 6px;">|</span>
-    <span class="dn-txt">▼ 1578개 하락</span>
-    <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 2589개</span>
-  </div>
-</div>
+    <div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>
   </div>
 
   <div class="section">
     <div class="stock-story-wrap">
       <div class="stock-list-col">
         <div class="ss-sub-label">📈 거래대금</div>
-        <div class="stock-row">
-  <div class="stock-name">삼성전자</div>
-  <div class="stock-right">
-    <span class="up-txt">▲3.2%</span>
-    <span class="stock-amt">77400억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">SK하이닉스</div>
-  <div class="stock-right">
-    <span class="up-txt">▲0.2%</span>
-    <span class="stock-amt">65580억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">대우건설</div>
-  <div class="stock-right">
-    <span class="up-txt">▲2.1%</span>
-    <span class="stock-amt">13096억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">키움히어로제2호스팩<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
-  <div class="stock-right">
-    <span class="up-txt">▲36.8%</span>
-    <span class="stock-amt">11155억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">대원전선</div>
-  <div class="stock-right">
-    <span class="up-txt">▲26.4%</span>
-    <span class="stock-amt">10236억</span>
-  </div>
-</div>
+        <div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>
         <div class="ss-sub-label" style="margin-top:10px">🚀 급등주</div>
-        <div class="stock-row">
-  <div class="stock-name">대원전선우</div>
-  <div class="stock-right">
-    <span class="up-txt">▲30.0%</span>
-    <span class="stock-amt">44억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">코스텍시스<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
-  <div class="stock-right">
-    <span class="up-txt">▲30.0%</span>
-    <span class="stock-amt">637억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">계양전기우</div>
-  <div class="stock-right">
-    <span class="up-txt">▲29.9%</span>
-    <span class="stock-amt">270억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">바이젠셀<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
-  <div class="stock-right">
-    <span class="up-txt">▲29.9%</span>
-    <span class="stock-amt">795억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">사피엔반도체<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span></div>
-  <div class="stock-right">
-    <span class="up-txt">▲29.9%</span>
-    <span class="stock-amt">398억</span>
-  </div>
-</div>
+        <div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>
       </div>
       <div class="stock-story-col">
         
@@ -421,46 +351,46 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">국내 주식 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604232442i" target="_blank">[단독] MBK, 홈플러스 담은 3호 펀드 수익률 방어 성공</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026042433456" target="_blank">"KB금융, 올해 ROE 11%대로 올라올 것…목표가↑"-한국</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026042326911" target="_blank">'高마진 대명사' 바이오·명품업계 이익률도 제쳐</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604243333i" target="_blank">Today's Pick : 반도체 사이클 지속…"SK하이닉스 210만원 간다" [마켓PRO]</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026042326931" target="_blank">6300·6400·6500…매일 100P씩 뛰는 코스피</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026042434026" target="_blank">"NH투자증권, 운용 손익 증가로 '깜작 실적'…목표가↑"-SK</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026042326141" target="_blank">가스터빈 켠 두산에너빌, 외국인 '최애 종목'으로 떴다</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604243256i" target="_blank">'중동 불안' 다시 고개들어…코스피 6500 안착 여부 주목 [이미아의 투자포인트]</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026042326121" target="_blank">삼전닉스 차익에 월배당…이런 ETF, 앞다퉈 출시</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026042433376" target="_blank">"SK하이닉스, 이젠 시총 1000조가 바닥권…목표가 200만원"-KB</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026042326171" target="_blank">NH證 주식매매 중개 호황에…1분기 영업익·순익 '역대 최대'</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026042432606" target="_blank">"현대차, 1분기 저점으로 실적 반등 기대…목표가↑"-LS</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604232234i" target="_blank">[포토] 코스피, 사흘 연속 사상 최고치 경신</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026042432546" target="_blank">중동 긴장 재고조에 하락 마감…서비스나우 18% 급락 [뉴욕증시 브리핑]</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div>
   </div>
 
@@ -470,18 +400,18 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 <div id="tab-us" class="tab-panel">
 
   <div class="section">
-    <div class="banner up">
+    <div class="banner dn">
       <strong>🌐 해외 시황</strong><br>
-      S&amp;P500 <span class="up-txt">7,137.90</span> <span class="up-txt">▲ 73.89 (1.05%)</span> &nbsp;|&nbsp;
-      나스닥 <span class="up-txt">26,937.28</span> <span class="up-txt">▲ 457.81 (1.73%)</span><br>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">S&P500 1.0% 상승</span>
+      S&amp;P500 <span class="dn-txt">7,108.40</span> <span class="dn-txt">▼ 29.50 (0.41%)</span> &nbsp;|&nbsp;
+      나스닥 <span class="dn-txt">26,782.62</span> <span class="dn-txt">▼ 154.65 (0.57%)</span><br>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">S&P500 보합</span>
     </div>
-    <div class="us-fg-banner" style="background:rgba(239,68,68,.12);border:1px solid #ef4444;">
-  <div class="us-fg-big">🤑</div>
+    <div class="us-fg-banner" style="background:rgba(249,115,22,.1);border:1px solid #f97316;">
+  <div class="us-fg-big">😊</div>
   <div class="us-fg-right">
-    <div class="us-fg-label" style="color:#ef4444">미국 공포/탐욕 지수</div>
-    <div class="us-fg-score" style="color:#ef4444">79 <span style="font-size:16px">극도 탐욕</span></div>
-    <div class="us-fg-desc" style="color:#ef4444">VIX 19.6 &nbsp;·&nbsp; S&amp;P RSI 72 &nbsp;·&nbsp; 나스닥 모멘텀 +1.73%</div>
+    <div class="us-fg-label" style="color:#f97316">미국 공포/탐욕 지수</div>
+    <div class="us-fg-score" style="color:#f97316">61 <span style="font-size:16px">탐욕</span></div>
+    <div class="us-fg-desc" style="color:#f97316">VIX 19.3 &nbsp;·&nbsp; S&amp;P RSI 71 &nbsp;·&nbsp; 나스닥 모멘텀 -0.57%</div>
   </div>
 </div>
   </div>
@@ -495,12 +425,12 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
           <span style="font-size:14px">📈</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">7,137.90</span>
-          <span class="us-pct-box up">+1.05%</span>
+          <span class="us-val">7,108.40</span>
+          <span class="us-pct-box dn">-0.41%</span>
         </div>
         <div class="rsi-wrap">
-          <div class="rsi-head"><span>RSI</span><span>72</span></div>
-          <div class="rsi-bg"><div class="rsi-fill" style="width:72%"></div></div>
+          <div class="rsi-head"><span>RSI</span><span>71</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:71%"></div></div>
         </div>
       </div>
       <div class="us-card" onclick="showMacroChart('nasdaq')">
@@ -509,12 +439,12 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
           <span style="font-size:14px">💻</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">26,937.28</span>
-          <span class="us-pct-box up">+1.73%</span>
+          <span class="us-val">26,782.62</span>
+          <span class="us-pct-box dn">-0.57%</span>
         </div>
         <div class="rsi-wrap">
-          <div class="rsi-head"><span>RSI</span><span>74</span></div>
-          <div class="rsi-bg"><div class="rsi-fill" style="width:74%"></div></div>
+          <div class="rsi-head"><span>RSI</span><span>73</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:73%"></div></div>
         </div>
       </div>
       <div class="us-card" onclick="showMacroChart('dow')">
@@ -523,12 +453,12 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
           <span style="font-size:14px">🏛️</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">49,490</span>
-          <span class="us-pct-box up">+0.69%</span>
+          <span class="us-val">49,310</span>
+          <span class="us-pct-box dn">-0.36%</span>
         </div>
         <div class="rsi-wrap">
-          <div class="rsi-head"><span>RSI</span><span>72</span></div>
-          <div class="rsi-bg"><div class="rsi-fill" style="width:72%"></div></div>
+          <div class="rsi-head"><span>RSI</span><span>70</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:70%"></div></div>
         </div>
       </div>
       <div class="us-card" onclick="showMacroChart('vix')">
@@ -537,12 +467,12 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
           <span style="font-size:14px">😰</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">19.63</span>
-          <span class="us-pct-box dn">+3.75%</span>
+          <span class="us-val">19.31</span>
+          <span class="us-pct-box dn">+2.06%</span>
         </div>
         <div class="rsi-wrap">
-          <div class="rsi-head"><span>RSI</span><span>40</span></div>
-          <div class="rsi-bg"><div class="rsi-fill" style="width:40%"></div></div>
+          <div class="rsi-head"><span>RSI</span><span>39</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:39%"></div></div>
         </div>
       </div>
     </div>
@@ -553,44 +483,44 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
       <div class="sector-bar-row">
   <div class="sector-bar-name">IT/기술</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:100.0%;background:var(--up)"></div></div>
-  <div class="sector-bar-pct up-txt">+2.20%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:52.3%;background:var(--dn)"></div></div>
+  <div class="sector-bar-pct dn-txt">-1.42%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">에너지</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:54.6%;background:var(--up)"></div></div>
-  <div class="sector-bar-pct up-txt">+1.20%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:28.6%;background:var(--up)"></div></div>
+  <div class="sector-bar-pct up-txt">+0.78%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">헬스케어</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:14.3%;background:var(--up)"></div></div>
-  <div class="sector-bar-pct up-txt">+0.32%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:3.5%;background:var(--dn)"></div></div>
+  <div class="sector-bar-pct dn-txt">-0.10%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">필수소비재</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:15.0%;background:var(--up)"></div></div>
-  <div class="sector-bar-pct up-txt">+0.33%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:61.4%;background:var(--up)"></div></div>
+  <div class="sector-bar-pct up-txt">+1.67%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">경기소비재</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:1.5%;background:var(--dn)"></div></div>
-  <div class="sector-bar-pct dn-txt">-0.03%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:36.8%;background:var(--dn)"></div></div>
+  <div class="sector-bar-pct dn-txt">-1.00%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">금융</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:7.8%;background:var(--dn)"></div></div>
-  <div class="sector-bar-pct dn-txt">-0.17%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:28.9%;background:var(--dn)"></div></div>
+  <div class="sector-bar-pct dn-txt">-0.79%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">산업재</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:10.6%;background:var(--dn)"></div></div>
-  <div class="sector-bar-pct dn-txt">-0.23%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:65.2%;background:var(--up)"></div></div>
+  <div class="sector-bar-pct up-txt">+1.77%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">소재</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:5.3%;background:var(--up)"></div></div>
-  <div class="sector-bar-pct up-txt">+0.12%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:1.4%;background:var(--dn)"></div></div>
+  <div class="sector-bar-pct dn-txt">-0.04%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">부동산</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:33.3%;background:var(--dn)"></div></div>
-  <div class="sector-bar-pct dn-txt">-0.73%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:42.3%;background:var(--up)"></div></div>
+  <div class="sector-bar-pct up-txt">+1.15%</div>
 </div><div class="sector-bar-row">
   <div class="sector-bar-name">유틸리티</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:8.1%;background:var(--dn)"></div></div>
-  <div class="sector-bar-pct dn-txt">-0.18%</div>
+  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:100.0%;background:var(--up)"></div></div>
+  <div class="sector-bar-pct up-txt">+2.72%</div>
 </div>
     </div>
   </div>
@@ -603,31 +533,31 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <div class="top3-row">
   <div class="top3-rank">1</div>
   <div><div class="top3-name">ARM</div><div class="top3-ticker">ARM</div></div>
-  <div class="top3-pct up-txt">+12.01%</div>
+  <div class="top3-pct up-txt">+4.09%</div>
 </div><div class="top3-row">
   <div class="top3-rank">2</div>
-  <div><div class="top3-name">브로드컴</div><div class="top3-ticker">AVGO</div></div>
-  <div class="top3-pct up-txt">+5.09%</div>
+  <div><div class="top3-name">인텔</div><div class="top3-ticker">INTC</div></div>
+  <div class="top3-pct up-txt">+2.31%</div>
 </div><div class="top3-row">
   <div class="top3-rank">3</div>
-  <div><div class="top3-name">팔로알토</div><div class="top3-ticker">PANW</div></div>
-  <div class="top3-pct up-txt">+3.57%</div>
+  <div><div class="top3-name">월마트</div><div class="top3-ticker">WMT</div></div>
+  <div class="top3-pct up-txt">+1.58%</div>
 </div>
       </div>
       <div style="background:var(--card);border:1px solid rgba(255,64,96,.2);border-radius:12px;padding:10px 12px;">
         <div style="font-size:10px;color:var(--dn);font-weight:700;margin-bottom:6px;">📉 급락</div>
         <div class="top3-row">
   <div class="top3-rank">1</div>
-  <div><div class="top3-name">화이자</div><div class="top3-ticker">PFE</div></div>
-  <div class="top3-pct dn-txt">-1.87%</div>
+  <div><div class="top3-name">팔로알토</div><div class="top3-ticker">PANW</div></div>
+  <div class="top3-pct dn-txt">-4.41%</div>
 </div><div class="top3-row">
   <div class="top3-rank">2</div>
-  <div><div class="top3-name">인텔</div><div class="top3-ticker">INTC</div></div>
-  <div class="top3-pct dn-txt">-1.49%</div>
+  <div><div class="top3-name">마이크로소프트</div><div class="top3-ticker">MSFT</div></div>
+  <div class="top3-pct dn-txt">-3.97%</div>
 </div><div class="top3-row">
   <div class="top3-rank">3</div>
-  <div><div class="top3-name">월마트</div><div class="top3-ticker">WMT</div></div>
-  <div class="top3-pct up-txt">+0.29%</div>
+  <div><div class="top3-name">아리스타</div><div class="top3-ticker">ANET</div></div>
+  <div class="top3-pct dn-txt">-2.91%</div>
 </div>
       </div>
     </div>
@@ -641,62 +571,62 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">유나이티드헬스</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+2.17%</span>
+        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+0.29%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">브로드컴</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+5.09%</span>
+        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-0.64%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">아리스타</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+2.82%</span>
+        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-2.91%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">월마트</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+0.29%</span>
+        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+1.58%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">ARM</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+12.01%</span>
+        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+4.09%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">화이자</div>
       <div class="stock-right">
-        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-1.87%</span>
+        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-0.49%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">팔로알토</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+3.57%</span>
+        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-4.41%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">인텔</div>
       <div class="stock-right">
-        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-1.49%</span>
+        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+2.31%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">엔비디아</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+1.31%</span>
+        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-1.41%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">애플</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+2.63%</span>
+        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+0.10%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">마이크로소프트</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+2.07%</span>
+        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-3.97%</span>
       </div>
     </div><div class="stock-row" style="padding: 6px 10px;">
       <div class="stock-name" style="font-size:10.5px; max-width: 85px;">메타</div>
       <div class="stock-right">
-        <span class="up-txt" style="font-size:10.5px; font-weight:700;">+0.88%</span>
+        <span class="dn-txt" style="font-size:10.5px; font-weight:700;">-2.31%</span>
       </div>
     </div>
     </div>
@@ -706,36 +636,36 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">기술적 신호 리포트</div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
       <div class="tech-row">
-  <div class="tech-name">S&amp;P 500 RSI (72)</div>
+  <div class="tech-name">S&amp;P 500 RSI (71)</div>
   <div style="display:flex;align-items:center">
-    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:72%"></div></div>
+    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:71%"></div></div>
     <span class="tech-sig" style="background:rgba(255,64,96,.15);color:#ff4060">과매수</span>
   </div>
 </div>
 <div class="tech-row">
-  <div class="tech-name">나스닥 RSI (74)</div>
+  <div class="tech-name">나스닥 RSI (73)</div>
   <div style="display:flex;align-items:center">
-    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:74%"></div></div>
+    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:73%"></div></div>
     <span class="tech-sig" style="background:rgba(255,64,96,.15);color:#ff4060">과매수</span>
   </div>
 </div>
 <div class="tech-row">
-  <div class="tech-name">다우존스 RSI (72)</div>
+  <div class="tech-name">다우존스 RSI (70)</div>
   <div style="display:flex;align-items:center">
-    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:72%"></div></div>
+    <div class="rsi-bg" style="width:60px;margin-right:8px"><div class="rsi-fill" style="width:70%"></div></div>
     <span class="tech-sig" style="background:rgba(255,64,96,.15);color:#ff4060">과매수</span>
   </div>
 </div>
 <div class="tech-row">
   <div class="tech-name">S&amp;P 500 MACD</div>
-  <span class="tech-sig" style="background:rgba(0,232,150,.15);color:#00e896">골든크로스</span>
+  <span class="tech-sig" style="background:rgba(163,163,163,.12);color:#a3a3a3">수렴</span>
 </div>
 <div class="tech-row">
   <div class="tech-name">나스닥 MACD</div>
-  <span class="tech-sig" style="background:rgba(0,232,150,.15);color:#00e896">골든크로스</span>
+  <span class="tech-sig" style="background:rgba(255,64,96,.15);color:#ff4060">데드크로스</span>
 </div>
 <div class="tech-row">
-  <div class="tech-name">볼린저밴드 (VIX 19.6)</div>
+  <div class="tech-name">볼린저밴드 (VIX 19.3)</div>
   <span class="tech-sig" style="background:rgba(163,163,163,.12);color:#a3a3a3">밴드 내 정상</span>
 </div>
     </div>
@@ -746,23 +676,23 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('tnx')">
         <div class="macro-name">미 10년물</div>
-        <div class="macro-val"><span class="dn-txt">4.29%</span></div>
-        <div class="macro-chg"><span class="dn-txt">▲ 0.00%p</span></div>
+        <div class="macro-val"><span class="dn-txt">4.32%</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.03%p</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="dn-txt">98.77</span></div>
-        <div class="macro-chg"><span class="dn-txt">▲ 0.18 (0.18%)</span></div>
+        <div class="macro-val"><span class="dn-txt">98.82</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.23 (0.23%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="dn-txt">$4,717</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $15.20 (0.32%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$4,712</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $20.10 (0.42%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="dn-txt">$77,570</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ 633.10 (0.81%)</span></div>
+        <div class="macro-val"><span class="up-txt">$78,227</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 23.49 (0.03%)</span></div>
       </div>
     </div>
   </div>
@@ -770,6 +700,30 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="section">
     <div class="section-label">해외 뉴스</div>
     <div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/23/stocks-making-the-biggest-moves-after-hours-intc-sap-byd-mxl.html" target="_blank">Stocks making the biggest moves after hours: Intel, SAP, Boyd Gaming, MaxLi…</a></div>
+  
+  <div class="news-summary">See which stocks are posting big moves after the bell.</div>
+  <div class="news-meta">CNBC Markets · 4월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/23/traders-are-betting-on-big-moves-in-intel-on-earnings.html" target="_blank">Traders are betting on big moves in Intel on earnings</a></div>
+  
+  <div class="news-summary">Semiconductor stocks are powering the U.S. equity market to records and traders …</div>
+  <div class="news-meta">CNBC Markets · 4월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/23/stocks-making-the-biggest-moves-midday-txn-uri-wex-penn.html" target="_blank">Stocks making the biggest moves midday: Texas Instruments, United Rentals, …</a></div>
+  
+  <div class="news-summary">These are the stocks posting the largest moves midday.</div>
+  <div class="news-meta">CNBC Markets · 4월 24일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/04/23/kalshi-bettors-see-strait-of-hormuz-traffic-normal-by-july.html" target="_blank">Kalshi traders don't see Strait of Hormuz traffic returning to normal until…</a></div>
+  
+  <div class="news-summary">Chances that traffic returns to normal fell below 50% on Wednesday, according to…</div>
+  <div class="news-meta">CNBC Markets · 4월 23일</div>
+</div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
   <div class="news-title"><a href="https://www.cnbc.com/2026/04/23/stocks-making-the-biggest-moves-premarket-hon-nok-nflx-ibm-tsla.html" target="_blank">Stocks making the biggest moves premarket: Honeywell, Nokia, Netflix, IBM, …</a></div>
   
@@ -787,30 +741,6 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   
   <div class="news-summary">These are the stocks posting the largest moves midday.</div>
   <div class="news-meta">CNBC Markets · 4월 23일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/22/stocks-making-the-biggest-moves-premarket-gev-vrt-bby.html" target="_blank">Stocks making the biggest moves premarket: GE Vernova, Vertiv, Best Buy & m…</a></div>
-  
-  <div class="news-summary">These are the stocks posting the largest moves premarket.</div>
-  <div class="news-meta">CNBC Markets · 4월 22일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/21/stocks-making-the-biggest-moves-after-hours-adbe-ual-cof.html" target="_blank">Stocks making the biggest moves after hours: Adobe, United Airlines, Capita…</a></div>
-  
-  <div class="news-summary">See which stocks are posting big moves after the bell.</div>
-  <div class="news-meta">CNBC Markets · 4월 22일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/21/trump-iran-war-white-house-uae-currency-swap-line.html" target="_blank">Trump administration discussing currency swap line with United Arab Emirate…</a></div>
-  
-  <div class="news-summary">Such a move would provide liquidity in dollars to the oil-rich UAE, but could be…</div>
-  <div class="news-meta">CNBC Markets · 4월 22일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/04/21/stocks-making-the-biggest-moves-midday-unh-pbi-aapl-amzn.html" target="_blank">Stocks making the biggest moves midday: UnitedHealth, Pitney Bowes, Apple, …</a></div>
-  
-  <div class="news-summary">These are the stocks posting the largest moves midday.</div>
-  <div class="news-meta">CNBC Markets · 4월 22일</div>
 </div>
   </div>
 
@@ -905,46 +835,46 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">핫이슈 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604232333g" target="_blank">버튼 누르면 '아아'까지…김고은도 반한 신상 '커피머신'</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604243437g" target="_blank">"벌써 한여름이네"…소노인터내셔널, 때 이른 더위에 워터파크 개장 당겼다</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026042325791" target="_blank">'삼전닉스' 현장직들이 무섭게 사간다더니…'대박' 터졌다</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604243353i" target="_blank">4월 24일 외신에스프레소</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026042328847" target="_blank">[속보] 유가 떨어졌는데 또 묶었다…4차 석유 최고가격 동결</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604233041i" target="_blank">월급은 못 도망간다…유리지갑 더 두꺼워진 세금 설계 [여기는 논설실]</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026042328561" target="_blank">4차 석유최고가격 휘발유·경유 또 동결</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604232088g" target="_blank">"백화점인 줄 알았는데"…성수동 2000평 '초대형 매장' 가보니 [현장+]</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604232862i" target="_blank">한솔제지, 담합 제재에 공식 사과…"재발 방지 대책 신속 이행"</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604232423g" target="_blank">남녀노소 하나씩 들고 다니더니…불티나게 팔린 '인싸템' 정체</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604232736i" target="_blank">불황 파도 넘는 금호석유화학…기술·포트폴리오로 돌파구</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202604243135i" target="_blank">쿠팡 로비 대상·금액 급증…"적힌 것은 일부에 불과"</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202604232857i" target="_blank">[포토] 삼성전자 노조, 결의대회…"성과급 상한제 폐지하라"</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026042326631" target="_blank">[포토] 밀라노서 선보인 삼성 AI 빌트인 가전</a></div>
   
   
-  <div class="news-meta">한국경제 · 4월 23일</div>
+  <div class="news-meta">한국경제 · 4월 24일</div>
 </div>
   </div>
 
@@ -994,13 +924,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div>
 
 <div class="footer-note">
-  2026년 4월 23일 목요일 · 20:41 생성<br>
+  2026년 4월 24일 금요일 · 09:05 생성<br>
   부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
 var MACRO_META={"kospi": {"name": "코스피", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "", "dec": 2}, "kosdaq": {"name": "코스닥", "color": "#3b82f6", "rgb": "59,130,246", "pre": "", "suf": "", "dec": 2}, "sp500": {"name": "S&P 500", "color": "#00e896", "rgb": "0,232,150", "pre": "", "suf": "", "dec": 2}, "nasdaq": {"name": "나스닥 100", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "", "dec": 2}, "dow": {"name": "다우존스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "vix": {"name": "VIX", "color": "#ffc940", "rgb": "255,201,64", "pre": "", "suf": "", "dec": 2}, "usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
-var MACRO_HIST={"kospi": [6091.3901, 6226.0498, 6191.9199, 6219.0898, 6388.4702, 6417.9302, 6475.8101], "kosdaq": [1152.4301, 1162.97, 1170.04, 1174.85, 1179.03, 1181.12, 1174.3101], "sp500": [6967.3799, 7022.9502, 7041.2798, 7126.0601, 7109.1401, 7064.0098, 7137.8999], "nasdaq": [25842.0, 26204.5801, 26333.0, 26672.4297, 26590.3398, 26479.4707, 26937.2793], "dow": [48535.9883, 48463.7188, 48578.7188, 49447.4297, 49442.5586, 49149.3789, 49490.0312], "vix": [18.17, 17.94, 17.48, 18.87, 19.5, 18.92, 19.62], "usdkrw": [1469.42, 1474.0601, 1477.92, 1465.15, 1469.26, 1485.8, 1481.6801], "brent": [94.93, 99.39, 90.38, 95.48, 98.48, 101.91, 97.36], "wti": [91.29, 94.69, 83.85, 89.61, 92.13, 92.96, 93.95], "tnx": [4.256, 4.282, 4.309, 4.246, 4.25, 4.292, 4.294], "gold": [4800.0, 4785.3999, 4857.6001, 4806.6001, 4698.3999, 4732.5, 4717.2998], "dxy": [98.06, 98.22, 98.1, 98.05, 98.41, 98.59, 98.772], "btc": [77126.875, 75726.2109, 73856.3516, 75872.5234, 76352.7734, 78203.1016, 77570.0]};
+var MACRO_HIST={"kospi": [5967.75, 6091.3901, 6226.0498, 6191.9199, 6219.0898, 6388.4702, 6417.9302], "kosdaq": [1121.88, 1152.4301, 1162.97, 1170.04, 1174.85, 1179.03, 1181.12], "sp500": [7022.9502, 7041.2798, 7126.0601, 7109.1401, 7064.0098, 7137.8999, 7108.3999], "nasdaq": [26204.5801, 26333.0, 26672.4297, 26590.3398, 26479.4707, 26937.2793, 26782.625], "dow": [48463.7188, 48578.7188, 49447.4297, 49442.5586, 49149.3789, 49490.0312, 49310.3203], "vix": [18.17, 17.94, 17.48, 18.87, 19.5, 18.92, 19.31], "usdkrw": [1474.0601, 1477.92, 1465.15, 1469.26, 1485.8, 1477.96, 1482.88], "brent": [94.93, 99.39, 90.38, 95.48, 98.48, 101.91, 106.09], "wti": [91.29, 94.69, 83.85, 89.61, 92.13, 92.96, 96.81], "tnx": [4.282, 4.309, 4.246, 4.25, 4.292, 4.294, 4.323], "gold": [4800.0, 4785.3999, 4857.6001, 4806.6001, 4698.3999, 4732.5, 4712.3999], "dxy": [98.06, 98.22, 98.1, 98.05, 98.41, 98.59, 98.821], "btc": [77126.875, 75726.2109, 73856.3516, 75872.5234, 76352.7734, 78203.1016, 78226.5938]};
 var _mc=null;
 function showMacroChart(k){
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
@@ -1059,7 +989,7 @@ try{(function(){
   });
 })();}catch(e){console.warn('sectorChart init failed:',e);}
 var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목'};
-var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 979.07, "change": 75.58, "change_pct": 8.37, "currency": "USD", "market_cap": "$144.5B", "ev": "$143.8B", "pe": null, "forward_pe": 8.56, "pb": 14.19, "ps": 16.18, "peg": null, "ev_ebitda": 100.88, "eps": -7.44, "shares_out": "$148M", "float_shares": "$139M", "revenue": "$8.9B", "net_income": "$-1041M", "op_margin": 35.5, "profit_margin": -11.66, "gross_margin": 34.81, "roe": -9.37, "roa": 5.87, "roic": null, "rev_growth": 61.2, "earn_growth": 618.0, "rev_q_growth": null, "earn_q_growth": 672.1, "current_ratio": 3.11, "quick_ratio": 1.73, "debt_equity": 7.96, "total_debt": "$813M", "total_cash": "$1.5B", "fcf": "$1.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 981.0611, "low52": 30.31, "target": 928.05, "ret_1w": 9.8, "ret_1m": 39.37, "ret_3m": 95.31, "ret_6m": 561.36, "ret_ytd": 255.72, "ret_1y": 3184.37, "ret_3y": null, "ret_5y": null, "rsi": 70, "beta": null, "sma20_gap": 23.59, "sma50_gap": 39.82, "sma200_gap": 208.03, "atr": 61.03, "vol_weekly": 41.59, "vol_monthly": 94.27, "volume": 14839485, "avg_volume": 19558496, "rel_volume": 0.76, "exchange": "NMS", "inst_pct": null, "insider_pct": 5.48, "short_float": 8.54, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "Stock Market Today, April 22: Micron Technology Surges on Continued Memory Boom", "link": "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-april-22-225041856.html", "publisher": "Motley Fool", "date": ""}, {"title": "SanDisk: Is a 20x Surge Just the Beginning or a Peak for This AI Pure-Play?", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-20x-surge-just-beginning-185314976.html", "publisher": "Barchart", "date": ""}, {"title": "Sandisk Just Joined the Nasdaq-100. Should You Buy SNDK Stock Here?", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-just-joined-nasdaq-100-163915760.html", "publisher": "Barchart", "date": ""}, {"title": "Is Western Digital Stock a Buy, Sell, or Hold After Hitting a 52-Week High?", "link": "https://finance.yahoo.com/markets/stocks/articles/western-digital-stock-buy-sell-150300960.html", "publisher": "Zacks", "date": ""}, {"title": "DRAM ETF Surge Puts Sandisk’s AI Memory Valuation In Focus", "link": "https://finance.yahoo.com/markets/stocks/articles/dram-etf-surge-puts-sandisk-130511338.html", "publisher": "Simply Wall St.", "date": ""}]}];
+var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 932.43, "change": -46.64, "change_pct": -4.76, "currency": "USD", "market_cap": "$137.6B", "ev": "$136.9B", "pe": null, "forward_pe": 8.15, "pb": 13.51, "ps": 15.41, "peg": null, "ev_ebitda": 96.05, "eps": -7.44, "shares_out": "$148M", "float_shares": "$139M", "revenue": "$8.9B", "net_income": "$-1041M", "op_margin": 35.5, "profit_margin": -11.66, "gross_margin": 34.81, "roe": -9.37, "roa": 5.87, "roic": null, "rev_growth": 61.2, "earn_growth": 618.0, "rev_q_growth": null, "earn_q_growth": 672.1, "current_ratio": 3.11, "quick_ratio": 1.73, "debt_equity": 7.96, "total_debt": "$813M", "total_cash": "$1.5B", "fcf": "$1.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 981.061, "low52": 30.31, "target": 928.05, "ret_1w": 1.41, "ret_1m": 32.73, "ret_3m": 85.21, "ret_6m": 524.58, "ret_ytd": 238.77, "ret_1y": 3047.97, "ret_3y": null, "ret_5y": null, "rsi": 63, "beta": null, "sma20_gap": 15.84, "sma50_gap": 31.69, "sma200_gap": 189.33, "atr": 60.08, "vol_weekly": 41.93, "vol_monthly": 94.46, "volume": 12155873, "avg_volume": 19558496, "rel_volume": 0.62, "exchange": "NMS", "inst_pct": null, "insider_pct": 5.48, "short_float": 8.54, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "Semiconductor stocks like Nvidia and Micron are on a remarkable streak", "link": "https://finance.yahoo.com/news/semiconductor-stocks-like-nvidia-and-micron-are-on-a-remarkable-streak-150827239.html", "publisher": "Yahoo Finance", "date": ""}, {"title": "SanDisk Climbs 295% YTD as AI Fuels Memory Mania: Can Q1 Results Justify the Run?", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-climbs-295-ytd-ai-194934153.html", "publisher": "24/7 Wall St.", "date": ""}, {"title": "This Stock May Be the Simplest Way to Double Your Money by 2027", "link": "https://finance.yahoo.com/markets/stocks/articles/stock-may-simplest-way-double-190500240.html", "publisher": "Motley Fool", "date": ""}, {"title": "US High Growth Tech Stocks To Watch In April 2026", "link": "https://finance.yahoo.com/sectors/technology/articles/us-high-growth-tech-stocks-173858797.html", "publisher": "Simply Wall St.", "date": ""}, {"title": "SNDK's Rides on End-Market Diversification: Is the Model Paying Off?", "link": "https://finance.yahoo.com/markets/stocks/articles/sndks-rides-end-market-diversification-154300154.html", "publisher": "Zacks", "date": ""}]}];
 function _fmt(v,dec,suf){if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}
 function _pctColor(v){
   if(v===null||v===undefined)return'<span style="color:var(--t3)">N/A</span>';
