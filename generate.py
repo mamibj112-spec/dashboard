@@ -9,6 +9,8 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv()
 
 try:
     import yfinance as yf
@@ -115,7 +117,6 @@ def fetch_market():
     for name, sym in TICKERS.items():
         try:
             t = yf.Ticker(sym)
-            # RSI 계산을 위해 1개월치 데이터 수집
             hist = t.history(period='1mo', auto_adjust=True)
             hist = hist.dropna(subset=['Close'])
             if len(hist) >= 2:
@@ -133,44 +134,89 @@ def fetch_market():
         except Exception as e:
             print(f"  [{name}] 오류: {e}")
             data[name] = {'val': None, 'chg': None, 'pct': None, 'rsi': 50, 'ok': False}
+
+    # KIS로 KOSPI/KOSDAQ 현재가 보정 (yfinance보다 정확한 한국 시장 데이터)
+    try:
+        import kis_api
+        token = kis_api.get_token()
+        if token:
+            for key, code in [('kospi', '0001'), ('kosdaq', '1001')]:
+                kis_data = kis_api.get_index_price(token, code)
+                if kis_data and kis_data['ok']:
+                    existing = data.get(key, {})
+                    rsi = existing.get('rsi', 50)
+                    # 장 마감/주말엔 KIS chg·pct가 0 → yfinance 값 유지
+                    chg = kis_data['chg'] if kis_data['chg'] != 0 else existing.get('chg', 0)
+                    pct = kis_data['pct'] if kis_data['pct'] != 0 else existing.get('pct', 0)
+                    data[key] = {'val': kis_data['val'], 'chg': chg, 'pct': pct, 'rsi': rsi, 'ok': True}
+                    print(f"  [{key}] KIS 보정: {kis_data['val']:.2f} ({pct:+.2f}%)")
+    except Exception as e:
+        print(f"  KIS 지수 보정 오류: {e}")
+
     return data
 
 
 # ── 주도주 & 시장 체감 ─────────────────────────────────────────────────────────
 
 def fetch_market_stocks():
-    """FinanceDataReader로 주도주/체감 데이터 수집"""
-    try:
-        import FinanceDataReader as fdr
-        import pandas as pd
+    """주도주/체감 데이터 수집 (KIS 랭킹 우선, FDR fallback)"""
+    import FinanceDataReader as fdr
+    import pandas as pd
 
-        print("  주도주/체감 데이터 수집 중...")
+    print("  주도주/체감 데이터 수집 중...")
+
+    # KIS로 거래대금/등락률 상위 종목 조회 (장중에만 유효 데이터 반환)
+    kis_top_amt  = []
+    kis_top_gain = []
+    try:
+        import kis_api
+        token = kis_api.get_token()
+        if token:
+            raw_amt  = kis_api.get_volume_ranking(token, top_n=5)
+            raw_gain = kis_api.get_fluctuation_ranking(token, top_n=5)
+            # 장 마감 후엔 Amount가 0 — 유효 데이터만 사용
+            kis_top_amt  = [x for x in raw_amt  if x.get('Amount', 0) > 0]
+            kis_top_gain = [x for x in raw_gain if x.get('Amount', 0) > 0]
+            if kis_top_amt:
+                print(f"  KIS 거래대금 상위 수집 완료: {len(kis_top_amt)}개")
+            if kis_top_gain:
+                print(f"  KIS 급등주 수집 완료: {len(kis_top_gain)}개")
+    except Exception as e:
+        print(f"  KIS 랭킹 오류: {e}")
+
+    # FDR로 시장 체감 온도 (상승/하락 종목 수) 수집
+    up = down = flat = 0
+    fdr_top_amt  = []
+    fdr_top_gain = []
+    try:
         kospi  = fdr.StockListing('KOSPI')
         kosdaq = fdr.StockListing('KOSDAQ')
         all_s  = pd.concat([kospi, kosdaq], ignore_index=True)
+        all_s  = all_s.dropna(subset=['Amount', 'ChagesRatio', 'Close', 'Name'])
+        all_s  = all_s[(all_s['Close'] > 0) & (all_s['Amount'] > 0)]
 
-        # 유효 데이터만
-        all_s = all_s.dropna(subset=['Amount', 'ChagesRatio', 'Close', 'Name'])
-        all_s = all_s[(all_s['Close'] > 0) & (all_s['Amount'] > 0)]
-
-        # 시장 체감 온도
         up   = int((all_s['ChagesRatio'] > 0).sum())
         down = int((all_s['ChagesRatio'] < 0).sum())
         flat = int((all_s['ChagesRatio'] == 0).sum())
 
-        # 거래대금 상위 5
-        top_amt = all_s.nlargest(5, 'Amount')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
-
-        # 상승률 상위 5 (상한가 30% 초과 제외)
-        gainers = all_s[(all_s['ChagesRatio'] > 0) & (all_s['ChagesRatio'] <= 30)]
-        top_gain = gainers.nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
-
-        print(f"  주도주 수집 완료: 상승 {up} / 하락 {down}")
-        return {'breadth': {'up': up, 'down': down, 'flat': flat},
-                'top_amt': top_amt, 'top_gain': top_gain}
+        fdr_top_amt  = all_s.nlargest(5, 'Amount')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        gainers      = all_s[(all_s['ChagesRatio'] > 0) & (all_s['ChagesRatio'] <= 30)]
+        fdr_top_gain = gainers.nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        print(f"  FDR 체감 수집 완료: 상승 {up} / 하락 {down}")
     except Exception as e:
-        print(f"  주도주 오류: {e}")
+        print(f"  FDR 주도주 오류: {e}")
+
+    top_amt  = kis_top_amt  if kis_top_amt  else fdr_top_amt
+    top_gain = kis_top_gain if kis_top_gain else fdr_top_gain
+
+    if not top_amt and not top_gain:
         return None
+
+    return {
+        'breadth':  {'up': up, 'down': down, 'flat': flat},
+        'top_amt':  top_amt,
+        'top_gain': top_gain,
+    }
 
 
 def fetch_usdkrw_week():

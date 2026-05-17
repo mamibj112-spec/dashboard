@@ -35,6 +35,8 @@ jobs:
         run: python generate.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          KIS_APP_KEY:    ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
 
       - name: 변경사항 커밋 & 푸시
         run: |
