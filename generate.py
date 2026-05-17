@@ -166,21 +166,26 @@ def fetch_market_stocks():
     print("  주도주/체감 데이터 수집 중...")
 
     # KIS로 거래대금/등락률 상위 종목 조회 (장중에만 유효 데이터 반환)
-    kis_top_amt  = []
-    kis_top_gain = []
+    kis_top_amt   = []
+    kis_top_gain  = []
+    kis_top_decline = []
     try:
         import kis_api
         token = kis_api.get_token()
         if token:
-            raw_amt  = kis_api.get_volume_ranking(token, top_n=5)
-            raw_gain = kis_api.get_fluctuation_ranking(token, top_n=5)
+            raw_amt     = kis_api.get_volume_ranking(token, top_n=5)
+            raw_gain    = kis_api.get_fluctuation_ranking(token, top_n=5)
+            raw_decline = kis_api.get_decline_ranking(token, top_n=5)
             # 장 마감 후엔 Amount가 0 — 유효 데이터만 사용
-            kis_top_amt  = [x for x in raw_amt  if x.get('Amount', 0) > 0]
-            kis_top_gain = [x for x in raw_gain if x.get('Amount', 0) > 0]
+            kis_top_amt     = [x for x in raw_amt     if x.get('Amount', 0) > 0]
+            kis_top_gain    = [x for x in raw_gain    if x.get('Amount', 0) > 0]
+            kis_top_decline = [x for x in raw_decline if x.get('Amount', 0) > 0]
             if kis_top_amt:
                 print(f"  KIS 거래대금 상위 수집 완료: {len(kis_top_amt)}개")
             if kis_top_gain:
                 print(f"  KIS 급등주 수집 완료: {len(kis_top_gain)}개")
+            if kis_top_decline:
+                print(f"  KIS 급락주 수집 완료: {len(kis_top_decline)}개")
     except Exception as e:
         print(f"  KIS 랭킹 오류: {e}")
 
@@ -199,23 +204,27 @@ def fetch_market_stocks():
         down = int((all_s['ChagesRatio'] < 0).sum())
         flat = int((all_s['ChagesRatio'] == 0).sum())
 
-        fdr_top_amt  = all_s.nlargest(5, 'Amount')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
-        gainers      = all_s[(all_s['ChagesRatio'] > 0) & (all_s['ChagesRatio'] <= 30)]
-        fdr_top_gain = gainers.nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        fdr_top_amt     = all_s.nlargest(5, 'Amount')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        gainers         = all_s[(all_s['ChagesRatio'] > 0) & (all_s['ChagesRatio'] <= 30)]
+        fdr_top_gain    = gainers.nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        losers          = all_s[(all_s['ChagesRatio'] < 0) & (all_s['ChagesRatio'] >= -30)]
+        fdr_top_decline = losers.nsmallest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
         print(f"  FDR 체감 수집 완료: 상승 {up} / 하락 {down}")
     except Exception as e:
         print(f"  FDR 주도주 오류: {e}")
 
-    top_amt  = kis_top_amt  if kis_top_amt  else fdr_top_amt
-    top_gain = kis_top_gain if kis_top_gain else fdr_top_gain
+    top_amt     = kis_top_amt     if kis_top_amt     else fdr_top_amt
+    top_gain    = kis_top_gain    if kis_top_gain    else fdr_top_gain
+    top_decline = kis_top_decline if kis_top_decline else fdr_top_decline
 
     if not top_amt and not top_gain:
         return None
 
     return {
-        'breadth':  {'up': up, 'down': down, 'flat': flat},
-        'top_amt':  top_amt,
-        'top_gain': top_gain,
+        'breadth':     {'up': up, 'down': down, 'flat': flat},
+        'top_amt':     top_amt,
+        'top_gain':    top_gain,
+        'top_decline': top_decline,
     }
 
 
@@ -1666,12 +1675,14 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 {b_total}개</span>
   </div>
 </div>'''
-        top_amt_html  = stocks_html(stocks.get('top_amt', []))
-        top_gain_html = stocks_html(stocks.get('top_gain', []))
+        top_amt_html     = stocks_html(stocks.get('top_amt', []))
+        top_gain_html    = stocks_html(stocks.get('top_gain', []))
+        top_decline_html = stocks_html(stocks.get('top_decline', []))
     else:
-        breadth_html  = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>'
-        top_amt_html  = breadth_html
-        top_gain_html = breadth_html
+        breadth_html     = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>'
+        top_amt_html     = breadth_html
+        top_gain_html    = breadth_html
+        top_decline_html = breadth_html
 
     # 캘린더
     cal_events = get_weekly_calendar(dt)
@@ -2003,14 +2014,16 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
       <div class="stock-list-col">
         <div class="ss-sub-label">📈 거래대금</div>
         {top_amt_html}
-        <div class="ss-sub-label" style="margin-top:10px">🚀 급등주</div>
-        {top_gain_html}
       </div>
       <div class="stock-story-col">
-        {stock_story_html}
+        <div class="ss-sub-label">🚀 급등주</div>
+        {top_gain_html}
+        <div class="ss-sub-label" style="margin-top:10px">💧 급락주</div>
+        {top_decline_html}
       </div>
     </div>
   </div>
+  {f'<div class="section">{stock_story_html}</div>' if stock_story_html else ''}
 
   {research_html}
 

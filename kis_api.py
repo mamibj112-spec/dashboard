@@ -227,6 +227,57 @@ KR_SECTORS = [
 ]
 
 
+def get_decline_ranking(token, top_n=5):
+    """하락률 기준 상위 종목 조회 (하한가 제외)"""
+    try:
+        r = requests.get(
+            f'{_base()}/uapi/domestic-stock/v1/ranking/fluctuation',
+            headers=_headers(token, 'FHPST01700000'),
+            params={
+                'FID_COND_MRKT_DIV_CODE':  'J',
+                'FID_COND_SCR_DIV_CODE':   '20170',
+                'FID_INPUT_ISCD':          '0000',
+                'FID_DIV_CLS_CODE':        '1',   # 1 = 하락률
+                'FID_BLNG_CLS_CODE':       '0',
+                'FID_TRGT_CLS_CODE':       '0',
+                'FID_TRGT_EXLS_CLS_CODE':  '0',
+                'FID_INPUT_PRICE_1':       '',
+                'FID_INPUT_PRICE_2':       '',
+                'FID_VOL_CNT':             '100000',
+                'FID_INPUT_DATE_1':        '',
+                'FID_RANK_SORT_CLS_CODE':  '0',
+                'FID_INPUT_CNT_1':         '0',
+                'FID_PRC_CLS_CODE':        '0',
+                'FID_RSFL_RATE1':          '',
+                'FID_RSFL_RATE2':          '',
+            },
+            timeout=10,
+        )
+        r.raise_for_status()
+        d = r.json()
+        if not _ok(d):
+            print(f"  KIS 급락주 순위 오류: {d.get('msg1')}")
+            return []
+        result = []
+        for item in d.get('output', []):
+            pct = float(item.get('prdy_ctrt', 0) or 0)
+            if pct >= 0 or pct < -30:
+                continue
+            result.append({
+                'Name':        item.get('hts_kor_isnm', ''),
+                'Close':       float(item.get('stck_prpr', 0) or 0),
+                'ChagesRatio': pct,
+                'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
+                'Market':      'KIS',
+            })
+            if len(result) >= top_n:
+                break
+        return result
+    except Exception as e:
+        print(f"  KIS 급락주 순위 오류: {e}")
+        return []
+
+
 def get_kr_sector_data(token):
     """KOSPI 주요 업종별 등락률 조회. 반환: [{'name': str, 'pct': float}, ...]"""
     results = []
