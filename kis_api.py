@@ -215,6 +215,43 @@ def get_fluctuation_ranking(token, top_n=5):
         return []
 
 
+KR_SECTORS = [
+    ('0013', '전기전자'),
+    ('0015', '자동차'),
+    ('0021', '금융'),
+    ('0009', '바이오'),
+    ('0008', '화학'),
+    ('0011', '철강'),
+    ('0018', '건설'),
+    ('0017', '에너지'),
+]
+
+
+def get_kr_sector_data(token):
+    """KOSPI 주요 업종별 등락률 조회. 반환: [{'name': str, 'pct': float}, ...]"""
+    results = []
+    for code, name in KR_SECTORS:
+        try:
+            r = requests.get(
+                f'{_base()}/uapi/domestic-stock/v1/quotations/inquire-index-price',
+                headers=_headers(token, 'FHPUP02100000'),
+                params={'FID_COND_MRKT_DIV_CODE': 'U', 'FID_INPUT_ISCD': code},
+                timeout=8,
+            )
+            r.raise_for_status()
+            d = r.json()
+            if not _ok(d):
+                results.append({'name': name, 'pct': 0.0})
+                continue
+            out = d.get('output', {})
+            pct = float(out.get('bstp_nmix_prdy_ctrt', 0) or 0)
+            results.append({'name': name, 'pct': round(pct, 2)})
+        except Exception as e:
+            print(f"  KIS 업종 오류 [{name}]: {e}")
+            results.append({'name': name, 'pct': 0.0})
+    return results
+
+
 def get_stock_price(token, ticker):
     """개별 종목 현재가 조회. ticker: '005930' 형식 6자리"""
     try:

@@ -219,6 +219,25 @@ def fetch_market_stocks():
     }
 
 
+def fetch_kr_sectors():
+    """KIS API로 KOSPI 주요 업종별 등락률 수집. 장 마감/주말엔 빈 리스트 반환"""
+    try:
+        import kis_api
+        token = kis_api.get_token()
+        if not token:
+            return []
+        sectors = kis_api.get_kr_sector_data(token)
+        # 장 마감/주말엔 전부 0 → 의미 없으므로 빈 리스트 반환
+        if all(s['pct'] == 0.0 for s in sectors):
+            print("  업종 데이터 장 마감 후 (fallback 사용)")
+            return []
+        print(f"  KIS 업종 {len(sectors)}개 수집 완료")
+        return sectors
+    except Exception as e:
+        print(f"  업종 데이터 오류: {e}")
+        return []
+
+
 def fetch_usdkrw_week():
     """USD/KRW 최근 7일 종가 리스트 반환"""
     try:
@@ -1449,13 +1468,22 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, us_ai_brief=None, watchlist=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
 
     import json as _json_wl
     watchlist_json = _json_wl.dumps(watchlist or [], ensure_ascii=False)
+
+    # 업종 차트 데이터 — KIS 실시간 우선, 없으면 기본값
+    _default_sectors = [
+        {'name': '전기전자', 'pct': 0.0}, {'name': '자동차', 'pct': 0.0},
+        {'name': '금융',    'pct': 0.0}, {'name': '바이오',  'pct': 0.0},
+        {'name': '화학',    'pct': 0.0}, {'name': '철강',    'pct': 0.0},
+        {'name': '건설',    'pct': 0.0}, {'name': '에너지',  'pct': 0.0},
+    ]
+    sector_data_json = _json_wl.dumps(kr_sectors if kr_sectors else _default_sectors, ensure_ascii=False)
 
     kospi_pct = d(market, 'kospi').get('pct') or 0
     if kospi_pct >= 1.0:
@@ -2308,8 +2336,9 @@ function closeMacroChart(){{
 }}
 try{{(function(){{
   var ctx=document.getElementById('sectorChart').getContext('2d');
-  var vals=[3.2,2.1,1.4,0.8,-0.5,-1.1,-1.8,-2.3];
-  var lbls=['반도체','2차전지','자동차','금융','바이오','화학','철강','에너지'];
+  var _sd={sector_data_json};
+  var lbls=_sd.map(function(s){{return s.name;}});
+  var vals=_sd.map(function(s){{return s.pct;}});
   var cols=vals.map(function(v){{return v>=0?'#ef4444':'#3b82f6';}});
   new Chart(ctx,{{
     type:'bar',
@@ -2606,13 +2635,14 @@ def main():
 
     # 1단계: 데이터 수집 (병렬 — Gemini 호출 없음)
     print("데이터 수집 중 (병렬)...")
-    with ThreadPoolExecutor(max_workers=6) as ex:
+    with ThreadPoolExecutor(max_workers=7) as ex:
         f_market          = ex.submit(fetch_market)
         f_news            = ex.submit(fetch_news)
         f_stocks          = ex.submit(fetch_market_stocks)
         f_usdkrw          = ex.submit(fetch_usdkrw_week)
         f_macro           = ex.submit(fetch_macro_history)
         f_research_reports = ex.submit(fetch_research_reports)
+        f_kr_sectors      = ex.submit(fetch_kr_sectors)
 
     market           = f_market.result()
     news             = f_news.result()
@@ -2620,6 +2650,7 @@ def main():
     usdkrw_week      = f_usdkrw.result()
     macro_hist       = f_macro.result()
     research_reports = f_research_reports.result()
+    kr_sectors       = f_kr_sectors.result()
 
     # 2단계: AI 분석 (병렬 — Gemini 호출)
     print("AI 분석 중 (병렬)...")
@@ -2636,7 +2667,7 @@ def main():
     stock_story      = f_stock_story.result()
     watchlist        = f_watchlist.result()
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, us_ai_brief=us_ai_brief, watchlist=watchlist)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
