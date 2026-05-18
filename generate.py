@@ -189,10 +189,32 @@ def fetch_market_stocks():
     except Exception as e:
         print(f"  KIS 랭킹 오류: {e}")
 
+    # KIS 외국인/기관 순매수, 신고가 수집
+    kis_foreign_buy = []
+    kis_inst_buy    = []
+    kis_high        = []
+    try:
+        if token:
+            raw_foreign = kis_api.get_foreign_net_buy_ranking(token, top_n=5)
+            raw_inst    = kis_api.get_institutional_net_buy_ranking(token, top_n=5)
+            raw_high    = kis_api.get_52week_high(token, top_n=5)
+            kis_foreign_buy = [x for x in raw_foreign if x.get('Amount', 0) > 0]
+            kis_inst_buy    = [x for x in raw_inst    if x.get('Amount', 0) > 0]
+            kis_high        = [x for x in raw_high    if x.get('Close', 0) > 0]
+            if kis_foreign_buy:
+                print(f"  KIS 외국인 순매수 수집 완료: {len(kis_foreign_buy)}개")
+            if kis_inst_buy:
+                print(f"  KIS 기관 순매수 수집 완료: {len(kis_inst_buy)}개")
+            if kis_high:
+                print(f"  KIS 신고가 수집 완료: {len(kis_high)}개")
+    except Exception as e:
+        print(f"  KIS 추가 랭킹 오류: {e}")
+
     # FDR로 시장 체감 온도 (상승/하락 종목 수) 수집
     up = down = flat = 0
     fdr_top_amt  = []
     fdr_top_gain = []
+    fdr_top_rise = []
     try:
         kospi  = fdr.StockListing('KOSPI')
         kosdaq = fdr.StockListing('KOSDAQ')
@@ -209,6 +231,8 @@ def fetch_market_stocks():
         fdr_top_gain    = gainers.nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
         losers          = all_s[(all_s['ChagesRatio'] < 0) & (all_s['ChagesRatio'] >= -30)]
         fdr_top_decline = losers.nsmallest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        # 상승률 상위: 상한가 포함 전체 상승 종목
+        fdr_top_rise    = all_s[all_s['ChagesRatio'] > 0].nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
         print(f"  FDR 체감 수집 완료: 상승 {up} / 하락 {down}")
     except Exception as e:
         print(f"  FDR 주도주 오류: {e}")
@@ -225,6 +249,10 @@ def fetch_market_stocks():
         'top_amt':     top_amt,
         'top_gain':    top_gain,
         'top_decline': top_decline,
+        'foreign_buy': kis_foreign_buy,
+        'inst_buy':    kis_inst_buy,
+        'high_52w':    kis_high,
+        'top_rise':    fdr_top_rise,
     }
 
 
@@ -1676,11 +1704,19 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         top_amt_html     = stocks_html(stocks.get('top_amt', []))
         top_gain_html    = stocks_html(stocks.get('top_gain', []))
         top_decline_html = stocks_html(stocks.get('top_decline', []))
+        foreign_buy_html = stocks_html(stocks.get('foreign_buy', []))
+        inst_buy_html    = stocks_html(stocks.get('inst_buy', []))
+        high_52w_html    = stocks_html(stocks.get('high_52w', []))
+        top_rise_html    = stocks_html(stocks.get('top_rise', []))
     else:
         breadth_html     = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>'
         top_amt_html     = breadth_html
         top_gain_html    = breadth_html
         top_decline_html = breadth_html
+        foreign_buy_html = breadth_html
+        inst_buy_html    = breadth_html
+        high_52w_html    = breadth_html
+        top_rise_html    = breadth_html
 
     # 캘린더
     cal_events = get_weekly_calendar(dt)
@@ -2012,12 +2048,28 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
       <div class="stock-list-col">
         <div class="ss-sub-label">📈 거래대금</div>
         {top_amt_html}
+        <div class="ss-sub-label" style="margin-top:10px">👤 외국인 순매수</div>
+        {foreign_buy_html}
+        <div class="ss-sub-label" style="margin-top:10px">🏢 기관 순매수</div>
+        {inst_buy_html}
       </div>
       <div class="stock-story-col">
         <div class="ss-sub-label">🚀 급등주</div>
         {top_gain_html}
         <div class="ss-sub-label" style="margin-top:10px">💧 급락주</div>
         {top_decline_html}
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="stock-story-wrap">
+      <div class="stock-list-col">
+        <div class="ss-sub-label">🏆 52주 신고가</div>
+        {high_52w_html}
+      </div>
+      <div class="stock-story-col">
+        <div class="ss-sub-label">📊 상승률 상위</div>
+        {top_rise_html}
       </div>
     </div>
   </div>

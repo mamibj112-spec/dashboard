@@ -278,6 +278,129 @@ def get_decline_ranking(token, top_n=5):
         return []
 
 
+def get_foreign_net_buy_ranking(token, top_n=5):
+    """외국인 순매수 기준 상위 종목"""
+    try:
+        r = requests.get(
+            f'{_base()}/uapi/domestic-stock/v1/ranking/investor',
+            headers=_headers(token, 'FHPST01600000'),
+            params={
+                'FID_COND_MRKT_DIV_CODE':  'J',
+                'FID_COND_SCR_DIV_CODE':   '20160',
+                'FID_INPUT_ISCD':          '0000',
+                'FID_TRGT_CLS_CODE':       '111111111',
+                'FID_TRGT_EXLS_CLS_CODE':  '000000',
+                'FID_INPUT_PRICE_1':       '',
+                'FID_INPUT_PRICE_2':       '',
+                'FID_VOL_CNT':             '',
+                'FID_INPUT_DATE_1':        '',
+                'FID_RANK_SORT_CLS_CODE':  '0',
+                'FID_ETC_CLS_CODE':        '1',  # 외국인
+            },
+            timeout=10,
+        )
+        r.raise_for_status()
+        d = r.json()
+        if not _ok(d):
+            print(f"  KIS 외국인 순매수 오류: {d.get('msg1')}")
+            return []
+        result = []
+        for item in d.get('output', [])[:top_n]:
+            result.append({
+                'Name':        item.get('hts_kor_isnm', ''),
+                'Close':       float(item.get('stck_prpr', 0) or 0),
+                'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
+                'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
+                'Market':      'KIS',
+            })
+        return result
+    except Exception as e:
+        print(f"  KIS 외국인 순매수 오류: {e}")
+        return []
+
+
+def get_institutional_net_buy_ranking(token, top_n=5):
+    """기관 순매수 기준 상위 종목"""
+    try:
+        r = requests.get(
+            f'{_base()}/uapi/domestic-stock/v1/ranking/investor',
+            headers=_headers(token, 'FHPST01600000'),
+            params={
+                'FID_COND_MRKT_DIV_CODE':  'J',
+                'FID_COND_SCR_DIV_CODE':   '20160',
+                'FID_INPUT_ISCD':          '0000',
+                'FID_TRGT_CLS_CODE':       '111111111',
+                'FID_TRGT_EXLS_CLS_CODE':  '000000',
+                'FID_INPUT_PRICE_1':       '',
+                'FID_INPUT_PRICE_2':       '',
+                'FID_VOL_CNT':             '',
+                'FID_INPUT_DATE_1':        '',
+                'FID_RANK_SORT_CLS_CODE':  '0',
+                'FID_ETC_CLS_CODE':        '2',  # 기관
+            },
+            timeout=10,
+        )
+        r.raise_for_status()
+        d = r.json()
+        if not _ok(d):
+            print(f"  KIS 기관 순매수 오류: {d.get('msg1')}")
+            return []
+        result = []
+        for item in d.get('output', [])[:top_n]:
+            result.append({
+                'Name':        item.get('hts_kor_isnm', ''),
+                'Close':       float(item.get('stck_prpr', 0) or 0),
+                'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
+                'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
+                'Market':      'KIS',
+            })
+        return result
+    except Exception as e:
+        print(f"  KIS 기관 순매수 오류: {e}")
+        return []
+
+
+def get_52week_high(token, top_n=5):
+    """52주 신고가 종목 상위"""
+    try:
+        r = requests.get(
+            f'{_base()}/uapi/domestic-stock/v1/ranking/high-low',
+            headers=_headers(token, 'FHPST01400000'),
+            params={
+                'FID_COND_MRKT_DIV_CODE':  'J',
+                'FID_COND_SCR_DIV_CODE':   '20140',
+                'FID_INPUT_ISCD':          '0000',
+                'FID_DIV_CLS_CODE':        '1',   # 1=신고가
+                'FID_BLNG_CLS_CODE':       '0',
+                'FID_TRGT_CLS_CODE':       '111111111',
+                'FID_TRGT_EXLS_CLS_CODE':  '000000',
+                'FID_INPUT_PRICE_1':       '',
+                'FID_INPUT_PRICE_2':       '',
+                'FID_VOL_CNT':             '100000',
+                'FID_INPUT_DATE_1':        '',
+            },
+            timeout=10,
+        )
+        r.raise_for_status()
+        d = r.json()
+        if not _ok(d):
+            print(f"  KIS 신고가 오류: {d.get('msg1')}")
+            return []
+        result = []
+        for item in d.get('output', [])[:top_n]:
+            result.append({
+                'Name':        item.get('hts_kor_isnm', ''),
+                'Close':       float(item.get('stck_prpr', 0) or 0),
+                'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
+                'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
+                'Market':      'KIS',
+            })
+        return result
+    except Exception as e:
+        print(f"  KIS 신고가 오류: {e}")
+        return []
+
+
 def get_kr_sector_data(token):
     """KOSPI 주요 업종별 등락률 조회. 반환: [{'name': str, 'pct': float}, ...]"""
     results = []
