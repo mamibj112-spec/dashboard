@@ -1,7 +1,7 @@
-const CACHE = 'dashboard-v3';
-const ASSETS = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+const CACHE = 'dashboard-v4';
+const ASSETS = ['/manifest.json', '/icon-192.png', '/icon-512.png'];
 
-// 설치: 기본 파일 캐시
+// 설치: 정적 자산만 캐시 (index.html 제외)
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
@@ -17,8 +17,19 @@ self.addEventListener('activate', e => {
   );
 });
 
-// 요청: 네트워크 우선, 실패 시 캐시
+// 요청: index.html은 항상 네트워크에서 새로 받음, 나머지는 네트워크 우선 캐시 fallback
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  const isHTML = url.pathname === '/' || url.pathname.endsWith('.html') || url.pathname.endsWith('/');
+
+  if (isHTML) {
+    e.respondWith(
+      fetch(e.request, { cache: 'no-store' })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
   e.respondWith(
     fetch(e.request)
       .then(res => {
