@@ -23,6 +23,10 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .header-date{font-size:16px;font-weight:700}
 .header-day{font-size:11px;color:var(--t3);margin-top:2px}
 .header-right{text-align:right;font-size:11px;color:var(--t3)}
+.update-btn{{display:inline-block;margin-top:5px;padding:4px 10px;font-size:10px;color:var(--blue);border:1px solid var(--blue);border-radius:6px;background:none;cursor:pointer;opacity:.8}}
+.update-btn:hover{{opacity:1}}
+.update-btn:disabled{{opacity:.4;cursor:not-allowed}}
+.update-status{{font-size:10px;color:var(--t3);display:block;text-align:right;margin-top:2px;min-height:14px}}
 
 .tab-nav{display:flex;margin:12px 0 0;border-bottom:1px solid var(--border);
 position:sticky;top:0;background:var(--bg);z-index:10;padding:0 4px}
@@ -213,7 +217,11 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="header-date">2026년 5월 19일 화요일</div>
     <div class="header-day">장 마감 기준</div>
   </div>
-  <div class="header-right">07:03 생성</div>
+  <div class="header-right">
+    07:29 생성<br>
+    <button class="update-btn" id="updBtn" onclick="triggerUpdate()">지금 업데이트</button>
+    <span class="update-status" id="updStatus"></span>
+  </div>
 </div>
 
 <nav class="tab-nav">
@@ -286,33 +294,33 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('usdkrw')">
         <div class="macro-name">USD/KRW</div>
-        <div class="macro-val"><span class="up-txt">1,488.1원</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 5.2 (0.35%)</span></div>
+        <div class="macro-val"><span class="up-txt">1,488.3원</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 5.1 (0.34%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('brent')">
         <div class="macro-name">브렌트유</div>
-        <div class="macro-val"><span class="up-txt">$109.3</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $0.02 (0.02%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$109.0</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $0.25 (0.23%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('wti')">
         <div class="macro-name">WTI</div>
-        <div class="macro-val"><span class="dn-txt">$102.5</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $2.93 (2.78%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$102.3</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $3.09 (2.93%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="up-txt">$4,571</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $15.00 (0.33%)</span></div>
+        <div class="macro-val"><span class="up-txt">$4,578</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $21.90 (0.48%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="up-txt">98.96</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.31 (0.31%)</span></div>
+        <div class="macro-val"><span class="up-txt">98.95</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 0.32 (0.32%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="dn-txt">$77,015</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ 414.15 (0.53%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$77,110</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ 319.36 (0.41%)</span></div>
       </div>
     </div>
   </div>
@@ -827,18 +835,18 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="up-txt">98.96</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.31 (0.31%)</span></div>
+        <div class="macro-val"><span class="up-txt">98.95</span></div>
+        <div class="macro-chg"><span class="up-txt">▼ 0.32 (0.32%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="up-txt">$4,571</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $15.00 (0.33%)</span></div>
+        <div class="macro-val"><span class="up-txt">$4,578</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $21.90 (0.48%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="dn-txt">$77,015</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ 414.15 (0.53%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$77,110</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ 319.36 (0.41%)</span></div>
       </div>
     </div>
   </div>
@@ -981,6 +989,30 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">핫이슈 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-red">이슈</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026051949207" target="_blank">"삼성전자 임직원 1분기 평균월급 1200만원…전년 25%↑"</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 5월 19일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-red">이슈</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202605182839g" target="_blank">"새벽 3시에도 배달이 되네"…다이소·쿠팡까지 '파격 승부수'</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 5월 19일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-red">이슈</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202605184702i" target="_blank">노스페이스 풀장착한 박보검, 한낮에 강릉서 10㎞ 달렸다</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 5월 19일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-red">이슈</span>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202605194901i" target="_blank">美 전략비축유 방출 사상 최대…비축량 2년만에 최저</a></div>
+  
+  
+  <div class="news-meta">한국경제 · 5월 19일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-red">이슈</span>
   <div class="news-title"><a href="https://www.hankyung.com/article/202605184237g" target="_blank">'성과급 투쟁' 삼성전자 월급 분석해보니…"1200만원 찍었다"</a></div>
   
   
@@ -994,30 +1026,6 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
   <div class="news-title"><a href="https://www.hankyung.com/article/202605184756i" target="_blank">채권 수익률과 유가가 관건…뉴욕증시 혼조세</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 5월 18일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202605184740i" target="_blank">데이터센터 급증…넥스트에라, 103조원 규모에 도미니언 인수</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 5월 18일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202605184723i" target="_blank">버크셔, 알파벳 지분 224% 늘려…7대 보유종목으로 등극</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 5월 18일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026051847251" target="_blank">5·18에 '탱크 마케팅' 논란…정용진, 스타벅스 대표 경질</a></div>
-  
-  
-  <div class="news-meta">한국경제 · 5월 18일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026051843701" target="_blank">사우디 돈줄 끊기더니…"한국오픈 후원 못해" 날벼락</a></div>
   
   
   <div class="news-meta">한국경제 · 5월 18일</div>
@@ -1070,13 +1078,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div>
 
 <div class="footer-note">
-  2026년 5월 19일 화요일 · 07:03 생성<br>
+  2026년 5월 19일 화요일 · 07:29 생성<br>
   부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
 var MACRO_META={"kospi": {"name": "코스피", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "", "dec": 2}, "kosdaq": {"name": "코스닥", "color": "#3b82f6", "rgb": "59,130,246", "pre": "", "suf": "", "dec": 2}, "sp500": {"name": "S&P 500", "color": "#00e896", "rgb": "0,232,150", "pre": "", "suf": "", "dec": 2}, "nasdaq": {"name": "나스닥 100", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "", "dec": 2}, "dow": {"name": "다우존스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "vix": {"name": "VIX", "color": "#ffc940", "rgb": "255,201,64", "pre": "", "suf": "", "dec": 2}, "usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
-var MACRO_HIST={"kospi": [7490.0498, 7498.0, 7822.2402, 7643.1499, 7844.0098, 7981.4102, 7493.1802], "kosdaq": [1199.1801, 1207.72, 1207.34, 1179.29, 1176.9301, 1191.09, 1129.8199], "sp500": [7398.9302, 7412.8398, 7400.96, 7444.25, 7501.2402, 7408.5, 7403.0498], "nasdaq": [29234.9902, 29320.6602, 29064.8008, 29366.9395, 29580.3008, 29125.1992, 28994.3691], "dow": [49609.1602, 49704.4688, 49760.5586, 49693.1992, 50063.4609, 49526.1719, 49686.1211], "vix": [17.19, 18.38, 17.99, 17.87, 17.26, 18.43, 17.82], "usdkrw": [1454.79, 1460.55, 1474.45, 1492.99, 1489.84, 1493.34, 1488.13], "brent": [101.29, 104.21, 107.77, 105.63, 105.72, 109.26, 109.28], "wti": [95.42, 98.07, 102.18, 101.02, 101.17, 105.42, 102.49], "tnx": [4.364, 4.41, 4.463, 4.481, 4.461, 4.595, 4.623], "gold": [4720.3999, 4718.7002, 4677.6001, 4697.7002, 4678.1001, 4555.7998, 4570.7998], "dxy": [97.84, 97.94, 98.29, 98.48, 98.88, 99.27, 98.96], "btc": [80477.4922, 79277.1172, 81051.25, 79065.6797, 78131.4375, 77429.3516, 77015.2031]};
+var MACRO_HIST={"kospi": [7490.0498, 7498.0, 7822.2402, 7643.1499, 7844.0098, 7981.4102, 7493.1802], "kosdaq": [1199.1801, 1207.72, 1207.34, 1179.29, 1176.9301, 1191.09, 1129.8199], "sp500": [7398.9302, 7412.8398, 7400.96, 7444.25, 7501.2402, 7408.5, 7403.0498], "nasdaq": [29234.9902, 29320.6602, 29064.8008, 29366.9395, 29580.3008, 29125.1992, 28994.3691], "dow": [49609.1602, 49704.4688, 49760.5586, 49693.1992, 50063.4609, 49526.1719, 49686.1211], "vix": [17.19, 18.38, 17.99, 17.87, 17.26, 18.43, 17.82], "usdkrw": [1454.79, 1460.55, 1474.45, 1492.99, 1489.84, 1493.34, 1488.27], "brent": [101.29, 104.21, 107.77, 105.63, 105.72, 109.26, 109.01], "wti": [95.42, 98.07, 102.18, 101.02, 101.17, 105.42, 102.33], "tnx": [4.364, 4.41, 4.463, 4.481, 4.461, 4.595, 4.623], "gold": [4720.3999, 4718.7002, 4677.6001, 4697.7002, 4678.1001, 4555.7998, 4577.7002], "dxy": [97.84, 97.94, 98.29, 98.48, 98.88, 99.27, 98.954], "btc": [80477.4922, 79277.1172, 81051.25, 79065.6797, 78131.4375, 77429.3516, 77109.9922]};
 var _mc=null;
 function showMacroChart(k){
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
@@ -1136,7 +1144,7 @@ try{(function(){
   });
 })();}catch(e){console.warn('sectorChart init failed:',e);}
 var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목'};
-var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 1333.01, "change": -74.6, "change_pct": -5.3, "currency": "USD", "market_cap": "$197.4B", "ev": "$204.9B", "pe": 45.53, "forward_pe": 7.68, "pb": 19.32, "ps": 14.97, "peg": null, "ev_ebitda": 36.39, "eps": 29.28, "shares_out": "$148M", "float_shares": "$146M", "revenue": "$13.2B", "net_income": "$4.5B", "op_margin": 69.98, "profit_margin": 34.19, "gross_margin": 56.04, "roe": 39.3, "roa": 22.82, "roic": null, "rev_growth": 251.0, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 4.78, "quick_ratio": 3.43, "debt_equity": 1.5, "total_debt": "$207M", "total_cash": "$3.7B", "fcf": "$2.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 1600.0, "low52": 35.79, "target": 1421.77, "ret_1w": -13.86, "ret_1m": 44.74, "ret_3m": 125.71, "ret_6m": 447.28, "ret_ytd": 384.31, "ret_1y": 3188.14, "ret_3y": null, "ret_5y": null, "rsi": 59, "beta": null, "sma20_gap": 7.63, "sma50_gap": 42.0, "sma200_gap": 211.16, "atr": 123.38, "vol_weekly": 45.41, "vol_monthly": 97.38, "volume": 13761849, "avg_volume": 17571444, "rel_volume": 0.78, "exchange": "NMS", "inst_pct": null, "insider_pct": 5.42, "short_float": 11.41, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "Why Nvidia earnings must deliver massively", "link": "https://finance.yahoo.com/markets/article/why-nvidia-earnings-must-deliver-massively-131600201.html", "publisher": "Yahoo Finance", "date": ""}, {"title": "Can Sandisk Stock Turn a $10,000 Investment Into $1 Million?", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-stock-turn-10-000-213500283.html", "publisher": "Motley Fool", "date": ""}, {"title": "Stock Market Today, May 18: Cautious Mood Nudges Markets Downwards", "link": "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-may-18-212110102.html", "publisher": "Motley Fool", "date": ""}, {"title": "Dow Jones Futures: Stocks Mixed As Trump Postpones Iran Attack; Sandisk, Bloom Energy, AI Leaders Sell Off", "link": "#", "publisher": "Investor's Business Daily", "date": ""}, {"title": "Why Did Sandisk Stock Drop Today?", "link": "https://finance.yahoo.com/markets/stocks/articles/why-did-sandisk-stock-drop-160811384.html", "publisher": "Motley Fool", "date": ""}]}];
+var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 1333.01, "change": -74.6, "change_pct": -5.3, "currency": "USD", "market_cap": "$197.4B", "ev": "$204.9B", "pe": 45.53, "forward_pe": 7.68, "pb": 19.32, "ps": 14.97, "peg": null, "ev_ebitda": 36.39, "eps": 29.28, "shares_out": "$148M", "float_shares": "$146M", "revenue": "$13.2B", "net_income": "$4.5B", "op_margin": 69.98, "profit_margin": 34.19, "gross_margin": 56.04, "roe": 39.3, "roa": 22.82, "roic": null, "rev_growth": 251.0, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 4.78, "quick_ratio": 3.43, "debt_equity": 1.5, "total_debt": "$207M", "total_cash": "$3.7B", "fcf": "$2.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 1600.0, "low52": 35.79, "target": 1421.77, "ret_1w": -13.86, "ret_1m": 44.74, "ret_3m": 125.71, "ret_6m": 447.28, "ret_ytd": 384.31, "ret_1y": 3188.14, "ret_3y": null, "ret_5y": null, "rsi": 59, "beta": null, "sma20_gap": 7.63, "sma50_gap": 42.0, "sma200_gap": 211.16, "atr": 123.38, "vol_weekly": 45.41, "vol_monthly": 97.38, "volume": 13761849, "avg_volume": 17571444, "rel_volume": 0.78, "exchange": "NMS", "inst_pct": null, "insider_pct": 5.42, "short_float": 11.41, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "Why Nvidia earnings must deliver massively", "link": "https://finance.yahoo.com/markets/article/why-nvidia-earnings-must-deliver-massively-131600201.html", "publisher": "Yahoo Finance", "date": ""}, {"title": "Dow Jones Futures: Trump Iran Delay Saves Dow's Day, But Sandisk, Bloom Energy, AI Leaders Sell Off", "link": "#", "publisher": "Investor's Business Daily", "date": ""}, {"title": "The Spill: Apple (AAPL) Just Crushed It. Now What?", "link": "https://finance.yahoo.com/markets/stocks/articles/spill-apple-aapl-just-crushed-215603939.html", "publisher": "IPO-Edge.com", "date": ""}, {"title": "Can Sandisk Stock Turn a $10,000 Investment Into $1 Million?", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-stock-turn-10-000-213500283.html", "publisher": "Motley Fool", "date": ""}, {"title": "Stock Market Today, May 18: Cautious Mood Nudges Markets Downwards", "link": "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-may-18-212110102.html", "publisher": "Motley Fool", "date": ""}]}];
 function _fmt(v,dec,suf){if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}
 function _pctColor(v){
   if(v===null||v===undefined)return'<span style="color:var(--t3)">N/A</span>';
@@ -1297,6 +1305,31 @@ function closeStockModal(){
   document.getElementById('stockOverlay').classList.remove('open');
   document.getElementById('stockModal').classList.remove('open');
   setTimeout(function(){document.getElementById('stockOverlay').style.display='none';},250);
+}
+var _updTimer=null;
+function triggerUpdate(){
+  var pat='';
+  if(!pat){document.getElementById('updStatus').textContent='토큰 미설정';return;}
+  var btn=document.getElementById('updBtn');
+  btn.disabled=true;btn.textContent='요청 중...';
+  document.getElementById('updStatus').textContent='';
+  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/daily.yml/dispatches',{
+    method:'POST',
+    headers:{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+    body:JSON.stringify({ref:'main'})
+  }).then(function(r){
+    if(r.status===204){
+      btn.textContent='업데이트 중...';
+      document.getElementById('updStatus').textContent='⏳ 1~2분 후 새로고침';
+      _updTimer=setTimeout(function(){location.reload();},90000);
+    }else{
+      btn.disabled=false;btn.textContent='지금 업데이트';
+      document.getElementById('updStatus').textContent='❌ 실패';
+    }
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='지금 업데이트';
+    document.getElementById('updStatus').textContent='❌ 네트워크 오류';
+  });
 }
 function sw(id, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
