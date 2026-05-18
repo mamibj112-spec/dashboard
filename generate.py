@@ -1321,6 +1321,10 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .header-date{font-size:16px;font-weight:700}
 .header-day{font-size:11px;color:var(--t3);margin-top:2px}
 .header-right{text-align:right;font-size:11px;color:var(--t3)}
+.update-btn{{display:inline-block;margin-top:5px;padding:4px 10px;font-size:10px;color:var(--blue);border:1px solid var(--blue);border-radius:6px;background:none;cursor:pointer;opacity:.8}}
+.update-btn:hover{{opacity:1}}
+.update-btn:disabled{{opacity:.4;cursor:not-allowed}}
+.update-status{{font-size:10px;color:var(--t3);display:block;text-align:right;margin-top:2px;min-height:14px}}
 
 .tab-nav{display:flex;margin:12px 0 0;border-bottom:1px solid var(--border);
 position:sticky;top:0;background:var(--bg);z-index:10;padding:0 4px}
@@ -1506,6 +1510,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
+    workflow_pat = os.environ.get('WORKFLOW_PAT', '')
     gen_time = dt.strftime("%H:%M 생성")
 
     import json as _json_wl
@@ -1927,7 +1932,11 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <div class="header-date">{kdate}</div>
     <div class="header-day">장 마감 기준</div>
   </div>
-  <div class="header-right">{gen_time}</div>
+  <div class="header-right">
+    {gen_time}<br>
+    <button class="update-btn" id="updBtn" onclick="triggerUpdate()">지금 업데이트</button>
+    <span class="update-status" id="updStatus"></span>
+  </div>
 </div>
 
 <nav class="tab-nav">
@@ -2592,6 +2601,31 @@ function closeStockModal(){{
   document.getElementById('stockOverlay').classList.remove('open');
   document.getElementById('stockModal').classList.remove('open');
   setTimeout(function(){{document.getElementById('stockOverlay').style.display='none';}},250);
+}}
+var _updTimer=null;
+function triggerUpdate(){{
+  var pat='{workflow_pat}';
+  if(!pat){{document.getElementById('updStatus').textContent='토큰 미설정';return;}}
+  var btn=document.getElementById('updBtn');
+  btn.disabled=true;btn.textContent='요청 중...';
+  document.getElementById('updStatus').textContent='';
+  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/daily.yml/dispatches',{{
+    method:'POST',
+    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}},
+    body:JSON.stringify({{ref:'main'}})
+  }}).then(function(r){{
+    if(r.status===204){{
+      btn.textContent='업데이트 중...';
+      document.getElementById('updStatus').textContent='⏳ 1~2분 후 새로고침';
+      _updTimer=setTimeout(function(){{location.reload();}},90000);
+    }}else{{
+      btn.disabled=false;btn.textContent='지금 업데이트';
+      document.getElementById('updStatus').textContent='❌ 실패';
+    }}
+  }}).catch(function(){{
+    btn.disabled=false;btn.textContent='지금 업데이트';
+    document.getElementById('updStatus').textContent='❌ 네트워크 오류';
+  }});
 }}
 function sw(id, btn) {{
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
