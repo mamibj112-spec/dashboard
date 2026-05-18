@@ -6,6 +6,12 @@ on:
     - cron: '30 7 * * *'
     # 매일 오전 6시 30분 KST (21:30 UTC) — 미국 장 마감 후
     - cron: '30 21 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'generate.py'
+      - 'kis_api.py'
+      - 'modules/**'
   workflow_dispatch:  # 수동 실행 버튼
 
 concurrency:
