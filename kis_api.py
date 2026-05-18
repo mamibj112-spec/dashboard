@@ -426,6 +426,56 @@ def get_kr_sector_data(token):
     return results
 
 
+_ETF_PREFIXES = ('KODEX', 'TIGER', 'KINDEX', 'ARIRANG', 'HANARO', 'KOSEF', 'SOL', 'ACE', 'TIMEFOLIO', 'KB')
+
+
+def get_etf_volume_ranking(token, top_n=5):
+    """거래대금 상위 ETF 조회 (ETF 이름 접두어로 필터링)"""
+    try:
+        r = requests.get(
+            f'{_base()}/uapi/domestic-stock/v1/quotations/volume-rank',
+            headers=_headers(token, 'FHPST01710000'),
+            params={
+                'FID_COND_MRKT_DIV_CODE':  'J',
+                'FID_COND_SCR_DIV_CODE':   '20171',
+                'FID_INPUT_ISCD':          '0000',
+                'FID_DIV_CLS_CODE':        '0',
+                'FID_BLNG_CLS_CODE':       '1',
+                'FID_TRGT_CLS_CODE':       '111111111',
+                'FID_TRGT_EXLS_CLS_CODE':  '000000',
+                'FID_INPUT_PRICE_1':       '',
+                'FID_INPUT_PRICE_2':       '',
+                'FID_VOL_CNT':             '',
+                'FID_INPUT_DATE_1':        '',
+            },
+            timeout=10,
+        )
+        r.raise_for_status()
+        d = r.json()
+        if not _ok(d):
+            return []
+        result = []
+        for item in d.get('output', []):
+            name = item.get('hts_kor_isnm', '')
+            if not any(name.startswith(p) for p in _ETF_PREFIXES):
+                continue
+            amt = float(item.get('acml_tr_pbmn', 0) or 0)
+            if amt <= 0:
+                continue
+            result.append({
+                'name': name,
+                'val':  float(item.get('stck_prpr', 0) or 0),
+                'pct':  float(item.get('prdy_ctrt', 0) or 0),
+                'amt':  amt,
+            })
+            if len(result) >= top_n:
+                break
+        return result
+    except Exception as e:
+        print(f"  KIS ETF 거래대금 오류: {e}")
+        return []
+
+
 def get_stock_price(token, ticker):
     """개별 종목 현재가 조회. ticker: '005930' 형식 6자리"""
     try:
