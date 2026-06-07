@@ -67,6 +67,13 @@ TICKERS = {
     'xlb':    'XLB',
     'xlre':   'XLRE',
     'xlu':    'XLU',
+    'xlc':    'XLC',
+    'tlt':    'TLT',
+    'ief':    'IEF',
+    'shy':    'SHY',
+    'gld':    'GLD',
+    'uso':    'USO',
+    'slv':    'SLV',
     'unh':    'UNH',
     'avgo':   'AVGO',
     'anet':   'ANET',
@@ -82,9 +89,15 @@ TICKERS = {
 }
 
 US_SECTOR_MAP = {
-    'xlk': 'IT/기술', 'xle': '에너지', 'xlv': '헬스케어', 'xlp': '필수소비재', 
-    'xly': '경기소비재', 'xlf': '금융', 'xli': '산업재', 'xlb': '소재', 
+    'xlk': 'IT/기술', 'xlc': '통신서비스', 'xle': '에너지', 'xlv': '헬스케어', 'xlp': '필수소비재',
+    'xly': '경기소비재', 'xlf': '금융', 'xli': '산업재', 'xlb': '소재',
     'xlre': '부동산', 'xlu': '유틸리티'
+}
+US_BOND_MAP = {
+    'tlt': ('TLT', '장기채'), 'ief': ('IEF', '중기채'), 'shy': ('SHY', '단기채'),
+}
+US_COMMODITY_MAP = {
+    'gld': ('GLD', '금'), 'uso': ('USO', '원유'), 'slv': ('SLV', '은'),
 }
 US_STOCK_MAP = {
     'unh': '유나이티드헬스', 'avgo': '브로드컴', 'anet': '아리스타', 'wmt': '월마트',
@@ -603,6 +616,14 @@ def fetch_us_ai_briefing(market, news):
         for k, name in US_STOCK_MAP.items():
             stock_data += f"- {name}: {mv(k)}\n"
 
+        bond_data = ""
+        for k, (ticker, label) in US_BOND_MAP.items():
+            bond_data += f"- {ticker}({label}): {mv(k)}\n"
+
+        commodity_data = ""
+        for k, (ticker, label) in US_COMMODITY_MAP.items():
+            commodity_data += f"- {ticker}({label}): {mv(k)}\n"
+
         headlines = []
         for item in news.get('international', [])[:6]:
             headlines.append(item['title'])
@@ -617,6 +638,12 @@ def fetch_us_ai_briefing(market, news):
 섹터별 동향:
 {sector_data}
 
+채권:
+{bond_data}
+
+원자재:
+{commodity_data}
+
 주요 종목 동향:
 {stock_data}
 
@@ -628,8 +655,14 @@ def fetch_us_ai_briefing(market, news):
 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
 {{
   "keyword": "오늘 미국 시장 핵심 키워드 (이모지 포함, 20자 이내)",
+  "hashtags": ["오늘 시장을 한눈에 보여주는 해시태그 5개 (예: #강한 고용지표, #VIX 급등 형식, # 포함, 각 12자 이내)"],
+  "highlights": [
+    {{"title": "오늘의 핵심 이슈 제목 (12자 이내)", "desc": "그 이슈에 대한 한 줄 설명 (35자 이내)"}},
+    {{"title": "두 번째 핵심 이슈 제목 (12자 이내)", "desc": "그 이슈에 대한 한 줄 설명 (35자 이내)"}},
+    {{"title": "세 번째 핵심 이슈 제목 (12자 이내)", "desc": "그 이슈에 대한 한 줄 설명 (35자 이내)"}}
+  ],
   "story": "전체적인 시장 분위기와 지수 움직임의 원인 (3~4문장)",
-  "sector_story": "섹터 및 주요 종목들의 특징적인 움직임과 이유 (3문장)",
+  "sector_story": "섹터·채권·원자재 등 자산군 간의 자금 흐름과 순환매, 그 이유 (3~4문장)",
   "outlook": "향후 주목해야 할 이벤트나 투자 포인트 (2문장)"
 }}"""
 
@@ -1499,6 +1532,28 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .story-label{font-size:10px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:5px}
 .story-text{font-size:12px;color:var(--t2);line-height:1.75}
 .story-watch{font-size:12px;color:var(--t1);line-height:1.9;font-weight:500}
+.mkt-sec-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.mkt-sec-icon{font-size:15px}
+.mkt-sec-title{font-size:14px;font-weight:700;color:var(--t1);flex:1}
+.mkt-sec-num{font-size:10px;color:var(--t3);font-weight:700;background:var(--card2);padding:2px 7px;border-radius:6px}
+.hashtag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.hashtag-pill{font-size:10.5px;color:var(--blue);background:rgba(77,166,255,.12);border:1px solid rgba(77,166,255,.25);border-radius:20px;padding:4px 10px;font-weight:600}
+.highlight-list{margin-bottom:12px}
+.highlight-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.highlight-item:last-child{border-bottom:none}
+.highlight-dot{color:var(--blue);font-size:13px;line-height:1.6;font-weight:700}
+.highlight-title{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.highlight-desc{font-size:11px;color:var(--t2);line-height:1.6}
+.asset-group-label{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.5px;margin:12px 0 6px}
+.asset-group-label:first-of-type{margin-top:0}
+.asset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.asset-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.asset-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center}
+.asset-ticker{font-size:10.5px;font-weight:700;color:var(--t2)}
+.asset-sub{font-size:8.5px;color:var(--t3);margin-top:1px}
+.asset-pct{font-size:12px;font-weight:700;margin-top:4px}
+.asset-pct.up{color:var(--up)}
+.asset-pct.dn{color:var(--dn)}
 .report-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
 .report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .report-stock{font-size:13px;font-weight:700;color:var(--t1)}
@@ -1539,12 +1594,6 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .us-fg-label{font-size:11px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;font-weight:600}
 .us-fg-score{font-size:28px;font-weight:800;line-height:1.1}
 .us-fg-desc{font-size:11px;margin-top:4px;opacity:.8}
-.sector-bar-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.sector-bar-row:last-child{border-bottom:none}
-.sector-bar-name{font-size:11px;color:var(--t2);width:72px;flex-shrink:0}
-.sector-bar-wrap{flex:1;height:12px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
-.sector-bar-fill{height:100%;border-radius:3px}
-.sector-bar-pct{font-size:10.5px;font-weight:700;width:48px;text-align:right;flex-shrink:0}
 .top3-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .top3-row:last-child{border-bottom:none}
 .top3-rank{font-size:11px;color:var(--t3);width:16px;flex-shrink:0;text-align:center}
@@ -1626,9 +1675,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         dom_cls, dom_ico = 'dn', '📉'
     else:
         dom_cls, dom_ico = 'blue', '➖'
-
-    sp500_pct = d(market, 'sp500').get('pct') or 0
-    us_cls = 'up' if sp500_pct >= 0 else 'dn'
 
     dom_summary = build_dom_summary(market)
     us_summary  = (us_ai_brief or {}).get('story') or build_us_summary(market)
@@ -1857,42 +1903,53 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         us_fg_emoji, us_fg_label, us_fg_color = '🤑', '극탐욕', '#ef4444'
 
     # 해외 AI 브리핑 HTML
+    # 해외 AI 브리핑 보조 콘텐츠 (해시태그 / 하이라이트 / 전망 / 자산동향 narrative)
+    us_hashtags_html = ''
+    us_highlights_html = ''
+    us_outlook_html = ''
+    us_asset_story = ''
     if us_ai_brief:
-        u_kw   = us_ai_brief.get('keyword', '')
-        u_sec  = us_ai_brief.get('sector_story', '')
-        u_out  = us_ai_brief.get('outlook', '')
-        us_story_html = f'''<div class="section">
-  <div class="story-wrap" style="background: linear-gradient(135deg, rgba(77, 166, 255, 0.1), rgba(167, 139, 250, 0.05)); border-color: rgba(77, 166, 255, 0.3);">
-    <div class="story-keyword" style="color: var(--blue); border-bottom-color: rgba(77, 166, 255, 0.2);">{u_kw}</div>
-    <div class="story-block">
-      <div class="story-label" style="color: var(--blue);">📈 섹터/종목 흐름</div>
-      <div class="story-text">{u_sec}</div>
-    </div>
-    <div class="story-block">
-      <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
-      <div class="story-text">{u_out}</div>
-    </div>
+        for tag in us_ai_brief.get('hashtags', []):
+            us_hashtags_html += f'<span class="hashtag-pill">{tag}</span>'
+        for hl in us_ai_brief.get('highlights', []):
+            us_highlights_html += f'''<div class="highlight-item">
+  <div class="highlight-dot">·</div>
+  <div>
+    <div class="highlight-title">{hl.get('title','')}</div>
+    <div class="highlight-desc">{hl.get('desc','')}</div>
   </div>
 </div>'''
-    else:
-        us_story_html = ''
+        u_out = us_ai_brief.get('outlook', '')
+        if u_out:
+            us_outlook_html = f'''<div class="story-block" style="margin-top:10px">
+      <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
+      <div class="story-text">{u_out}</div>
+    </div>'''
+        us_asset_story = us_ai_brief.get('sector_story', '')
 
-    # 해외 섹터 HTML (색상 막대 바)
-    sector_pct_list = [abs(d(market, k).get('pct', 0)) for k in US_SECTOR_MAP]
-    max_sector_pct = max(sector_pct_list) if sector_pct_list else 5
-    us_sectors_html = ''
-    for k, name in US_SECTOR_MAP.items():
-        item = d(market, k)
-        pct = item.get('pct', 0)
-        cls = 'up-txt' if pct >= 0 else 'dn-txt'
-        bar_color = 'var(--up)' if pct >= 0 else 'var(--dn)'
-        bar_width = min(abs(pct) / max(max_sector_pct, 0.01) * 100, 100)
+    # 섹터 & 자산 동향 카드 그리드 HTML
+    def _asset_card(ticker, sub, pct):
+        cls = 'up' if pct >= 0 else 'dn'
         sign = '+' if pct >= 0 else ''
-        us_sectors_html += f'''<div class="sector-bar-row">
-  <div class="sector-bar-name">{name}</div>
-  <div class="sector-bar-wrap"><div class="sector-bar-fill" style="width:{bar_width:.1f}%;background:{bar_color}"></div></div>
-  <div class="sector-bar-pct {cls}">{sign}{pct:.2f}%</div>
+        sub_html = f'<div class="asset-sub">{sub}</div>' if sub else ''
+        return f'''<div class="asset-card">
+  <div class="asset-ticker">{ticker}</div>
+  {sub_html}
+  <div class="asset-pct {cls}">{sign}{pct:.2f}%</div>
 </div>'''
+
+    asset_sectors_html = ''.join(
+        _asset_card(k.upper(), name, d(market, k).get('pct', 0) or 0)
+        for k, name in US_SECTOR_MAP.items()
+    )
+    asset_bonds_html = ''.join(
+        _asset_card(ticker, label, d(market, k).get('pct', 0) or 0)
+        for k, (ticker, label) in US_BOND_MAP.items()
+    )
+    asset_commodities_html = ''.join(
+        _asset_card(ticker, label, d(market, k).get('pct', 0) or 0)
+        for k, (ticker, label) in US_COMMODITY_MAP.items()
+    )
 
     # 해외 주요 종목 HTML
     us_stocks_html = ''
@@ -2202,15 +2259,38 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
   <div class="section">
     {us_fg_banner_html}
-    <div class="banner {us_cls}">
-      <strong>🌐 해외 시황</strong><br>
-      S&amp;P500 {vdisp(market,'sp500')} {cdisp(market,'sp500')} &nbsp;|&nbsp;
-      나스닥 {vdisp(market,'nasdaq')} {cdisp(market,'nasdaq')}<br>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">{us_summary}</span>
+  </div>
+
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">🌐</span>
+        <span class="mkt-sec-title">시장 요약</span>
+        <span class="mkt-sec-num">01</span>
+      </div>
+      <div class="hashtag-row">{us_hashtags_html}</div>
+      <div class="highlight-list">{us_highlights_html}</div>
+      <div class="story-text">{us_summary}</div>
+      {us_outlook_html}
     </div>
   </div>
 
-  {us_story_html}
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📊</span>
+        <span class="mkt-sec-title">섹터 & 자산 동향</span>
+        <span class="mkt-sec-num">02</span>
+      </div>
+      <div class="asset-group-label">📁 섹터</div>
+      <div class="asset-grid">{asset_sectors_html}</div>
+      <div class="asset-group-label">💵 채권</div>
+      <div class="asset-grid cols-3">{asset_bonds_html}</div>
+      <div class="asset-group-label">🪙 원자재</div>
+      <div class="asset-grid cols-3">{asset_commodities_html}</div>
+      <div class="story-text" style="margin-top:12px">{us_asset_story}</div>
+    </div>
+  </div>
 
   <div class="section">
     <div class="section-label">주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
@@ -2271,13 +2351,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
           <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'vix').get('rsi',50)}%"></div></div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">섹터별 성적표</div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
-      {us_sectors_html}
     </div>
   </div>
 
