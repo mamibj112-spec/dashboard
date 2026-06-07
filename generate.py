@@ -2054,6 +2054,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 <div id="tab-dom" class="tab-panel active">
 
   <div class="section">
+    {us_fg_banner_html}
     <div class="banner {dom_cls}">
       <strong>{dom_ico} 오늘 시황</strong><br>
       <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong>{vdisp(market,'kospi')}</strong> &nbsp;{cdisp(market,'kospi')}</span>
