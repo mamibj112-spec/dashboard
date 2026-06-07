@@ -247,7 +247,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="header-day">장 마감 기준</div>
   </div>
   <div class="header-right">
-    23:40 생성<br>
+    23:50 생성<br>
     <button class="update-btn" id="updBtn" onclick="triggerUpdate()">지금 업데이트</button>
     <span class="update-status" id="updStatus"></span>
   </div>
@@ -298,6 +298,29 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <div class="idx-chg"><span class="dn-txt">▼ 47.29 (4.50%)</span></div>
       </div>
     </div>
+    <div class="asset-group-label">🇺🇸 미국 주요 지수</div>
+    <div class="index-grid">
+      <div class="idx-card" onclick="showMacroChart('nasdaq')" style="cursor:pointer">
+        <div class="idx-name">나스닥 100</div>
+        <div class="idx-val"><span class="dn-txt">28,957.60</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 1450.21 (4.77%)</span></div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('sp500')" style="cursor:pointer">
+        <div class="idx-name">S&amp;P 500</div>
+        <div class="idx-val"><span class="dn-txt">7,383.74</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 200.57 (2.64%)</span></div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
+        <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
+        <div class="idx-val">21.51</div>
+        <div class="idx-chg"><span class="up-txt">▲ 6.11 (39.68%)</span></div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
+        <div class="idx-name">다우존스</div>
+        <div class="idx-val"><span class="dn-txt">50,866.78</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 695.15 (1.35%)</span></div>
+      </div>
+    </div>
     <div class="asset-group-label">🌐 글로벌 매크로</div>
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('usdkrw')">
@@ -327,8 +350,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$62,052</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 1184.82 (1.95%)</span></div>
+        <div class="macro-val"><span class="up-txt">$61,808</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 940.66 (1.55%)</span></div>
       </div>
     </div>
   </div>
@@ -340,59 +363,33 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <span class="mkt-sec-title">시장 요약</span>
       <span class="mkt-sec-num">01</span>
     </div>
-    <div class="hashtag-row"><span class="hashtag-pill">#코스피급락</span><span class="hashtag-pill">#금리인상우려</span><span class="hashtag-pill">#환율상승</span><span class="hashtag-pill">#AI반도체</span><span class="hashtag-pill">#젠슨황효과</span></div>
+    <div class="hashtag-row"><span class="hashtag-pill">#코스피급락</span><span class="hashtag-pill">#환율급등</span><span class="hashtag-pill">#미국금리인상</span><span class="hashtag-pill">#AI반도체강세</span><span class="hashtag-pill">#젠슨황방한</span></div>
     <div class="highlight-list"><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
     <div class="highlight-title">글로벌 증시 동반 하락</div>
-    <div class="highlight-desc">미국 증시 급락 영향으로 코스피, 코스닥 동반 폭락</div>
+    <div class="highlight-desc">코스피/코스닥 큰 폭 하락, 해외 증시도 약세</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">환율, 금리 동반 상승</div>
-    <div class="highlight-desc">고용 보고서發 연준 금리 인하 기대감 후퇴 영향</div>
+    <div class="highlight-title">환율, 금리 동반 급등</div>
+    <div class="highlight-desc">강달러 및 미국 금리 인상 우려 증폭</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">젠슨 황의 AI 마법</div>
-    <div class="highlight-desc">글로벌 악재 속 AI 반도체 ETF 강세, 관련주 기대</div>
+    <div class="highlight-title">젠슨 황 방한 효과</div>
+    <div class="highlight-desc">AI 반도체 관련주 강세 속 기대감 고조</div>
   </div>
 </div></div>
-    <div class="story-text">오늘 한국 증시는 미 증시의 급락세에 동조하며 코스피와 코스닥 모두 큰 폭으로 하락했습니다. 뜨거운 고용 보고서에 연준의 금리 인하 기대가 멀어지면서 미 10년물 금리가 상승하고 달러 강세로 인해 USD/KRW 환율도 급등, 외국인 자금 이탈 압력이 가중되며 증시 하방 압력을 키웠습니다.</div>
+    <div class="story-text">오늘 한국 주식시장은 코스피와 코스닥이 5% 내외로 급락하며 불안한 모습을 보였습니다. 이는 뜨거운 미국 고용 보고서 발표로 연준의 금리 인하 기대감이 멀어지고, 미 10년물 금리가 상승하며 달러 강세(원/달러 환율 급등)가 심화된 글로벌 금융 시장의 불안감이 국내 증시에 고스란히 반영된 결과입니다. 해외 큰손들이 코스피 하락에 대비해 자금을 빼는 움직임도 포착되어 시장의 변동성이 확대되었습니다.</div>
     <div class="story-block" style="margin-top:10px">
       <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
-      <div class="story-text">내일은 젠슨 황 CEO의 추가 발표와 삼성 전영현 회장과의 회동 결과에 따라 AI 관련주의 변동성이 커질 것으로 예상됩니다. 또한, 미국 고용 지표에 대한 시장의 해석과 연준의 향후 통화 정책 방향을 가늠할 수 있는 추가적인 단서에 투자자들은 주목해야 할 것입니다.</div>
+      <div class="story-text">내일은 젠슨 황 엔비디아 CEO의 추가 발표 내용과 삼성 전영현 회동 결과에 따라 AI 반도체 관련주의 움직임이 주목됩니다. 또한, 미국 금리 인상에 대한 연준의 스탠스와 글로벌 경제 지표 발표가 시장의 방향성을 결정할 주요 변수가 될 것입니다.</div>
     </div>
   </div>
 </div>
-
-  <div class="section">
-    <div class="section-label">미국 주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
-    <div class="index-grid">
-      <div class="idx-card" onclick="showMacroChart('nasdaq')" style="cursor:pointer">
-        <div class="idx-name">나스닥 100</div>
-        <div class="idx-val"><span class="dn-txt">28,957.60</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 1450.21 (4.77%)</span></div>
-      </div>
-      <div class="idx-card" onclick="showMacroChart('sp500')" style="cursor:pointer">
-        <div class="idx-name">S&amp;P 500</div>
-        <div class="idx-val"><span class="dn-txt">7,383.74</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 200.57 (2.64%)</span></div>
-      </div>
-      <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
-        <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
-        <div class="idx-val">21.51</div>
-        <div class="idx-chg"><span class="up-txt">▲ 6.11 (39.68%)</span></div>
-      </div>
-      <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
-        <div class="idx-name">다우존스</div>
-        <div class="idx-val"><span class="dn-txt">50,866.78</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 695.15 (1.35%)</span></div>
-      </div>
-    </div>
-  </div>
 
   <div class="section">
     <div class="story-wrap">
@@ -435,7 +432,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   
   <div class="asset-pct dn">-1.26%</div>
 </div></div>
-      <div class="story-text" style="margin-top:12px">전반적인 시장 하락 속에서도 AI 반도체 ETF는 젠슨 황 엔비디아 CEO의 방한과 긍정적인 발언에 힘입어 강세를 보였습니다. 이는 글로벌 침체 우려 속에서도 AI 기술 혁신에 대한 기대감이 여전히 유효함을 보여주며, 고배당 및 금융주 또한 상대적으로 견조한 흐름을 나타냈습니다.</div>
+      <div class="story-text" style="margin-top:12px">전반적인 시장 침체 속에서도 AI 반도체 관련 ETF는 젠슨 황 엔비디아 CEO의 방한과 삼성, SK와의 협력 기대감에 힘입어 강세를 보였습니다. 또한, 시장 변동성 확대 및 고금리 환경 속에서 고배당 및 금융주가 상대적으로 선방하며 투자자들의 피난처 역할을 했습니다. 반면, 금리 인상 우려와 경기 둔화 가능성에 민감한 성장주들은 큰 폭의 하락을 면치 못했습니다.</div>
     </div>
   </div>
 
@@ -695,15 +692,15 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     </div>
   </div>
   <div class="section"><div class="ss-wrap">
-  <div class="ss-tone">테마주 및 파생상품 중심의 개별 종목 장세</div>
+  <div class="ss-tone">테마주 및 개별 종목 장세</div>
   <div class="ss-block">
     <div class="ss-label">🔥 주도 테마</div>
-    <div class="ss-theme">💊제약/바이오, 로봇 관련주 강세!🤖</div>
-    <div class="ss-text">급등주 상위에 제약/바이오 관련주(대원제약)와 로봇 관련주(아이로보틱스)가 다수 포진하며 해당 섹터에 대한 투자 심리가 개선된 것으로 보입니다.</div>
+    <div class="ss-theme">💊제약/바이오, 로봇 관련주 강세! 🚀</div>
+    <div class="ss-text">급등주 상위에 제약(대원제약) 및 로봇(아이로보틱스) 관련 종목들이 다수 포진하며 해당 섹터에 대한 투자 심리가 개선되었음을 시사합니다. 특정 이슈보다는 개별 종목의 강세가 두드러진 것으로 보입니다.</div>
   </div>
   <div class="ss-block">
     <div class="ss-label">💰 큰 돈의 흐름</div>
-    <div class="ss-text">거래대금 상위에서는 국채선물 인버스에 가장 많은 자금이 유입되었으며, 인버스/레버리지 ETN 등 파생상품에 대한 관심이 높았습니다. 특히 KB 인버스 2X 은 선물 ETN과 미래에셋 레버리지 미국 제약 TOP3 ETN이 높은 상승률을 보였습니다.</div>
+    <div class="ss-text">거래대금 상위에서는 국채선물10년인버스에 202억 원의 자금이 유입되며 채권 시장의 변동성에 베팅하는 움직임이 포착되었습니다. 반면, 인버스 ETN에도 자금이 유입되었으나, 특정 방향성보다는 분산된 투자가 이루어진 것으로 보입니다.</div>
   </div>
 </div></div>
 
@@ -714,8 +711,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   </div>
   <div class="report-title">탐방노트: 북미 LNG 수주 모멘텀</div>
   <div class="report-points">
-    <div class="report-point">· 북미 LNG 프로젝트 수주 기대감이 높아지고 있으며, 이는 한텍의 실적 성장을 견인할 핵심 모멘텀입니다.</div>
-    <div class="report-point">· LNG 플랜트 핵심 기자재 공급 역량을 바탕으로 글로벌 에너지 전환 시대의 수혜를 받을 것으로 예상됩니다.</div>
+    <div class="report-point">· 북미 LNG 프로젝트 수주 기대감이 높아지고 있으며, 이는 한텍의 실적 성장에 긍정적인 영향을 미칠 것으로 예상됩니다.</div>
+    <div class="report-point">· LNG 관련 사업 확대로 인한 중장기적인 성장 동력을 확보하고 있어 주목할 만합니다.</div>
   </div>
 </div></a><a href="https://finance.naver.com/research/company_read.naver?nid=93429&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
   <div class="report-header">
@@ -724,8 +721,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   </div>
   <div class="report-title">기판도 깐부다</div>
   <div class="report-points">
-    <div class="report-point">· AI 시대 도래와 함께 고성능 기판 수요가 급증하고 있으며, 삼성전기는 FC-BGA 등 고부가 기판 시장에서 경쟁력을 확보하고 있습니다.</div>
-    <div class="report-point">· 전장용 MLCC 및 카메라 모듈 등 다양한 사업부문의 고른 성장이 기대되며, 이는 삼성전기의 밸류에이션 리레이팅으로 이어질 수 있습니다.</div>
+    <div class="report-point">· AI 및 고성능 컴퓨팅 시장 성장에 따른 고부가 기판 수요 증가가 삼성전기의 핵심 성장 동력입니다.</div>
+    <div class="report-point">· 기술 경쟁력을 바탕으로 기판 사업의 수익성 개선과 시장 점유율 확대가 기대됩니다.</div>
   </div>
 </div></a><a href="https://finance.naver.com/research/company_read.naver?nid=93427&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
   <div class="report-header">
@@ -734,8 +731,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   </div>
   <div class="report-title">모든 고객들이 Capex 상향</div>
   <div class="report-points">
-    <div class="report-point">· 주요 고객사들의 반도체 Capex 상향 조정으로 피에스케이의 장비 수주 및 매출 증가가 예상됩니다.</div>
-    <div class="report-point">· 글로벌 반도체 시장의 회복과 함께 드라이 클리닝 장비 등 독보적인 기술력을 바탕으로 시장 점유율을 확대할 것으로 기대됩니다.</div>
+    <div class="report-point">· 반도체 전방 산업의 Capex(설비투자) 상향 조정으로 피에스케이의 장비 수주가 증가할 것으로 예상됩니다.</div>
+    <div class="report-point">· 주요 고객사들의 투자 확대는 피에스케이의 실적 개선과 성장세를 견인할 중요한 요인입니다.</div>
   </div>
 </div></a></div>
 
@@ -871,30 +868,42 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <span class="mkt-sec-title">시장 요약</span>
         <span class="mkt-sec-num">01</span>
       </div>
-      <div class="hashtag-row"><span class="hashtag-pill">#강한고용지표</span><span class="hashtag-pill">#VIX급등</span><span class="hashtag-pill">#기술주하락</span><span class="hashtag-pill">#방어주강세</span><span class="hashtag-pill">#금리인하후퇴</span></div>
+      <div class="hashtag-row"><span class="hashtag-pill">#강한고용지표</span><span class="hashtag-pill">#금리인하후퇴</span><span class="hashtag-pill">#VIX급등</span><span class="hashtag-pill">#기술주하락</span><span class="hashtag-pill">#방어주강세</span></div>
       <div class="highlight-list"><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">고용 보고서 충격</div>
-    <div class="highlight-desc">뜨거운 고용 지표에 연준 금리 인하 기대 후퇴</div>
+    <div class="highlight-title">고용지표 강세</div>
+    <div class="highlight-desc">뜨거운 고용에 연준 금리 인하 기대 후퇴.</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">기술주 대폭락</div>
-    <div class="highlight-desc">나스닥 4.77% 급락, IT/기술 섹터 6.66% 하락</div>
+    <div class="highlight-title">기술주 폭락</div>
+    <div class="highlight-desc">나스닥 4.77% 급락, IT/기술 섹터 주도 하락.</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">VIX 공포지수 폭등</div>
-    <div class="highlight-desc">시장 불안감 고조, VIX 39.68% 급등하며 21.51 기록</div>
+    <div class="highlight-title">VIX 공포지수 급등</div>
+    <div class="highlight-desc">시장 불안감 확산, 투자자들의 불안 심리 반영.</div>
+  </div>
+</div><div class="highlight-item">
+  <div class="highlight-dot">·</div>
+  <div>
+    <div class="highlight-title">방어주 강세</div>
+    <div class="highlight-desc">헬스케어, 필수소비재 등 경기 방어주 상승.</div>
+  </div>
+</div><div class="highlight-item">
+  <div class="highlight-dot">·</div>
+  <div>
+    <div class="highlight-title">원자재 급락</div>
+    <div class="highlight-desc">금, 은, 원유 등 원자재 전반적으로 하락.</div>
   </div>
 </div></div>
-      <div class="story-text">오늘 미국 주식시장은 뜨거운 고용 보고서 발표로 인해 연방준비제도(Fed)의 금리 인하 기대감이 크게 후퇴하며 전반적인 하락세를 보였습니다. 특히 나스닥 지수가 4.77% 폭락하며 기술주 중심의 매도세가 두드러졌고, 시장의 불안감을 나타내는 VIX 공포지수는 39.68%나 치솟아 투자자들의 경계심이 최고조에 달했음을 보여주었습니다. 다우존스와 S&P500 역시 각각 1.35%, 2.64% 하락하며 전반적인 시장 심리가 위축된 하루였습니다.</div>
+      <div class="story-text">오늘 미국 주식시장은 뜨거운 고용 보고서 발표로 연방준비제도(Fed)의 금리 인하 기대감이 크게 후퇴하며 전반적인 하락세를 보였습니다. 주요 3대 지수가 모두 큰 폭으로 하락했으며, 특히 나스닥은 4.77% 급락하며 기술주 중심의 매도세가 두드러졌습니다. VIX 공포지수는 39.68%나 치솟아 투자자들의 불안 심리가 극에 달했음을 보여줬습니다.</div>
       <div class="story-block" style="margin-top:10px">
       <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
-      <div class="story-text">향후 투자자들은 연준의 금리 정책 방향과 다음 고용 및 물가 지표 발표에 촉각을 세워야 할 것입니다. 시장의 변동성이 커진 만큼, 방어적 섹터와 실적 안정성이 높은 기업에 대한 관심이 지속될 수 있습니다.</div>
+      <div class="story-text">투자자들은 앞으로 발표될 인플레이션 지표와 연준 위원들의 발언에 더욱 귀 기울여야 할 것입니다. 고용 시장의 견조함이 지속된다면 연준의 매파적 스탠스가 유지될 수 있어, 시장 변동성이 당분간 높은 수준을 유지할 가능성이 있습니다.</div>
     </div>
     </div>
   </div>
@@ -980,7 +989,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="asset-sub">은</div>
   <div class="asset-pct dn">-8.08%</div>
 </div></div>
-      <div class="story-text" style="margin-top:12px">강한 고용 지표는 연준의 긴축 기조 장기화 우려를 키워 금리 인하 기대감을 낮췄고, 이는 특히 성장주인 IT/기술 섹터에 큰 타격을 주며 6.66% 하락을 이끌었습니다. 반면, 시장 불확실성이 커지자 투자자들은 헬스케어, 필수소비재, 유틸리티, 부동산 등 경기 방어적 성격의 섹터로 자금을 옮기며 이들 섹터는 소폭 상승했습니다. 채권 시장은 금리 인하 기대 후퇴로 인해 TLT, IEF, SHY 모두 하락했으며, 원자재 시장에서는 금(GLD), 은(SLV), 원유(USO) 모두 큰 폭으로 하락하며 전반적인 위험 회피 심리를 반영했습니다.</div>
+      <div class="story-text" style="margin-top:12px">강한 고용지표로 인한 금리 인하 기대 후퇴는 고성장 기술주에 가장 큰 타격을 주며 IT/기술 섹터의 6.66% 하락을 이끌었습니다. 반면, 경기 둔화 우려 속에서 헬스케어, 필수소비재, 유틸리티, 부동산 등 경기 방어적 성격의 섹터들은 상승하며 상대적인 강세를 보였습니다. 채권 시장은 금리 인하 기대 후퇴에 따라 전반적으로 하락했으며, 금, 은, 원유 등 원자재는 시장의 전반적인 위험 회피 심리와 달러 강세 압력에 크게 하락했습니다.</div>
     </div>
   </div>
 
@@ -1060,35 +1069,35 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="ticker-badge">LU</div>
   <div class="earn-body">
     <div class="earn-head">룰루레몬 애슬레티카(LULU) <span class="earn-period">2024년 1분기 실적 분석</span></div>
-    <div class="earn-summary">매출 예상치 하회, 가이던스 하향 조정으로 주가 급락</div>
+    <div class="earn-summary">매출 가이던스 하향 조정으로 주가 급락.</div>
   </div>
 </div><div class="earn-item">
   <div class="ticker-badge">MU</div>
   <div class="earn-body">
     <div class="earn-head">마이크론 테크놀로지(MU) <span class="earn-period">2024년 2분기 실적 분석</span></div>
-    <div class="earn-summary">예상치 상회하는 실적 발표, AI 수요 증가 전망</div>
+    <div class="earn-summary">예상치 상회하는 실적과 낙관적 전망에 주가 상승.</div>
   </div>
 </div><div class="earn-item is-extra">
-  <div class="ticker-badge">SV</div>
+  <div class="ticker-badge">TS</div>
   <div class="earn-body">
-    <div class="earn-head">서비스타이탄(SVT) <span class="earn-period">2024년 1분기 실적 분석</span></div>
-    <div class="earn-summary">예상치 상회하는 매출 및 EPS 발표, 강한 성장세</div>
-  </div>
-</div><div class="earn-item is-extra">
-  <div class="ticker-badge">ST</div>
-  <div class="earn-body">
-    <div class="earn-head">스트래티지(STRAT) <span class="earn-period">2024년 4분기 실적 분석</span></div>
-    <div class="earn-summary">매출 및 EPS 예상치 상회, 긍정적인 가이던스 제시</div>
+    <div class="earn-head">서비스타이탄(TST) <span class="earn-period">2024년 1분기 실적 분석</span></div>
+    <div class="earn-summary">예상치 하회하는 매출 및 이익으로 주가 하락.</div>
   </div>
 </div><div class="earn-item is-extra">
   <div class="ticker-badge">AG</div>
   <div class="earn-body">
-    <div class="earn-head">아르간(AGX) <span class="earn-period">2024년 1분기 실적 분석</span></div>
-    <div class="earn-summary">예상치 상회하는 매출, EPS는 예상치 하회</div>
+    <div class="earn-head">아르간(AGX) <span class="earn-period">2024년 4분기 실적 분석</span></div>
+    <div class="earn-summary">매출 및 이익 예상치 상회하며 주가 상승.</div>
+  </div>
+</div><div class="earn-item is-extra">
+  <div class="ticker-badge">ST</div>
+  <div class="earn-body">
+    <div class="earn-head">스트래티지(STRAT) <span class="earn-period">2024년 1분기 실적 분석</span></div>
+    <div class="earn-summary">예상치 하회하는 실적 발표로 주가 하락.</div>
   </div>
 </div></div>
       <div class="earn-more-btn" data-more-label="▼ 3개 더 보기" data-less-label="▲ 접기" onclick="toggleEarnMore(this)">▼ 3개 더 보기</div>
-      <div class="story-text">기술주 폭락의 여파로 매그니피센트 7 종목들 역시 일제히 하락했습니다. 특히 ARM(-12.84%), 인텔(-11.28%), 브로드컴(-7.92%), 아리스타(-7.07%) 등 반도체 및 AI 관련주들이 가장 큰 낙폭을 기록하며 시장 하락을 주도했습니다. 엔비디아(-6.20%), 테슬라(-6.56%), 메타(-5.51%) 등 주요 기술주들도 큰 폭으로 하락하며 매도 압력을 받았습니다. 반면, 유나이티드헬스(+0.76%), 월마트(+0.97%), 화이자(+1.36%) 등 경기 방어적 성격의 대형주들은 시장의 하락 속에서도 상대적으로 선방하거나 소폭 상승하며 투자자들의 피난처 역할을 했습니다.</div>
+      <div class="story-text">매그니피센트 7 종목들은 시장의 기술주 하락세를 주도하며 대부분 큰 폭으로 하락했습니다. 특히 엔비디아와 테슬라는 6% 이상 급락하며 투자자들의 불안감을 키웠습니다. 브로드컴, 아리스타, ARM, 인텔 등 반도체 및 기술 관련 대형주들이 7% 이상의 하락률을 기록하며 시장 전체의 하락세를 이끌었습니다. 반면 유나이티드헬스, 월마트, 화이자 등 헬스케어 및 필수소비재 관련 종목들은 시장 전반의 하락세 속에서도 상승하며 방어주로서의 역할을 톡톡히 했습니다.</div>
     </div>
   </div>
 
@@ -1151,8 +1160,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$62,052</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 1184.82 (1.95%)</span></div>
+        <div class="macro-val"><span class="up-txt">$61,808</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 940.66 (1.55%)</span></div>
       </div>
     </div>
   </div>
@@ -1167,7 +1176,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="news-meta">CNBC Markets · 6월 6일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/05/hot-jobs-report-puts-fed-cuts-further-out-of-reach-as-chair-warsh-faces-policy-tests.html" target="_blank">뜨거운 고용 보고서에 연준 금리 인하 기대 멀어져, 워시 의장 정책 시험대 올라</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/05/hot-jobs-report-puts-fed-cuts-further-out-of-reach-as-chair-warsh-faces-policy-tests.html" target="_blank">뜨거운 고용 보고서에 연준 금리 인하 기대 멀어져… 워시 의장 정책 시험대 올라</a></div>
   <div class="news-orig">Hot jobs report puts Fed cuts further out of reach as Chair Warsh faces policy t…</div>
   <div class="news-summary">Another big jobs report in May has swept aside the possibility of interest rate …</div>
   <div class="news-meta">CNBC Markets · 6월 6일</div>
@@ -1191,13 +1200,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="news-meta">CNBC Markets · 6월 5일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/04/stocks-making-the-biggest-moves-after-hours-lulu-agx-ttan.html" target="_blank">시간 외 거래에서 가장 큰 움직임을 보이는 주식: 룰루레몬 애슬레티카, 서비스타이탄, 아르간 외</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/04/stocks-making-the-biggest-moves-after-hours-lulu-agx-ttan.html" target="_blank">장 마감 후 가장 큰 움직임을 보이는 주식: 룰루레몬 애슬레티카, 서비스타이탄, 아르간 외</a></div>
   <div class="news-orig">Stocks making the biggest moves after hours: Lululemon Athletica, ServiceTitan, …</div>
   <div class="news-summary">See which stocks are posting big moves after the bell.</div>
   <div class="news-meta">CNBC Markets · 6월 5일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/04/ark-invest-owns-spacex-in-its-venture-etf-it-says-starlink-alone-supports-2-trillion-value-at-ipo.html" target="_blank">아크 인베스트, 벤처 ETF로 스페이스X 보유. 스타링크만으로 IPO 시 2조 달러 가치 지지한다고 밝혀</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/04/ark-invest-owns-spacex-in-its-venture-etf-it-says-starlink-alone-supports-2-trillion-value-at-ipo.html" target="_blank">아크 인베스트, 벤처 ETF로 스페이스X 보유… 스타링크만으로 IPO 시 2조 달러 가치 지지 주장</a></div>
   <div class="news-orig">Ark Invest owns SpaceX in its venture ETF. It says Starlink alone supports $2 tr…</div>
   <div class="news-summary">Brett Winton said SpaceX's Starlink satellite broadband network is the primary d…</div>
   <div class="news-meta">CNBC Markets · 6월 4일</div>
@@ -1413,13 +1422,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div>
 
 <div class="footer-note">
-  2026년 6월 7일 일요일 · 23:40 생성<br>
+  2026년 6월 7일 일요일 · 23:50 생성<br>
   부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
 var MACRO_META={"kospi": {"name": "코스피", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "", "dec": 2}, "kosdaq": {"name": "코스닥", "color": "#3b82f6", "rgb": "59,130,246", "pre": "", "suf": "", "dec": 2}, "sp500": {"name": "S&P 500", "color": "#00e896", "rgb": "0,232,150", "pre": "", "suf": "", "dec": 2}, "nasdaq": {"name": "나스닥 100", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "", "dec": 2}, "dow": {"name": "다우존스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "vix": {"name": "VIX", "color": "#ffc940", "rgb": "255,201,64", "pre": "", "suf": "", "dec": 2}, "usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
-var MACRO_HIST={"kospi": [8228.7002, 8185.29, 8476.1504, 8788.3799, 8801.4902, 8639.4102, 8160.5898], "kosdaq": [1133.13, 1104.36, 1074.8, 1050.03, 1026.03, 1049.73, 1002.44], "sp500": [7563.6299, 7580.0601, 7599.96, 7609.7798, 7553.6802, 7584.3101, 7383.7402], "nasdaq": [30223.8906, 30333.1797, 30513.8594, 30660.5996, 30571.2402, 30407.8105, 28957.5996], "dow": [50668.9688, 51032.4609, 51078.8789, 51307.7891, 50687.0703, 51561.9297, 50866.7812], "vix": [15.74, 15.32, 16.05, 15.77, 16.06, 15.4, 21.51], "usdkrw": [1495.29, 1506.84, 1511.27, 1516.6, 1530.11, 1533.0699, 1558.84], "brent": [93.71, 92.05, 94.98, 96.0, 97.81, 95.03, 93.09], "wti": [88.9, 87.36, 92.16, 93.76, 96.02, 93.04, 90.54], "tnx": [4.455, 4.453, 4.475, 4.455, 4.491, 4.477, 4.536], "gold": [4499.2998, 4560.5, 4475.2002, 4489.1001, 4436.7002, 4475.7998, 4365.2998], "dxy": [99.02, 98.91, 99.2, 99.22, 99.53, 99.41, 100.07], "btc": [71319.7734, 66703.6562, 64014.3672, 63801.5742, 60922.668, 60867.4141, 62052.2383]};
+var MACRO_HIST={"kospi": [8228.7002, 8185.29, 8476.1504, 8788.3799, 8801.4902, 8639.4102, 8160.5898], "kosdaq": [1133.13, 1104.36, 1074.8, 1050.03, 1026.03, 1049.73, 1002.44], "sp500": [7563.6299, 7580.0601, 7599.96, 7609.7798, 7553.6802, 7584.3101, 7383.7402], "nasdaq": [30223.8906, 30333.1797, 30513.8594, 30660.5996, 30571.2402, 30407.8105, 28957.5996], "dow": [50668.9688, 51032.4609, 51078.8789, 51307.7891, 50687.0703, 51561.9297, 50866.7812], "vix": [15.74, 15.32, 16.05, 15.77, 16.06, 15.4, 21.51], "usdkrw": [1495.29, 1506.84, 1511.27, 1516.6, 1530.11, 1533.0699, 1558.84], "brent": [93.71, 92.05, 94.98, 96.0, 97.81, 95.03, 93.09], "wti": [88.9, 87.36, 92.16, 93.76, 96.02, 93.04, 90.54], "tnx": [4.455, 4.453, 4.475, 4.455, 4.491, 4.477, 4.536], "gold": [4499.2998, 4560.5, 4475.2002, 4489.1001, 4436.7002, 4475.7998, 4365.2998], "dxy": [99.02, 98.91, 99.2, 99.22, 99.53, 99.41, 100.07], "btc": [71319.7734, 66703.6562, 64014.3672, 63801.5742, 60922.668, 60867.4141, 61808.0781]};
 var _mc=null;
 function showMacroChart(k){
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
@@ -1446,7 +1455,7 @@ function closeMacroChart(){
   setTimeout(function(){document.getElementById('macroOverlay').style.display='none';},280);
 }
 var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF'};
-var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 1559.3199, "change": -200.3601, "change_pct": -11.39, "currency": "USD", "market_cap": "$230.9B", "ev": "$227.4B", "pe": 53.18, "forward_pe": 8.77, "pb": 22.6, "ps": 17.52, "peg": null, "ev_ebitda": 40.38, "eps": 29.32, "shares_out": "$148M", "float_shares": "$146M", "revenue": "$13.2B", "net_income": "$4.5B", "op_margin": 69.98, "profit_margin": 34.19, "gross_margin": 56.04, "roe": 39.3, "roa": 22.82, "roic": null, "rev_growth": 251.0, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 4.78, "quick_ratio": 3.43, "debt_equity": 1.5, "total_debt": "$207M", "total_cash": "$3.7B", "fcf": "$2.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 1861.0, "low52": 37.33, "target": 1659.27, "ret_1w": -8.0, "ret_1m": 10.59, "ret_3m": 195.7, "ret_6m": 702.2, "ret_ytd": 466.53, "ret_1y": 3815.92, "ret_3y": null, "ret_5y": null, "rsi": 54, "beta": null, "sma20_gap": 0.36, "sma50_gap": 32.16, "sma200_gap": 194.08, "atr": 126.87, "vol_weekly": 44.8, "vol_monthly": 98.85, "volume": 13068427, "avg_volume": 15914819, "rel_volume": 0.82, "exchange": "NMS", "inst_pct": null, "insider_pct": 1.13, "short_float": 9.63, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "샌디스크(SNDK) 주가 3개월 급등 후 기업 가치 평가", "link": "https://finance.yahoo.com/markets/stocks/articles/assessing-sandisk-sndk-valuation-sharp-231156302.html", "publisher": "Simply Wall St.", "date": "", "title_orig": "Assessing Sandisk (SNDK) Valuation After A Sharp Three Month Share Price Surge"}, {"title": "개미 투자자들, AI 주식으로 월스트리트 벤치마크 능가. 하지만 곧 바뀔 수도 있는 이유.", "link": "https://finance.yahoo.com/markets/stocks/articles/retail-investors-beating-wall-street-153002311.html", "publisher": "Barchart", "date": "", "title_orig": "Retail Investors Are Beating Wall Street Benchmarks With AI Stocks. Why That Could Change Soon."}, {"title": "젠슨 황이 언급한 다음 1조 달러 AI 칩 기업은? (힌트: AMD나 샌디스크가 아니다)", "link": "https://finance.yahoo.com/markets/stocks/articles/jensen-huang-just-said-ai-023300708.html", "publisher": "Motley Fool", "date": "", "title_orig": "Jensen Huang Just Said This AI Chip Stock Could Be the Next $1 Trillion Company (Hint: It's Not AMD or Sandisk)"}, {"title": "샌디스크 코퍼레이션(SNDK)은 초보 투자자를 위한 최고의 저가 주식 중 하나인가?", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-corporation-sndk-one-best-220422350.html", "publisher": "Insider Monkey", "date": "", "title_orig": "Is Sandisk Corporation (SNDK) One of the Best Cheap Stocks to Buy for Beginners?"}, {"title": "주목할 만한 주식 요약: 룰루레몬, 브로드컴, 루멘텀 홀딩스", "link": "#", "publisher": "The Wall Street Journal", "date": "", "title_orig": "Stocks to Watch Recap: Lululemon, Broadcom, Lumentum Holdings"}]}];
+var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 1559.3199, "change": -200.3601, "change_pct": -11.39, "currency": "USD", "market_cap": "$230.9B", "ev": "$227.4B", "pe": 53.18, "forward_pe": 8.77, "pb": 22.6, "ps": 17.52, "peg": null, "ev_ebitda": 40.38, "eps": 29.32, "shares_out": "$148M", "float_shares": "$146M", "revenue": "$13.2B", "net_income": "$4.5B", "op_margin": 69.98, "profit_margin": 34.19, "gross_margin": 56.04, "roe": 39.3, "roa": 22.82, "roic": null, "rev_growth": 251.0, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 4.78, "quick_ratio": 3.43, "debt_equity": 1.5, "total_debt": "$207M", "total_cash": "$3.7B", "fcf": "$2.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 1861.0, "low52": 37.33, "target": 1659.27, "ret_1w": -8.0, "ret_1m": 10.59, "ret_3m": 195.7, "ret_6m": 702.2, "ret_ytd": 466.53, "ret_1y": 3815.92, "ret_3y": null, "ret_5y": null, "rsi": 54, "beta": null, "sma20_gap": 0.36, "sma50_gap": 32.16, "sma200_gap": 194.08, "atr": 126.87, "vol_weekly": 44.8, "vol_monthly": 98.85, "volume": 13068427, "avg_volume": 15914819, "rel_volume": 0.82, "exchange": "NMS", "inst_pct": null, "insider_pct": 1.13, "short_float": 9.63, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "샌디스크(SNDK) 주가 3개월 급등 후 기업 가치 평가", "link": "https://finance.yahoo.com/markets/stocks/articles/assessing-sandisk-sndk-valuation-sharp-231156302.html", "publisher": "Simply Wall St.", "date": "", "title_orig": "Assessing Sandisk (SNDK) Valuation After A Sharp Three Month Share Price Surge"}, {"title": "개미 투자자들, AI 주식으로 월스트리트 벤치마크 능가. 하지만 곧 바뀔 수도 있는 이유.", "link": "https://finance.yahoo.com/markets/stocks/articles/retail-investors-beating-wall-street-153002311.html", "publisher": "Barchart", "date": "", "title_orig": "Retail Investors Are Beating Wall Street Benchmarks With AI Stocks. Why That Could Change Soon."}, {"title": "젠슨 황이 언급한 다음 1조 달러 AI 칩 기업은? (힌트: AMD나 샌디스크가 아니다)", "link": "https://finance.yahoo.com/markets/stocks/articles/jensen-huang-just-said-ai-023300708.html", "publisher": "Motley Fool", "date": "", "title_orig": "Jensen Huang Just Said This AI Chip Stock Could Be the Next $1 Trillion Company (Hint: It's Not AMD or Sandisk)"}, {"title": "샌디스크 코퍼레이션(SNDK)은 초보 투자자를 위한 최고의 저가 주식 중 하나일까?", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-corporation-sndk-one-best-220422350.html", "publisher": "Insider Monkey", "date": "", "title_orig": "Is Sandisk Corporation (SNDK) One of the Best Cheap Stocks to Buy for Beginners?"}, {"title": "주목할 만한 주식 요약: 룰루레몬, 브로드컴, 루멘텀 홀딩스", "link": "#", "publisher": "The Wall Street Journal", "date": "", "title_orig": "Stocks to Watch Recap: Lululemon, Broadcom, Lumentum Holdings"}]}];
 function _fmt(v,dec,suf){if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}
 function _pctColor(v){
   if(v===null||v===undefined)return'<span style="color:var(--t3)">N/A</span>';
