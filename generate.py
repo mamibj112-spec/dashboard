@@ -86,6 +86,14 @@ TICKERS = {
     'aapl':   'AAPL',
     'msft':   'MSFT',
     'meta':   'META',
+    'googl':  'GOOGL',
+    'amzn':   'AMZN',
+    'tsla':   'TSLA',
+}
+
+MAG7_MAP = {
+    'nvda': '엔비디아', 'aapl': '애플', 'msft': '마이크로소프트', 'googl': '알파벳',
+    'amzn': '아마존', 'meta': '메타', 'tsla': '테슬라',
 }
 
 US_SECTOR_MAP = {
@@ -616,6 +624,10 @@ def fetch_us_ai_briefing(market, news):
         for k, name in US_STOCK_MAP.items():
             stock_data += f"- {name}: {mv(k)}\n"
 
+        mag7_data = ""
+        for k, name in MAG7_MAP.items():
+            mag7_data += f"- {name}({k.upper()}): {mv(k)}\n"
+
         bond_data = ""
         for k, (ticker, label) in US_BOND_MAP.items():
             bond_data += f"- {ticker}({label}): {mv(k)}\n"
@@ -647,6 +659,9 @@ def fetch_us_ai_briefing(market, news):
 주요 종목 동향:
 {stock_data}
 
+매그니피센트 7 동향:
+{mag7_data}
+
 주요 뉴스 헤드라인:
 {chr(10).join(f"- {h}" for h in headlines)}
 
@@ -663,7 +678,15 @@ def fetch_us_ai_briefing(market, news):
   ],
   "story": "전체적인 시장 분위기와 지수 움직임의 원인 (3~4문장)",
   "sector_story": "섹터·채권·원자재 등 자산군 간의 자금 흐름과 순환매, 그 이유 (3~4문장)",
-  "outlook": "향후 주목해야 할 이벤트나 투자 포인트 (2문장)"
+  "outlook": "향후 주목해야 할 이벤트나 투자 포인트 (2문장)",
+  "stock_story": "매그니피센트7과 주요 종목의 등락 원인, 어떤 종목이 시장을 주도했는지에 대한 서사 (3~4문장)",
+  "earnings_reviews": [
+    {{"company": "최근 1~2주 내 실적을 발표했을 법한 미국 상장기업명", "ticker": "티커", "period": "OOOO년 O분기 실적 분석 형식의 회계연도·분기 표기", "summary": "매출·EPS·가이던스 등 핵심 실적 포인트를 한 줄로 (40자 이내)"}},
+    {{"company": "두 번째 기업명", "ticker": "티커", "period": "회계연도·분기 표기", "summary": "핵심 실적 포인트 한 줄 (40자 이내)"}},
+    {{"company": "세 번째 기업명", "ticker": "티커", "period": "회계연도·분기 표기", "summary": "핵심 실적 포인트 한 줄 (40자 이내)"}},
+    {{"company": "네 번째 기업명", "ticker": "티커", "period": "회계연도·분기 표기", "summary": "핵심 실적 포인트 한 줄 (40자 이내)"}},
+    {{"company": "다섯 번째 기업명", "ticker": "티커", "period": "회계연도·분기 표기", "summary": "핵심 실적 포인트 한 줄 (40자 이내)"}}
+  ]
 }}"""
 
         import json, re
@@ -1554,6 +1577,27 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .asset-pct{font-size:12px;font-weight:700;margin-top:4px}
 .asset-pct.up{color:var(--up)}
 .asset-pct.dn{color:var(--dn)}
+.ticker-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:9.5px;font-weight:700;color:#fff;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--purple))}
+.mover-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.mover-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px}
+.mover-card.up-side{border-color:rgba(0,232,150,.2)}
+.mover-card.dn-side{border-color:rgba(255,64,96,.2)}
+.mover-head{font-size:10px;font-weight:700;margin-bottom:7px}
+.mover-head.up{color:var(--up)}
+.mover-head.dn{color:var(--dn)}
+.mover-row{display:flex;align-items:center;gap:7px;padding:4px 0}
+.mover-ticker{font-size:11px;font-weight:700;color:var(--t1);flex:1}
+.mover-pct{font-size:11px;font-weight:700}
+.earn-list{margin-bottom:10px}
+.earn-item{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.earn-item:last-child{border-bottom:none}
+.earn-item.is-extra{display:none}
+.earn-item.is-extra.show{display:flex}
+.earn-body{flex:1;min-width:0}
+.earn-head{font-size:11.5px;font-weight:700;color:var(--t1);margin-bottom:2px;line-height:1.5}
+.earn-period{color:var(--t3);font-weight:600}
+.earn-summary{font-size:10.5px;color:var(--t2);line-height:1.6}
+.earn-more-btn{display:block;width:100%;text-align:center;font-size:10.5px;font-weight:700;color:var(--blue);background:rgba(77,166,255,.1);border:1px solid rgba(77,166,255,.2);border-radius:8px;padding:7px;margin-bottom:12px;cursor:pointer}
 .report-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
 .report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .report-stock{font-size:13px;font-weight:700;color:var(--t1)}
@@ -1594,12 +1638,6 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .us-fg-label{font-size:11px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;font-weight:600}
 .us-fg-score{font-size:28px;font-weight:800;line-height:1.1}
 .us-fg-desc{font-size:11px;margin-top:4px;opacity:.8}
-.top3-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.top3-row:last-child{border-bottom:none}
-.top3-rank{font-size:11px;color:var(--t3);width:16px;flex-shrink:0;text-align:center}
-.top3-name{flex:1;font-size:12px;font-weight:600}
-.top3-ticker{font-size:10px;color:var(--t3);margin-top:1px}
-.top3-pct{font-size:13px;font-weight:700;flex-shrink:0}
 .tech-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .tech-row:last-child{border-bottom:none}
 .tech-name{font-size:11.5px;color:var(--t2)}
@@ -1951,36 +1989,54 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         for k, (ticker, label) in US_COMMODITY_MAP.items()
     )
 
-    # 해외 주요 종목 HTML
-    us_stocks_html = ''
-    for k, name in US_STOCK_MAP.items():
-        item = d(market, k)
-        pct = item.get('pct', 0)
-        cls = 'up-txt' if pct >= 0 else 'dn-txt'
-        sign = '+' if pct >= 0 else ''
-        us_stocks_html += f'''<div class="stock-row" style="padding: 6px 10px;">
-      <div class="stock-name" style="font-size:10.5px; max-width: 85px;">{name}</div>
-      <div class="stock-right">
-        <span class="{cls}" style="font-size:10.5px; font-weight:700;">{sign}{pct:.2f}%</span>
-      </div>
-    </div>'''
-
-    # 급등/급락 Top 3
-    us_stock_sorted = sorted(
-        [(k, name, d(market, k).get('pct', 0)) for k, name in US_STOCK_MAP.items()],
-        key=lambda x: x[2], reverse=True
+    # ③ 주요 종목 동향 — 매그니피센트 7 카드 그리드
+    mag7_html = ''.join(
+        _asset_card(k.upper(), name, d(market, k).get('pct', 0) or 0)
+        for k, name in MAG7_MAP.items()
     )
-    def _top3_row(rank, k, name, pct):
-        cls = 'up-txt' if pct >= 0 else 'dn-txt'
+
+    # 급등/급락 Top 3 (주요 종목 + 매그니피센트7 통합 유니버스에서 산출)
+    us_universe = {**US_STOCK_MAP, **MAG7_MAP}
+    us_universe_sorted = sorted(
+        [(k, d(market, k).get('pct', 0) or 0) for k in us_universe],
+        key=lambda x: x[1], reverse=True
+    )
+    def _mover_row(k, pct):
+        cls = 'up' if pct >= 0 else 'dn'
         sign = '+' if pct >= 0 else ''
-        return f'''<div class="top3-row">
-  <div class="top3-rank">{rank}</div>
-  <div><div class="top3-name">{name}</div><div class="top3-ticker">{k.upper()}</div></div>
-  <div class="top3-pct {cls}">{sign}{pct:.2f}%</div>
+        return f'''<div class="mover-row">
+  <div class="ticker-badge">{k.upper()[:2]}</div>
+  <div class="mover-ticker">{k.upper()}</div>
+  <div class="mover-pct {cls}">{sign}{pct:.2f}%</div>
 </div>'''
 
-    us_gainers_html = ''.join(_top3_row(i+1, k, n, p) for i, (k, n, p) in enumerate(us_stock_sorted[:3]))
-    us_losers_html  = ''.join(_top3_row(i+1, k, n, p) for i, (k, n, p) in enumerate(us_stock_sorted[-3:][::-1]))
+    us_movers_gainers_html = ''.join(_mover_row(k, p) for k, p in us_universe_sorted[:3])
+    us_movers_losers_html  = ''.join(_mover_row(k, p) for k, p in us_universe_sorted[-3:][::-1])
+
+    # 최근 실적 리뷰 (AI 생성)
+    earnings_reviews_html = ''
+    earn_extra_count = 0
+    if us_ai_brief:
+        reviews = us_ai_brief.get('earnings_reviews', [])
+        for i, rv in enumerate(reviews):
+            extra_cls = ' is-extra' if i >= 2 else ''
+            company = rv.get('company', '')
+            ticker = rv.get('ticker', '')
+            period = rv.get('period', '')
+            summary = rv.get('summary', '')
+            earnings_reviews_html += f'''<div class="earn-item{extra_cls}">
+  <div class="ticker-badge">{ticker[:2].upper()}</div>
+  <div class="earn-body">
+    <div class="earn-head">{company}({ticker}) <span class="earn-period">{period}</span></div>
+    <div class="earn-summary">{summary}</div>
+  </div>
+</div>'''
+        earn_extra_count = max(0, len(reviews) - 2)
+    earn_more_html = ''
+    if earn_extra_count > 0:
+        earn_more_html = f'''<div class="earn-more-btn" data-more-label="▼ {earn_extra_count}개 더 보기" data-less-label="▲ 접기" onclick="toggleEarnMore(this)">▼ {earn_extra_count}개 더 보기</div>'''
+
+    us_stock_story = (us_ai_brief or {}).get('stock_story', '')
 
     # 기술적 신호
     def _rsi_signal(rsi):
@@ -2355,23 +2411,28 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 
   <div class="section">
-    <div class="section-label">급등 / 급락 Top 3</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div style="background:var(--card);border:1px solid rgba(0,232,150,.2);border-radius:12px;padding:10px 12px;">
-        <div style="font-size:10px;color:var(--up);font-weight:700;margin-bottom:6px;">🚀 급등</div>
-        {us_gainers_html}
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">🔍</span>
+        <span class="mkt-sec-title">주요 종목 동향</span>
+        <span class="mkt-sec-num">03</span>
       </div>
-      <div style="background:var(--card);border:1px solid rgba(255,64,96,.2);border-radius:12px;padding:10px 12px;">
-        <div style="font-size:10px;color:var(--dn);font-weight:700;margin-bottom:6px;">📉 급락</div>
-        {us_losers_html}
+      <div class="asset-group-label">⭐ 매그니피센트 7</div>
+      <div class="asset-grid">{mag7_html}</div>
+      <div class="mover-grid">
+        <div class="mover-card up-side">
+          <div class="mover-head up">🚀 급등 Top 3</div>
+          {us_movers_gainers_html}
+        </div>
+        <div class="mover-card dn-side">
+          <div class="mover-head dn">📉 급락 Top 3</div>
+          {us_movers_losers_html}
+        </div>
       </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">주요 종목 동향</div>
-    <div style="display:grid;grid-template-columns: 1fr 1fr; gap: 6px;">
-      {us_stocks_html}
+      <div class="asset-group-label">📋 최근 실적 리뷰</div>
+      <div class="earn-list">{earnings_reviews_html}</div>
+      {earn_more_html}
+      <div class="story-text">{us_stock_story}</div>
     </div>
   </div>
 
@@ -2804,6 +2865,13 @@ function closeStockModal(){{
   document.getElementById('stockOverlay').classList.remove('open');
   document.getElementById('stockModal').classList.remove('open');
   setTimeout(function(){{document.getElementById('stockOverlay').style.display='none';}},250);
+}}
+function toggleEarnMore(btn){{
+  var list = btn.previousElementSibling;
+  var extras = list.querySelectorAll('.earn-item.is-extra');
+  var opened = extras.length && extras[0].classList.contains('show');
+  extras.forEach(function(el){{el.classList.toggle('show', !opened);}});
+  btn.textContent = opened ? btn.dataset.moreLabel : btn.dataset.lessLabel;
 }}
 var _updTimer=null;
 function triggerUpdate(){{
