@@ -690,7 +690,7 @@ def fetch_us_ai_briefing(market, news):
 }}"""
 
         import json, re
-        text = _gemini_post(api_key, prompt, temperature=0.7)
+        text = _gemini_post(api_key, prompt, temperature=0.7, max_tokens=2048)
         m = re.search(r'\{.*\}', text, re.DOTALL)
         if m:
             data = json.loads(m.group(0))
@@ -2318,38 +2318,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 
   <div class="section">
-    <div class="story-wrap">
-      <div class="mkt-sec-head">
-        <span class="mkt-sec-icon">🌐</span>
-        <span class="mkt-sec-title">시장 요약</span>
-        <span class="mkt-sec-num">01</span>
-      </div>
-      <div class="hashtag-row">{us_hashtags_html}</div>
-      <div class="highlight-list">{us_highlights_html}</div>
-      <div class="story-text">{us_summary}</div>
-      {us_outlook_html}
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="story-wrap">
-      <div class="mkt-sec-head">
-        <span class="mkt-sec-icon">📊</span>
-        <span class="mkt-sec-title">섹터 & 자산 동향</span>
-        <span class="mkt-sec-num">02</span>
-      </div>
-      <div class="asset-group-label">📁 섹터</div>
-      <div class="asset-grid">{asset_sectors_html}</div>
-      <div class="asset-group-label">💵 채권</div>
-      <div class="asset-grid cols-3">{asset_bonds_html}</div>
-      <div class="asset-group-label">🪙 원자재</div>
-      <div class="asset-grid cols-3">{asset_commodities_html}</div>
-      <div class="story-text" style="margin-top:12px">{us_asset_story}</div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
+    <div class="section-label">00 · 주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
     <div class="us-grid">
       <div class="us-card" onclick="showMacroChart('sp500')">
         <div class="us-card-top">
@@ -2407,6 +2376,37 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
           <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'vix').get('rsi',50)}%"></div></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">🌐</span>
+        <span class="mkt-sec-title">시장 요약</span>
+        <span class="mkt-sec-num">01</span>
+      </div>
+      <div class="hashtag-row">{us_hashtags_html}</div>
+      <div class="highlight-list">{us_highlights_html}</div>
+      <div class="story-text">{us_summary}</div>
+      {us_outlook_html}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📊</span>
+        <span class="mkt-sec-title">섹터 & 자산 동향</span>
+        <span class="mkt-sec-num">02</span>
+      </div>
+      <div class="asset-group-label">📁 섹터</div>
+      <div class="asset-grid">{asset_sectors_html}</div>
+      <div class="asset-group-label">💵 채권</div>
+      <div class="asset-grid cols-3">{asset_bonds_html}</div>
+      <div class="asset-group-label">🪙 원자재</div>
+      <div class="asset-grid cols-3">{asset_commodities_html}</div>
+      <div class="story-text" style="margin-top:12px">{us_asset_story}</div>
     </div>
   </div>
 
