@@ -578,16 +578,23 @@ def fetch_ai_briefing(market, news):
 
 위 데이터를 바탕으로 단순 나열이 아닌, 지표 간 인과관계와 스토리가 있는 시황 분석을 작성하세요.
 부동산 내용은 절대 포함하지 마세요. 주식 시장만 분석하세요.
+한국어 뉴스레터 형식으로 작성하며, 투자자들이 오늘 무엇에 집중해야 했는지 명확히 설명하세요.
 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
 {{
   "keyword": "오늘의 핵심 키워드 한 줄 (이모지 포함, 20자 이내)",
+  "hashtags": ["오늘 한국 시장을 한눈에 보여주는 해시태그 5개 (예: #외국인 순매수 형식, # 포함, 각 12자 이내)"],
+  "highlights": [
+    {{"title": "오늘의 핵심 이슈 제목 (12자 이내)", "desc": "그 이슈에 대한 한 줄 설명 (35자 이내)"}},
+    {{"title": "두 번째 핵심 이슈 제목 (12자 이내)", "desc": "그 이슈에 대한 한 줄 설명 (35자 이내)"}},
+    {{"title": "세 번째 핵심 이슈 제목 (12자 이내)", "desc": "그 이슈에 대한 한 줄 설명 (35자 이내)"}}
+  ],
   "story": "주요 지표 움직임의 원인과 연결고리 설명 (2~3문장, 인과관계 중심)",
-  "sector_story": "업종별 등락 스토리 (왜 올랐고 왜 내렸는지 흐름 설명, 2문장)",
-  "watch_points": ["투자자 주목 포인트 1", "투자자 주목 포인트 2", "투자자 주목 포인트 3"]
+  "sector_story": "업종별 등락 스토리 (왜 올랐고 왜 내렸는지 흐름 설명, 2~3문장)",
+  "outlook": "내일 이후 주목해야 할 이벤트나 투자 포인트 (2문장)"
 }}"""
 
         import json, re
-        text = _gemini_post(api_key, prompt, temperature=0.7)
+        text = _gemini_post(api_key, prompt, temperature=0.7, max_tokens=2048)
         m = re.search(r'\{.*\}', text, re.DOTALL)
         if m:
             data = json.loads(m.group(0))
@@ -1549,12 +1556,10 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .ss-theme{font-size:11px;font-weight:600;color:var(--t1);margin-bottom:3px}
 .ss-text{font-size:10.5px;color:var(--t2);line-height:1.7}
 .story-wrap{background:linear-gradient(135deg,rgba(77,166,255,.08),rgba(167,139,250,.06));border:1px solid rgba(77,166,255,.2);border-radius:12px;padding:14px}
-.story-keyword{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
 .story-block{margin-bottom:10px}
 .story-block:last-child{margin-bottom:0}
 .story-label{font-size:10px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:5px}
 .story-text{font-size:12px;color:var(--t2);line-height:1.75}
-.story-watch{font-size:12px;color:var(--t1);line-height:1.9;font-weight:500}
 .mkt-sec-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
 .mkt-sec-icon{font-size:15px}
 .mkt-sec-title{font-size:14px;font-weight:700;color:var(--t1);flex:1}
@@ -1697,14 +1702,13 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     import json as _json_wl
     watchlist_json = _json_wl.dumps(watchlist or [], ensure_ascii=False)
 
-    # 업종 차트 데이터 — KIS 실시간 우선, 없으면 기본값
+    # 업종별 등락률 카드 데이터 — KIS 실시간 우선, 없으면 기본값
     _default_sectors = [
         {'name': '전기전자', 'pct': 0.0}, {'name': '자동차', 'pct': 0.0},
         {'name': '금융',    'pct': 0.0}, {'name': '바이오',  'pct': 0.0},
         {'name': '화학',    'pct': 0.0}, {'name': '철강',    'pct': 0.0},
         {'name': '건설',    'pct': 0.0}, {'name': '에너지',  'pct': 0.0},
     ]
-    sector_data_json = _json_wl.dumps(kr_sectors if kr_sectors else _default_sectors, ensure_ascii=False)
 
     kospi_pct = d(market, 'kospi').get('pct') or 0
     if kospi_pct >= 1.0:
@@ -1798,25 +1802,44 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     ai_extra = ''
     ai_html = ''
 
+    # 시황 분석 보조 콘텐츠 (해시태그 / 하이라이트 / 전망 / 업종 서사)
+    dom_hashtags_html = ''
+    dom_highlights_html = ''
+    dom_outlook_html = ''
+    sector_story = ''
+    if ai_brief:
+        for tag in ai_brief.get('hashtags', []):
+            dom_hashtags_html += f'<span class="hashtag-pill">{tag}</span>'
+        for hl in ai_brief.get('highlights', []):
+            dom_highlights_html += f'''<div class="highlight-item">
+  <div class="highlight-dot">·</div>
+  <div>
+    <div class="highlight-title">{hl.get('title','')}</div>
+    <div class="highlight-desc">{hl.get('desc','')}</div>
+  </div>
+</div>'''
+        d_out = ai_brief.get('outlook', '')
+        if d_out:
+            dom_outlook_html = f'''<div class="story-block" style="margin-top:10px">
+      <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
+      <div class="story-text">{d_out}</div>
+    </div>'''
+        sector_story = ai_brief.get('sector_story', '')
+
     # 스토리형 시황 분석 섹션
     if ai_brief:
-        keyword      = ai_brief.get('keyword', '')
-        story        = ai_brief.get('story', '')
-        sector_story = ai_brief.get('sector_story', '')
-        watch_points = ai_brief.get('watch_points', [])
-        wp_html = ''.join(f'<div class="story-watch">· {wp}</div>' for wp in watch_points)
+        story = ai_brief.get('story', '')
         story_html = f'''<div class="section">
   <div class="story-wrap">
-    <div class="story-keyword">{keyword}</div>
-    <div class="story-block">
-      <div class="story-label">📊 시황 흐름</div>
-      <div class="story-text">{story}</div>
+    <div class="mkt-sec-head">
+      <span class="mkt-sec-icon">🇰🇷</span>
+      <span class="mkt-sec-title">시장 요약</span>
+      <span class="mkt-sec-num">01</span>
     </div>
-    <div class="story-block">
-      <div class="story-label">🏭 업종 스토리</div>
-      <div class="story-text">{sector_story}</div>
-    </div>
-    {f'<div class="story-block"><div class="story-label">👀 오늘의 주목 포인트</div>{wp_html}</div>' if wp_html else ''}
+    <div class="hashtag-row">{dom_hashtags_html}</div>
+    <div class="highlight-list">{dom_highlights_html}</div>
+    <div class="story-text">{story}</div>
+    {dom_outlook_html}
   </div>
 </div>'''
     else:
@@ -1987,6 +2010,12 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     asset_commodities_html = ''.join(
         _asset_card(ticker, label, d(market, k).get('pct', 0) or 0)
         for k, (ticker, label) in US_COMMODITY_MAP.items()
+    )
+
+    # 국내 업종별 등락률 카드 그리드 (KIS 실시간 데이터 우선, 없으면 기본값)
+    dom_sectors_html = ''.join(
+        _asset_card(s['name'], '', s.get('pct', 0) or 0)
+        for s in (kr_sectors if kr_sectors else _default_sectors)
     )
 
     # ③ 주요 종목 동향 — 매그니피센트 7 카드 그리드
@@ -2258,9 +2287,15 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 
   <div class="section">
-    <div class="section-label">📊 업종별 등락률</div>
-    <div style="background:var(--card);border-radius:10px;padding:12px 14px;">
-      <canvas id="sectorChart" height="200"></canvas>
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">🏭</span>
+        <span class="mkt-sec-title">업종 동향</span>
+        <span class="mkt-sec-num">02</span>
+      </div>
+      <div class="asset-group-label">📁 주요 업종</div>
+      <div class="asset-grid">{dom_sectors_html}</div>
+      <div class="story-text" style="margin-top:12px">{sector_story}</div>
     </div>
   </div>
 
@@ -2670,39 +2705,6 @@ function closeMacroChart(){{
   document.getElementById('macroModal').classList.remove('open');
   setTimeout(function(){{document.getElementById('macroOverlay').style.display='none';}},280);
 }}
-try{{(function(){{
-  var ctx=document.getElementById('sectorChart').getContext('2d');
-  var _sd={sector_data_json};
-  var lbls=_sd.map(function(s){{return s.name;}});
-  var vals=_sd.map(function(s){{return s.pct;}});
-  var cols=vals.map(function(v){{return v>=0?'#ef4444':'#3b82f6';}});
-  new Chart(ctx,{{
-    type:'bar',
-    data:{{labels:lbls,datasets:[{{data:vals,backgroundColor:cols,borderRadius:4,barThickness:14}}]}},
-    options:{{
-      indexAxis:'y',responsive:true,
-      plugins:{{
-        legend:{{display:false}},
-        tooltip:{{callbacks:{{label:function(c){{return(c.raw>0?'+':'')+c.raw+'%';}}}}}},
-        datalabels:{{
-          color:function(ctx){{return ctx.dataset.data[ctx.dataIndex]>=0?'#ef4444':'#3b82f6';}},
-          font:{{size:10,weight:'600'}},
-          formatter:function(v){{return(v>0?'+':'')+v+'%';}},
-          anchor:'end',align:'end',offset:2,clamp:true
-        }}
-      }},
-      scales:{{
-        x:{{display:false}},
-        y:{{
-          grid:{{display:false}},
-          ticks:{{color:'#b8ccee',font:{{size:11}}}},
-          border:{{color:'rgba(255,255,255,0.08)'}}
-        }}
-      }}
-    }},
-    plugins:[ChartDataLabels]
-  }});
-}})();}}catch(e){{console.warn('sectorChart init failed:',e);}}
 var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF'}};
 var WATCHLIST={watchlist_json};
 function _fmt(v,dec,suf){{if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}}
