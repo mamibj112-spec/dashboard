@@ -12,6 +12,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 
+# Windows 콘솔(cp949)에서 이모지 등 출력 시 UnicodeEncodeError로 죽는 것을 방지
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+
 try:
     import yfinance as yf
     import requests
@@ -500,9 +505,10 @@ _GEMINI_LIMITER = _GeminiRateLimiter(rpm=10)
 
 def _gemini_post(api_key, prompt, temperature=0.7, max_tokens=1024):
     """Gemini API 호출 (Rate Limiter로 429 원천 차단)"""
-    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}'
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}'
     body = {'contents': [{'parts': [{'text': prompt}]}],
-            'generationConfig': {'temperature': temperature, 'maxOutputTokens': max_tokens}}
+            'generationConfig': {'temperature': temperature, 'maxOutputTokens': max_tokens,
+                                 'thinkingConfig': {'thinkingBudget': 0}}}
     _GEMINI_LIMITER.acquire()
     resp = requests.post(url, json=body, timeout=60)
     resp.raise_for_status()
@@ -1625,7 +1631,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     us_cls = 'up' if sp500_pct >= 0 else 'dn'
 
     dom_summary = build_dom_summary(market)
-    us_summary  = build_us_summary(market)
+    us_summary  = (us_ai_brief or {}).get('story') or build_us_summary(market)
 
     # 환율 추이 차트
     if usdkrw_week and len(usdkrw_week) >= 2:
@@ -1853,16 +1859,11 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     # 해외 AI 브리핑 HTML
     if us_ai_brief:
         u_kw   = us_ai_brief.get('keyword', '')
-        u_st   = us_ai_brief.get('story', '')
         u_sec  = us_ai_brief.get('sector_story', '')
         u_out  = us_ai_brief.get('outlook', '')
         us_story_html = f'''<div class="section">
   <div class="story-wrap" style="background: linear-gradient(135deg, rgba(77, 166, 255, 0.1), rgba(167, 139, 250, 0.05)); border-color: rgba(77, 166, 255, 0.3);">
     <div class="story-keyword" style="color: var(--blue); border-bottom-color: rgba(77, 166, 255, 0.2);">{u_kw}</div>
-    <div class="story-block">
-      <div class="story-label" style="color: var(--blue);">🌍 시장 서사</div>
-      <div class="story-text">{u_st}</div>
-    </div>
     <div class="story-block">
       <div class="story-label" style="color: var(--blue);">📈 섹터/종목 흐름</div>
       <div class="story-text">{u_sec}</div>
@@ -2200,14 +2201,16 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 <div id="tab-us" class="tab-panel">
 
   <div class="section">
+    {us_fg_banner_html}
     <div class="banner {us_cls}">
       <strong>🌐 해외 시황</strong><br>
       S&amp;P500 {vdisp(market,'sp500')} {cdisp(market,'sp500')} &nbsp;|&nbsp;
       나스닥 {vdisp(market,'nasdaq')} {cdisp(market,'nasdaq')}<br>
       <span style="font-size:11.5px;opacity:.9;line-height:1.6">{us_summary}</span>
     </div>
-    {us_fg_banner_html}
   </div>
+
+  {us_story_html}
 
   <div class="section">
     <div class="section-label">주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
@@ -2291,8 +2294,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
       </div>
     </div>
   </div>
-
-  {us_story_html}
 
   <div class="section">
     <div class="section-label">주요 종목 동향</div>
