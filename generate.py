@@ -2206,10 +2206,9 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     </div>
   </div>
 
-  {story_html}
-
   <div class="section">
-    <div class="section-label">국내 지수</div>
+    <div class="section-label">00 · 주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
+    <div class="asset-group-label">🇰🇷 국내 지수</div>
     <div class="index-grid">
       <div class="idx-card" onclick="showMacroChart('kospi')" style="cursor:pointer">
         <div class="idx-name">코스피 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
@@ -2222,36 +2221,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         <div class="idx-chg">{cdisp(market,'kosdaq')}</div>
       </div>
     </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">미국 주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
-    <div class="index-grid">
-      <div class="idx-card" onclick="showMacroChart('nasdaq')" style="cursor:pointer">
-        <div class="idx-name">나스닥 100</div>
-        <div class="idx-val">{vdisp(market,'nasdaq')}</div>
-        <div class="idx-chg">{cdisp(market,'nasdaq')}</div>
-      </div>
-      <div class="idx-card" onclick="showMacroChart('sp500')" style="cursor:pointer">
-        <div class="idx-name">S&amp;P 500</div>
-        <div class="idx-val">{vdisp(market,'sp500')}</div>
-        <div class="idx-chg">{cdisp(market,'sp500')}</div>
-      </div>
-      <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
-        <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
-        <div class="idx-val">{vdisp(market,'vix')}</div>
-        <div class="idx-chg">{cdisp(market,'vix')}</div>
-      </div>
-      <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
-        <div class="idx-name">다우존스</div>
-        <div class="idx-val">{vdisp(market,'dow')}</div>
-        <div class="idx-chg">{cdisp(market,'dow')}</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">매크로 지표 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
+    <div class="asset-group-label">🌐 글로벌 매크로</div>
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('usdkrw')">
         <div class="macro-name">USD/KRW</div>
@@ -2282,6 +2252,34 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         <div class="macro-name">🪙 비트코인</div>
         <div class="macro-val">{vdisp(market,'btc')}</div>
         <div class="macro-chg">{cdisp(market,'btc')}</div>
+      </div>
+    </div>
+  </div>
+
+  {story_html}
+
+  <div class="section">
+    <div class="section-label">미국 주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
+    <div class="index-grid">
+      <div class="idx-card" onclick="showMacroChart('nasdaq')" style="cursor:pointer">
+        <div class="idx-name">나스닥 100</div>
+        <div class="idx-val">{vdisp(market,'nasdaq')}</div>
+        <div class="idx-chg">{cdisp(market,'nasdaq')}</div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('sp500')" style="cursor:pointer">
+        <div class="idx-name">S&amp;P 500</div>
+        <div class="idx-val">{vdisp(market,'sp500')}</div>
+        <div class="idx-chg">{cdisp(market,'sp500')}</div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
+        <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
+        <div class="idx-val">{vdisp(market,'vix')}</div>
+        <div class="idx-chg">{cdisp(market,'vix')}</div>
+      </div>
+      <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
+        <div class="idx-name">다우존스</div>
+        <div class="idx-val">{vdisp(market,'dow')}</div>
+        <div class="idx-chg">{cdisp(market,'dow')}</div>
       </div>
     </div>
   </div>
