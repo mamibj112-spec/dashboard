@@ -3,6 +3,7 @@
 """KIS (한국투자증권) Open API 연동 모듈"""
 import os
 import time
+import threading
 import requests
 
 _APP_KEY    = os.environ.get('KIS_APP_KEY', '')
@@ -19,6 +20,7 @@ def _base():
     return _BASE.get(_MODE, _BASE['real'])
 
 _token_cache = {'token': None, 'expires_at': 0.0}
+_token_lock  = threading.Lock()
 _TOKEN_FILE  = os.path.join(os.path.dirname(__file__), '.kis_token_cache')
 
 
@@ -47,39 +49,42 @@ _load_token_cache()
 
 
 def get_token():
-    now = time.time()
-    if _token_cache['token'] and now < _token_cache['expires_at']:
-        return _token_cache['token']
+    # KIS는 동일 appkey에 대한 동시 토큰 발급 요청을 403으로 거부하므로
+    # 락으로 직렬화해 실제 HTTP 요청은 한 번만 나가도록 한다.
+    with _token_lock:
+        now = time.time()
+        if _token_cache['token'] and now < _token_cache['expires_at']:
+            return _token_cache['token']
 
-    if not _APP_KEY or not _APP_SECRET:
-        print("  KIS 키 없음 (KIS_APP_KEY / KIS_APP_SECRET)")
-        return None
-
-    try:
-        r = requests.post(
-            f'{_base()}/oauth2/tokenP',
-            json={
-                'grant_type': 'client_credentials',
-                'appkey':     _APP_KEY,
-                'appsecret':  _APP_SECRET,
-            },
-            timeout=10,
-        )
-        r.raise_for_status()
-        data = r.json()
-        token = data.get('access_token')
-        if not token:
-            print(f"  KIS 토큰 발급 실패: {data.get('msg1', data)}")
+        if not _APP_KEY or not _APP_SECRET:
+            print("  KIS 키 없음 (KIS_APP_KEY / KIS_APP_SECRET)")
             return None
-        expires_in = int(data.get('expires_in', 86400))
-        _token_cache['token']      = token
-        _token_cache['expires_at'] = now + expires_in - 300
-        _save_token_cache()
-        print("  KIS 토큰 발급 성공")
-        return token
-    except Exception as e:
-        print(f"  KIS 토큰 오류: {e}")
-        return None
+
+        try:
+            r = requests.post(
+                f'{_base()}/oauth2/tokenP',
+                json={
+                    'grant_type': 'client_credentials',
+                    'appkey':     _APP_KEY,
+                    'appsecret':  _APP_SECRET,
+                },
+                timeout=10,
+            )
+            r.raise_for_status()
+            data = r.json()
+            token = data.get('access_token')
+            if not token:
+                print(f"  KIS 토큰 발급 실패: {data.get('msg1', data)}")
+                return None
+            expires_in = int(data.get('expires_in', 86400))
+            _token_cache['token']      = token
+            _token_cache['expires_at'] = now + expires_in - 300
+            _save_token_cache()
+            print("  KIS 토큰 발급 성공")
+            return token
+        except Exception as e:
+            print(f"  KIS 토큰 오류: {e}")
+            return None
 
 
 def _headers(token, tr_id):
@@ -279,23 +284,18 @@ def get_decline_ranking(token, top_n=5):
 
 
 def get_foreign_net_buy_ranking(token, top_n=5):
-    """외국인 순매수 기준 상위 종목"""
+    """외국인 순매수 기준 상위 종목 (국내기관_외국인 매매종목가집계)"""
     try:
         r = requests.get(
-            f'{_base()}/uapi/domestic-stock/v1/ranking/investor',
-            headers=_headers(token, 'FHPST01600000'),
+            f'{_base()}/uapi/domestic-stock/v1/quotations/foreign-institution-total',
+            headers=_headers(token, 'FHPTJ04400000'),
             params={
-                'FID_COND_MRKT_DIV_CODE':  'J',
-                'FID_COND_SCR_DIV_CODE':   '20160',
+                'FID_COND_MRKT_DIV_CODE':  'V',
+                'FID_COND_SCR_DIV_CODE':   '16449',
                 'FID_INPUT_ISCD':          '0000',
-                'FID_TRGT_CLS_CODE':       '111111111',
-                'FID_TRGT_EXLS_CLS_CODE':  '000000',
-                'FID_INPUT_PRICE_1':       '',
-                'FID_INPUT_PRICE_2':       '',
-                'FID_VOL_CNT':             '',
-                'FID_INPUT_DATE_1':        '',
-                'FID_RANK_SORT_CLS_CODE':  '0',
-                'FID_ETC_CLS_CODE':        '1',  # 외국인
+                'FID_DIV_CLS_CODE':        '1',   # 1=금액정렬
+                'FID_RANK_SORT_CLS_CODE':  '0',   # 0=순매수상위
+                'FID_ETC_CLS_CODE':        '1',   # 1=외국인
             },
             timeout=10,
         )
@@ -310,7 +310,7 @@ def get_foreign_net_buy_ranking(token, top_n=5):
                 'Name':        item.get('hts_kor_isnm', ''),
                 'Close':       float(item.get('stck_prpr', 0) or 0),
                 'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
-                'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
+                'Amount':      float(item.get('frgn_ntby_tr_pbmn', 0) or 0),
                 'Market':      'KIS',
             })
         return result
@@ -320,23 +320,18 @@ def get_foreign_net_buy_ranking(token, top_n=5):
 
 
 def get_institutional_net_buy_ranking(token, top_n=5):
-    """기관 순매수 기준 상위 종목"""
+    """기관 순매수 기준 상위 종목 (국내기관_외국인 매매종목가집계)"""
     try:
         r = requests.get(
-            f'{_base()}/uapi/domestic-stock/v1/ranking/investor',
-            headers=_headers(token, 'FHPST01600000'),
+            f'{_base()}/uapi/domestic-stock/v1/quotations/foreign-institution-total',
+            headers=_headers(token, 'FHPTJ04400000'),
             params={
-                'FID_COND_MRKT_DIV_CODE':  'J',
-                'FID_COND_SCR_DIV_CODE':   '20160',
+                'FID_COND_MRKT_DIV_CODE':  'V',
+                'FID_COND_SCR_DIV_CODE':   '16449',
                 'FID_INPUT_ISCD':          '0000',
-                'FID_TRGT_CLS_CODE':       '111111111',
-                'FID_TRGT_EXLS_CLS_CODE':  '000000',
-                'FID_INPUT_PRICE_1':       '',
-                'FID_INPUT_PRICE_2':       '',
-                'FID_VOL_CNT':             '',
-                'FID_INPUT_DATE_1':        '',
-                'FID_RANK_SORT_CLS_CODE':  '0',
-                'FID_ETC_CLS_CODE':        '2',  # 기관
+                'FID_DIV_CLS_CODE':        '1',   # 1=금액정렬
+                'FID_RANK_SORT_CLS_CODE':  '0',   # 0=순매수상위
+                'FID_ETC_CLS_CODE':        '2',   # 2=기관계
             },
             timeout=10,
         )
@@ -351,7 +346,7 @@ def get_institutional_net_buy_ranking(token, top_n=5):
                 'Name':        item.get('hts_kor_isnm', ''),
                 'Close':       float(item.get('stck_prpr', 0) or 0),
                 'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
-                'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
+                'Amount':      float(item.get('orgn_ntby_tr_pbmn', 0) or 0),
                 'Market':      'KIS',
             })
         return result
@@ -361,23 +356,24 @@ def get_institutional_net_buy_ranking(token, top_n=5):
 
 
 def get_52week_high(token, top_n=5):
-    """52주 신고가 종목 상위"""
+    """52주 신고가 근접 종목 상위 (국내주식 신고_신저근접종목 상위)"""
     try:
         r = requests.get(
-            f'{_base()}/uapi/domestic-stock/v1/ranking/high-low',
-            headers=_headers(token, 'FHPST01400000'),
+            f'{_base()}/uapi/domestic-stock/v1/ranking/near-new-highlow',
+            headers=_headers(token, 'FHPST01870000'),
             params={
+                'FID_APLY_RANG_VOL':       '0',
                 'FID_COND_MRKT_DIV_CODE':  'J',
-                'FID_COND_SCR_DIV_CODE':   '20140',
+                'FID_COND_SCR_DIV_CODE':   '20187',
+                'FID_DIV_CLS_CODE':        '0',
+                'FID_INPUT_CNT_1':         '0',
+                'FID_INPUT_CNT_2':         '100',
+                'FID_PRC_CLS_CODE':        '0',   # 0=신고근접
                 'FID_INPUT_ISCD':          '0000',
-                'FID_DIV_CLS_CODE':        '1',   # 1=신고가
-                'FID_BLNG_CLS_CODE':       '0',
-                'FID_TRGT_CLS_CODE':       '111111111',
-                'FID_TRGT_EXLS_CLS_CODE':  '000000',
-                'FID_INPUT_PRICE_1':       '',
-                'FID_INPUT_PRICE_2':       '',
-                'FID_VOL_CNT':             '100000',
-                'FID_INPUT_DATE_1':        '',
+                'FID_TRGT_CLS_CODE':       '0',
+                'FID_TRGT_EXLS_CLS_CODE':  '0',
+                'FID_APLY_RANG_PRC_1':     '0',
+                'FID_APLY_RANG_PRC_2':     '1000000',
             },
             timeout=10,
         )
@@ -388,11 +384,13 @@ def get_52week_high(token, top_n=5):
             return []
         result = []
         for item in d.get('output', [])[:top_n]:
+            close = float(item.get('stck_prpr', 0) or 0)
+            vol   = float(item.get('acml_vol', 0) or 0)
             result.append({
                 'Name':        item.get('hts_kor_isnm', ''),
-                'Close':       float(item.get('stck_prpr', 0) or 0),
+                'Close':       close,
                 'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
-                'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
+                'Amount':      close * vol,  # 거래대금 필드가 없어 현재가×거래량으로 근사
                 'Market':      'KIS',
             })
         return result
