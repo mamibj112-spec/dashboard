@@ -276,9 +276,10 @@ def fetch_market_stocks():
 
     # FDR로 시장 체감 온도 (상승/하락 종목 수) 수집
     up = down = flat = 0
-    fdr_top_amt  = []
-    fdr_top_gain = []
-    fdr_top_rise = []
+    fdr_top_amt     = []
+    fdr_top_gain    = []
+    fdr_top_decline = []
+    fdr_top_rise    = []
     try:
         kospi  = fdr.StockListing('KOSPI')
         kosdaq = fdr.StockListing('KOSDAQ')
