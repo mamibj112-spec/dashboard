@@ -1697,7 +1697,6 @@ def _etf_row(e, show_amt=False):
 def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
-    workflow_pat = os.environ.get('WORKFLOW_PAT', '')
     gen_time = dt.strftime("%H:%M 생성")
 
     import json as _json_wl
@@ -2874,20 +2873,19 @@ function toggleEarnMore(btn){{
 }}
 var _updTimer=null;
 function triggerUpdate(){{
-  var pat='{workflow_pat}';
-  if(!pat){{document.getElementById('updStatus').textContent='토큰 미설정';return;}}
   var btn=document.getElementById('updBtn');
   btn.disabled=true;btn.textContent='요청 중...';
   document.getElementById('updStatus').textContent='';
-  fetch('https://api.github.com/repos/mamibj112-spec/dashboard/actions/workflows/daily.yml/dispatches',{{
-    method:'POST',
-    headers:{{'Authorization':'token '+pat,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'}},
-    body:JSON.stringify({{ref:'main'}})
-  }}).then(function(r){{
-    if(r.status===204){{
+  fetch('https://dashboard-trigger.mamibj112.workers.dev',{{method:'POST'}})
+  .then(function(r){{return r.json().then(function(d){{return {{code:r.status,data:d}};}});}})
+  .then(function(res){{
+    if(res.code===200 && res.data.status==='success'){{
       btn.textContent='업데이트 중...';
       document.getElementById('updStatus').textContent='⏳ 1~2분 후 새로고침';
       _updTimer=setTimeout(function(){{location.reload();}},90000);
+    }}else if(res.code===409){{
+      btn.disabled=false;btn.textContent='지금 업데이트';
+      document.getElementById('updStatus').textContent='⏳ 이미 진행 중';
     }}else{{
       btn.disabled=false;btn.textContent='지금 업데이트';
       document.getElementById('updStatus').textContent='❌ 실패';
