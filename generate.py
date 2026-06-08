@@ -1897,9 +1897,10 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         b_dn    = breadth.get('down', 0)
         b_total = b_up + b_dn + breadth.get('flat', 0)
         b_up_pct = f"{b_up/b_total*100:.0f}" if b_total else '–'
+        b_up_pct_w = (b_up/b_total*100) if b_total else 0
         breadth_html = f'''<div class="breadth-wrap">
   <div class="breadth-bar">
-    <div class="breadth-up" style="width:{b_up/b_total*100:.1f}%"></div>
+    <div class="breadth-up" style="width:{b_up_pct_w:.1f}%"></div>
   </div>
   <div class="breadth-label">
     <span class="up-txt">▲ {b_up}개 상승</span>
