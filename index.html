@@ -247,7 +247,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="header-day">장 마감 기준</div>
   </div>
   <div class="header-right">
-    09:10 생성<br>
+    20:52 생성<br>
     <button class="update-btn" id="updBtn" onclick="triggerUpdate()">지금 업데이트</button>
     <span class="update-status" id="updStatus"></span>
   </div>
@@ -271,15 +271,15 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="us-fg-big">😨</div>
   <div class="us-fg-right">
     <div class="us-fg-label" style="color:#60a5fa">미국 공포/탐욕 지수</div>
-    <div class="us-fg-score" style="color:#60a5fa">34 <span style="font-size:16px">공포</span></div>
-    <div class="us-fg-desc" style="color:#60a5fa">VIX 22.2 &nbsp;·&nbsp; S&amp;P RSI 37 &nbsp;·&nbsp; 나스닥 모멘텀 -1.98%</div>
+    <div class="us-fg-score" style="color:#60a5fa">35 <span style="font-size:16px">공포</span></div>
+    <div class="us-fg-desc" style="color:#60a5fa">VIX 20.9 &nbsp;·&nbsp; S&amp;P RSI 37 &nbsp;·&nbsp; 나스닥 모멘텀 -1.98%</div>
   </div>
 </div>
-    <div class="banner dn">
-      <strong>📉 오늘 시황</strong><br>
-      <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong><span class="dn-txt">7,408.39</span></strong> &nbsp;<span class="dn-txt">▼ 322.43 (4.17%)</span></span>
-      <span style="display:block;margin-bottom:6px;">코스닥 &nbsp;<strong><span class="dn-txt">923.40</span></strong> &nbsp;<span class="dn-txt">▼ 28.23 (2.97%)</span></span>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 4.2% 급락 · 코스닥 상대 강세 · 원/달러 1,525원 고환율 부담 · 브렌트유 3.8% 급등</span>
+    <div class="banner blue">
+      <strong>➖ 오늘 시황</strong><br>
+      <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong><span class="up-txt">7,763.95</span></strong> &nbsp;<span class="up-txt">▲ 33.13 (0.43%)</span></span>
+      <span style="display:block;margin-bottom:6px;">코스닥 &nbsp;<strong><span class="up-txt">996.93</span></strong> &nbsp;<span class="up-txt">▲ 45.30 (4.76%)</span></span>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 보합권 · 코스닥 상대 강세 · 원/달러 1,530원 고환율 부담</span>
     </div>
   </div>
 
@@ -289,13 +289,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="index-grid">
       <div class="idx-card" onclick="showMacroChart('kospi')" style="cursor:pointer">
         <div class="idx-name">코스피 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
-        <div class="idx-val"><span class="dn-txt">7,408.39</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 322.43 (4.17%)</span></div>
+        <div class="idx-val"><span class="up-txt">7,763.95</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 33.13 (0.43%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('kosdaq')" style="cursor:pointer">
         <div class="idx-name">코스닥 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
-        <div class="idx-val"><span class="dn-txt">923.40</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 28.23 (2.97%)</span></div>
+        <div class="idx-val"><span class="up-txt">996.93</span></div>
+        <div class="idx-chg"><span class="up-txt">▲ 45.30 (4.76%)</span></div>
       </div>
     </div>
     <div class="asset-group-label">🇺🇸 미국 주요 지수</div>
@@ -312,8 +312,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
         <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
-        <div class="idx-val">22.22</div>
-        <div class="idx-chg"><span class="up-txt">▲ 2.35 (11.83%)</span></div>
+        <div class="idx-val">20.85</div>
+        <div class="idx-chg"><span class="dn-txt">▼ 1.37 (6.17%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
         <div class="idx-name">다우존스</div>
@@ -325,33 +325,33 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('usdkrw')">
         <div class="macro-name">USD/KRW</div>
-        <div class="macro-val"><span class="up-txt">1,525.5원</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.3 (0.02%)</span></div>
+        <div class="macro-val"><span class="dn-txt">1,529.6원</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 3.8 (0.25%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('brent')">
         <div class="macro-name">브렌트유</div>
-        <div class="macro-val"><span class="up-txt">$95.0</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $3.52 (3.85%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$91.9</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $1.19 (1.28%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('wti')">
         <div class="macro-name">WTI</div>
-        <div class="macro-val"><span class="up-txt">$92.3</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $4.14 (4.69%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$88.9</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $1.11 (1.23%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="dn-txt">$4,080</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $180.10 (4.23%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$4,103</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $5.20 (0.13%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="dn-txt">100.03</span></div>
-        <div class="macro-chg"><span class="dn-txt">▲ 0.12 (0.12%)</span></div>
+        <div class="macro-val"><span class="dn-txt">100.06</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.11 (0.11%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="dn-txt">$61,530</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ 113.30 (0.18%)</span></div>
+        <div class="macro-val"><span class="up-txt">$63,125</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 1675.71 (2.73%)</span></div>
       </div>
     </div>
   </div>
@@ -363,42 +363,30 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <span class="mkt-sec-title">시장 요약</span>
       <span class="mkt-sec-num">01</span>
     </div>
-    <div class="hashtag-row"><span class="hashtag-pill">#지정학적리스크</span><span class="hashtag-pill">#유가급등</span><span class="hashtag-pill">#증시하락</span><span class="hashtag-pill">#환율상승</span><span class="hashtag-pill">#안전자산회피</span></div>
+    <div class="hashtag-row"><span class="hashtag-pill">#코스닥강세</span><span class="hashtag-pill">#변동성확대</span><span class="hashtag-pill">#레버리지경고</span><span class="hashtag-pill">#월드컵특수</span><span class="hashtag-pill">#미증시하락</span></div>
     <div class="highlight-list"><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">지정학적 불안 심화</div>
-    <div class="highlight-desc">트럼프 '이란 타격' 발언, 증시 전반에 악영향</div>
+    <div class="highlight-title">코스닥 급등</div>
+    <div class="highlight-desc">코스닥 4.76% 상승하며 코스피와 상반된 흐름</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">유가 폭등</div>
-    <div class="highlight-desc">중동 불안에 브렌트유, WTI 급등하며 인플레 우려</div>
+    <div class="highlight-title">레버리지 ETF 경고</div>
+    <div class="highlight-desc">당국, 과도한 회전율에 예의주시하며 투자 경고</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">K-관광주 선방</div>
-    <div class="highlight-desc">신세계 본점 외국인 결제액 증가, 백화점 주가 상승</div>
-  </div>
-</div><div class="highlight-item">
-  <div class="highlight-dot">·</div>
-  <div>
-    <div class="highlight-title">기술주 하락</div>
-    <div class="highlight-desc">나스닥 급락하며 국내 기술주에도 부정적 영향</div>
-  </div>
-</div><div class="highlight-item">
-  <div class="highlight-dot">·</div>
-  <div>
-    <div class="highlight-title">금리 상승 압력</div>
-    <div class="highlight-desc">미 10년물 금리 상승, 주식 시장에 부담 가중</div>
+    <div class="highlight-title">월드컵 특수</div>
+    <div class="highlight-desc">손흥민 관련 종목 등 월드컵 테마주 강세</div>
   </div>
 </div></div>
-    <div class="story-text">오늘 한국 증시는 트럼프의 '이란 타격' 발언과 중동 지정학적 리스크 고조로 글로벌 증시와 동반 급락했습니다. 유가가 크게 오르면서 인플레이션 우려가 다시 부각되었고, 이는 미 10년물 금리 상승으로 이어져 시장 전반에 부담을 주며 코스피와 코스닥 모두 큰 폭으로 하락했습니다. 반면, 달러/원 환율은 소폭 하락했으나, 이는 증시 하락에 따른 안전자산 선호보다는 일시적인 수급 요인으로 보입니다.</div>
+    <div class="story-text">오늘 한국 주식시장은 코스피와 코스닥이 상반된 흐름을 보였습니다. 코스피는 소폭 상승했지만, 코스닥은 4.76% 급등하며 강세를 나타냈습니다. 이는 미국 증시의 하락세에도 불구하고 국내 특정 테마주와 중소형주에 대한 투자심리가 살아난 것으로 풀이됩니다. 특히, '공포지수'가 사상 최고치를 기록하는 등 시장 전반의 변동성이 극심했던 하루였습니다.</div>
     <div class="story-block" style="margin-top:10px">
       <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
-      <div class="story-text">지정학적 리스크가 해소되지 않는 한 시장의 변동성은 당분간 지속될 것으로 보입니다. 투자자들은 유가 움직임과 미 10년물 금리 추이를 면밀히 주시하며, 단기적으로는 K-관광 관련주의 모멘텀 지속 여부를 확인할 필요가 있습니다.</div>
+      <div class="story-text">미국 증시 하락과 금리 인상 압력이 지속되는 가운데, 국내 시장은 당국의 레버리지 ETF 규제 움직임과 월드컵 테마주 등 특정 섹터의 수급에 따라 변동성이 확대될 것으로 예상됩니다. 투자자들은 개별 종목의 펀더멘털과 시장의 변동성 지표를 면밀히 주시하며 신중하게 접근해야 할 것입니다.</div>
     </div>
   </div>
 </div>
@@ -414,37 +402,37 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="asset-grid"><div class="asset-card">
   <div class="asset-ticker">전기전자</div>
   
-  <div class="asset-pct dn">-4.14%</div>
+  <div class="asset-pct up">+0.49%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">자동차</div>
   
-  <div class="asset-pct dn">-5.12%</div>
+  <div class="asset-pct dn">-0.93%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">금융</div>
   
-  <div class="asset-pct dn">-4.86%</div>
+  <div class="asset-pct up">+0.78%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">바이오</div>
   
-  <div class="asset-pct dn">-4.04%</div>
+  <div class="asset-pct dn">-0.39%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">화학</div>
   
-  <div class="asset-pct dn">-2.81%</div>
+  <div class="asset-pct up">+1.32%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">철강</div>
   
-  <div class="asset-pct dn">-5.38%</div>
+  <div class="asset-pct dn">-1.87%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">건설</div>
   
-  <div class="asset-pct dn">-4.76%</div>
+  <div class="asset-pct dn">-2.56%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">에너지</div>
   
-  <div class="asset-pct dn">-2.86%</div>
+  <div class="asset-pct dn">-0.75%</div>
 </div></div>
-      <div class="story-text" style="margin-top:12px">지정학적 불안감으로 인해 대부분의 업종이 약세를 면치 못했으나, 'K-관광' 관련주는 돋보이는 흐름을 보였습니다. 신세계 본점의 외국인 결제액 증가 소식과 관광공사의 대규모 캠페인 전개는 백화점 등 유통 섹터에 긍정적으로 작용하며 일부 종목의 주가 상승을 이끌었습니다. 반면, 나스닥 급락의 영향으로 국내 기술주들은 하락 압력을 강하게 받았습니다.</div>
+      <div class="story-text" style="margin-top:12px">월드컵 특수 관련 종목들이 강세를 보이며 '삼전닉스보다 손흥민'이라는 말이 나올 정도로 테마주 장세가 연출되었습니다. 반면, 레버리지 ETF와 같은 고위험 상품에 대한 당국의 규제 움직임과 '극한 변동장'이 맞물리면서 일부 종목에서는 급격한 등락이 관찰되었습니다. 이는 투자자들의 신중한 접근이 필요한 시점임을 시사합니다.</div>
     </div>
   </div>
 
@@ -458,55 +446,115 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="asset-group-label">📊 시장 체감 온도</div>
       <div class="breadth-wrap">
   <div class="breadth-bar">
-    <div class="breadth-up" style="width:31.7%"></div>
+    <div class="breadth-up" style="width:67.6%"></div>
   </div>
   <div class="breadth-label">
-    <span class="up-txt">▲ 842개 상승</span>
+    <span class="up-txt">▲ 1795개 상승</span>
     <span style="color:var(--t3);margin:0 6px;">|</span>
-    <span class="dn-txt">▼ 1726개 하락</span>
-    <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 2657개</span>
+    <span class="dn-txt">▼ 777개 하락</span>
+    <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 2656개</span>
   </div>
 </div>
       <div class="stock-story-wrap" style="margin-top:12px">
         <div class="stock-list-col">
           <div class="ss-sub-label">📈 거래대금</div>
           <div class="stock-row">
-  <div class="stock-name">N2 코스닥 150</div>
-  <div class="stock-right">
-    <span class="dn-txt">▼2.5%</span>
-    <span class="stock-amt">0.4억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">키움 코스닥 150</div>
-  <div class="stock-right">
-    <span class="dn-txt">▼2.2%</span>
-    <span class="stock-amt">1억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">메리츠 인버스 3X</div>
-  <div class="stock-right">
-    <span class="up-txt">▲1.4%</span>
-    <span class="stock-amt">0.0억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">카스</div>
-  <div class="stock-right">
-    <span class="up-txt">▲9.7%</span>
-    <span class="stock-amt">9억</span>
-  </div>
-</div><div class="stock-row">
-  <div class="stock-name">TIGER 12월자</div>
+  <div class="stock-name">KB KIS CD금</div>
   <div class="stock-right">
     <span class="up-txt">▲0.0%</span>
-    <span class="stock-amt">1억</span>
+    <span class="stock-amt">27억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">메리츠 KIS CD</div>
+  <div class="stock-right">
+    <span class="dn-txt">▼0.0%</span>
+    <span class="stock-amt">28억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">메리츠 레버리지 미</div>
+  <div class="stock-right">
+    <span class="dn-txt">▼0.3%</span>
+    <span class="stock-amt">0.5억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">키움 CD금리투자 </div>
+  <div class="stock-right">
+    <span class="up-txt">▲0.0%</span>
+    <span class="stock-amt">52억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">N2 코스닥 150</div>
+  <div class="stock-right">
+    <span class="up-txt">▲5.4%</span>
+    <span class="stock-amt">1.0억</span>
   </div>
 </div>
           <div class="ss-sub-label" style="margin-top:10px">👤 외국인 순매수</div>
-          <div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>
+          <div class="stock-row">
+  <div class="stock-name">삼성전자우</div>
+  <div class="stock-right">
+    <span class="up-txt">▲1.0%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">LG이노텍</div>
+  <div class="stock-right">
+    <span class="dn-txt">▼1.6%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">한미반도체</div>
+  <div class="stock-right">
+    <span class="up-txt">▲7.8%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">알테오젠</div>
+  <div class="stock-right">
+    <span class="up-txt">▲10.2%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">LIG디펜스앤에어로</div>
+  <div class="stock-right">
+    <span class="dn-txt">▼3.3%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div>
         </div>
         <div class="stock-story-col">
           <div class="ss-sub-label">🏢 기관 순매수</div>
-          <div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>
+          <div class="stock-row">
+  <div class="stock-name">SK스퀘어</div>
+  <div class="stock-right">
+    <span class="up-txt">▲3.8%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">SK하이닉스</div>
+  <div class="stock-right">
+    <span class="up-txt">▲2.6%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">삼성전자</div>
+  <div class="stock-right">
+    <span class="dn-txt">▼1.2%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">삼성전기</div>
+  <div class="stock-right">
+    <span class="up-txt">▲0.0%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">주성엔지니어링</div>
+  <div class="stock-right">
+    <span class="up-txt">▲23.4%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div>
           <div class="ss-sub-label" style="margin-top:10px">🏆 52주 신고가</div>
           <div class="stock-row">
   <div class="stock-name">DH오토넥스</div>
@@ -541,51 +589,51 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div>
         </div>
       </div>
-      <div class="story-text" style="margin-top:12px">오늘 시장은 하락 종목 수가 상승 종목 수의 두 배에 달하며 전반적으로 투자 심리가 위축된 분위기입니다. 📉 외국인과 기관의 순매수 상위 종목 데이터가 부재하여 주도적인 매수세가 확인되지 않는 가운데, 52주 신고가 근접 종목들이 모두 보합세를 보이고 있어 뚜렷한 상승 동력을 찾기 어려운 하루였습니다. 개별 종목의 강한 모멘텀보다는 관망세가 우세했던 것으로 보입니다. 🤔</div>
+      <div class="story-text" style="margin-top:12px">오늘 시장은 상승 종목이 하락 종목의 두 배 이상을 기록하며 전반적으로 긍정적인 분위기였습니다. 📈 외국인 투자자들은 반도체(한미반도체)와 바이오(알테오젠) 등 성장성 높은 종목에 집중적으로 매수세를 보였고, 기관은 SK그룹 계열사 및 반도체 장비주(주성엔지니어링)를 중심으로 매수하며 실적 기대감이 높은 종목에 주목했습니다. 특히 주성엔지니어링의 23.4% 급등은 기관의 강한 매수세가 특정 종목의 주가에 미치는 영향력을 보여주며, 52주 신고가 근접 종목들이 보합세를 보인 것은 차익 실현 압력 또는 관망세가 작용했을 가능성을 시사합니다. 🧐</div>
     </div>
   </div>
   <div class="section"><div class="ss-wrap">
-  <div class="ss-tone">전반적인 하락장 속 테마주 개별 장세</div>
+  <div class="ss-tone">개별 종목 및 테마주 중심의 강세장</div>
   <div class="ss-block">
     <div class="ss-label">🔥 주도 테마</div>
-    <div class="ss-theme">✨ 메타버스/XR 관련주 강세! 버넥트, 솔트웨어 등</div>
-    <div class="ss-text">급등주 상위에 버넥트와 솔트웨어 등 메타버스 및 XR(확장현실) 관련 기업들이 다수 포진하며 해당 기술 섹터에 대한 시장의 관심이 집중된 것으로 보입니다. 이는 신기술 및 미래 성장 동력에 대한 기대감이 반영된 결과일 수 있습니다.</div>
+    <div class="ss-theme">🍗 음식료 및 특정 개별 종목 강세</div>
+    <div class="ss-text">마니커 등 음식료 관련주가 급등하며 시장의 주목을 받았고, STX그린로지스, 코미코 등 개별 모멘텀을 가진 종목들이 상한가를 기록하며 강세를 보였습니다.</div>
   </div>
   <div class="ss-block">
     <div class="ss-label">💰 큰 돈의 흐름</div>
-    <div class="ss-text">거래대금 상위에서는 ETN 상품들이 눈에 띄지만, 실제 유의미한 거래대금을 동반한 종목은 카스(+9.7%, 9억) 정도입니다. 전반적으로 특정 섹터로의 대규모 자금 쏠림 현상은 관찰되지 않았습니다.</div>
+    <div class="ss-text">거래대금 상위 종목들은 대부분 CD금리투자 ETN으로, 안정적인 수익을 추구하는 자금이 유입되었음을 알 수 있습니다. 특히 '메리츠 레버리지 미국채10년 ETN(H)'과 'N2 코스닥 150 TR ETN'은 거래대금이 0억임에도 상위권에 있어 데이터 오류 또는 특이사항으로 보입니다.</div>
   </div>
 </div></div>
 
-  <div class="section"><div class="section-label">📋 오늘의 증권사 리포트</div><a href="https://finance.naver.com/research/company_read.naver?nid=93503&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
+  <div class="section"><div class="section-label">📋 오늘의 증권사 리포트</div><a href="https://finance.naver.com/research/company_read.naver?nid=93512&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
   <div class="report-header">
-    <span class="report-stock">에치에프알</span>
-    <span class="report-firm">하나증권</span>
+    <span class="report-stock">LS ELECTRIC</span>
+    <span class="report-firm">유안타증권</span>
   </div>
-  <div class="report-title">우리가 AI RAN 대표주입니다</div>
+  <div class="report-title">LS ELECTRIC - 수주 가이던스 상향이 가장 빠르게 확인될 기..</div>
   <div class="report-points">
-    <div class="report-point">· AI 시대에 필수적인 RAN(Radio Access Network) 기술을 보유한 대표 기업으로 부각.</div>
-    <div class="report-point">· AI 인프라 확장에 따른 수혜가 기대되며, 기술 경쟁력 기반의 성장 잠재력이 높음.</div>
+    <div class="report-point">· 전력 인프라 투자 확대와 AI 데이터센터 수요 증가로 초고압 변압기 등 전력기기 수주가 급증하고 있습니다.</div>
+    <div class="report-point">· 수주 가이던스 상향 가능성이 높아 실적 성장세가 지속될 것으로 기대됩니다.</div>
   </div>
 </div></a><a href="https://finance.naver.com/research/company_read.naver?nid=93502&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
   <div class="report-header">
     <span class="report-stock">LG이노텍</span>
     <span class="report-firm">미래에셋증권</span>
   </div>
-  <div class="report-title">기판으로 다시 핀다</div>
+  <div class="report-title">LG이노텍 - 기판으로 다시 핀다</div>
   <div class="report-points">
-    <div class="report-point">· 기존 사업 외에 고부가 기판 사업 확대를 통해 새로운 성장 동력을 확보.</div>
-    <div class="report-point">· AI 및 전장 부품 수요 증가에 따른 기판 사업의 실적 개선과 밸류에이션 재평가 기대.</div>
+    <div class="report-point">· AI 반도체 시장 성장에 따른 FC-BGA 기판 수요 증가로 LG이노텍의 기판 사업이 고성장할 전망입니다.</div>
+    <div class="report-point">· 카메라 모듈 사업의 안정적인 실적과 함께 기판 사업이 새로운 성장 동력으로 부각되고 있습니다.</div>
   </div>
-</div></a><a href="https://finance.naver.com/research/company_read.naver?nid=93499&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
+</div></a><a href="https://finance.naver.com/research/company_read.naver?nid=93503&page=1" target="_blank" style="text-decoration:none;display:block"><div class="report-card">
   <div class="report-header">
-    <span class="report-stock">HD현대일렉트릭</span>
-    <span class="report-firm">유안타증권</span>
+    <span class="report-stock">에치에프알</span>
+    <span class="report-firm">하나증권</span>
   </div>
-  <div class="report-title">초고압 강자, 밸류 부담은 낮아졌다</div>
+  <div class="report-title">에치에프알 - 우리가 AI RAN 대표주입니다</div>
   <div class="report-points">
-    <div class="report-point">· 초고압 변압기 시장의 강자로, 전력 인프라 투자 확대에 따른 수혜가 지속될 전망.</div>
-    <div class="report-point">· 견조한 실적 성장에도 불구하고 밸류에이션 부담이 낮아져 투자 매력이 부각됨.</div>
+    <div class="report-point">· AI 시대에 필수적인 AI RAN(Radio Access Network) 기술을 선도하며 통신 인프라 시장의 핵심 기업으로 부상하고 있습니다.</div>
+    <div class="report-point">· 글로벌 통신사들의 AI RAN 투자 확대에 따라 에치에프알의 수혜가 예상됩니다.</div>
   </div>
 </div></a></div>
 
@@ -593,40 +641,40 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">국내 주식 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606119450i" target="_blank">인플레 꼭지? 무시된 호재…스페이스X 태풍 "상장 후 나흘 기다려야" [김현석의 월스트리트나우]</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061112576" target="_blank">"오늘은 삼전닉스보다 손흥민"…월드컵 특수에 불티난 주식 [종목+]</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606109213i" target="_blank">불황에도 '큰손' 지갑 활짝…백화점 주가에 불붙은 이유</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061114551" target="_blank">금감원 증권신고서 수정요구…올 '역대 최다' 건수 찍을 듯</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026061195616" target="_blank">트럼프 "이란 더 강하게 타격"…나스닥 2% 급락 [뉴욕증시 브리핑]</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061114161" target="_blank">레버리지 ETF發 '극한 변동장'…공포지수 사상 최고치 찍었다</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606109194i" target="_blank">커버드콜 수익률 가른 '옵션매도 비중'…일반 투자자는 알기 어렵다</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061114171" target="_blank">당국 "회전율 과도"…2배 ETF 예의주시</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026061093431" target="_blank">한화솔루션 유상증자…'3수' 끝에 심사 통과</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061114181" target="_blank">"그래도 산다"는 불개미들…레버리지 교육 수료자 90만명 육박</a></div>
   
   
-  <div class="news-meta">한국경제 · 6월 10일</div>
+  <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026061087826" target="_blank">사흘 연속 사이드카…극단적인 널뛰기에 코스피 '변동성 쇼크' [분석+]</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202606110807i" target="_blank">삼전·생명 다 가졌네…'반도체 랠리' 숨은 수혜주 뭐길래</a></div>
   
   
-  <div class="news-meta">한국경제 · 6월 10일</div>
+  <div class="news-meta">한국경제 · 6월 11일</div>
 </div>
   </div>
 
@@ -640,8 +688,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="us-fg-big">😨</div>
   <div class="us-fg-right">
     <div class="us-fg-label" style="color:#60a5fa">미국 공포/탐욕 지수</div>
-    <div class="us-fg-score" style="color:#60a5fa">34 <span style="font-size:16px">공포</span></div>
-    <div class="us-fg-desc" style="color:#60a5fa">VIX 22.2 &nbsp;·&nbsp; S&amp;P RSI 37 &nbsp;·&nbsp; 나스닥 모멘텀 -1.98%</div>
+    <div class="us-fg-score" style="color:#60a5fa">35 <span style="font-size:16px">공포</span></div>
+    <div class="us-fg-desc" style="color:#60a5fa">VIX 20.9 &nbsp;·&nbsp; S&amp;P RSI 37 &nbsp;·&nbsp; 나스닥 모멘텀 -1.98%</div>
   </div>
 </div>
   </div>
@@ -697,12 +745,12 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
           <span style="font-size:14px">😰</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">22.22</span>
-          <span class="us-pct-box dn">+11.83%</span>
+          <span class="us-val">20.85</span>
+          <span class="us-pct-box up">-6.17%</span>
         </div>
         <div class="rsi-wrap">
-          <div class="rsi-head"><span>RSI</span><span>63</span></div>
-          <div class="rsi-bg"><div class="rsi-fill" style="width:63%"></div></div>
+          <div class="rsi-head"><span>RSI</span><span>57</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:57%"></div></div>
         </div>
       </div>
     </div>
@@ -715,30 +763,42 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <span class="mkt-sec-title">시장 요약</span>
         <span class="mkt-sec-num">01</span>
       </div>
-      <div class="hashtag-row"><span class="hashtag-pill">#기술주급락</span><span class="hashtag-pill">#VIX급등</span><span class="hashtag-pill">#에너지강세</span><span class="hashtag-pill">#필수소비재선방</span><span class="hashtag-pill">#방어주부각</span></div>
+      <div class="hashtag-row"><span class="hashtag-pill">#기술주하락</span><span class="hashtag-pill">#에너지강세</span><span class="hashtag-pill">#방어주선방</span><span class="hashtag-pill">#VIX하락</span><span class="hashtag-pill">#안전자산선호</span></div>
       <div class="highlight-list"><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">기술주 대폭 하락</div>
-    <div class="highlight-desc">S&P500, 나스닥 등 주요 지수 모두 하락 주도</div>
-  </div>
-</div><div class="highlight-item">
-  <div class="highlight-dot">·</div>
-  <div>
-    <div class="highlight-title">VIX 공포지수 급등</div>
-    <div class="highlight-desc">시장 불확실성 증폭, 투자 심리 위축 반영</div>
+    <div class="highlight-title">기술주 전반적 하락</div>
+    <div class="highlight-desc">S&P500, 나스닥, 다우존스 모두 1% 이상 하락</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
     <div class="highlight-title">에너지/필수소비재 강세</div>
-    <div class="highlight-desc">경기 방어적 섹터로 자금 유입, 시장 위험 회피</div>
+    <div class="highlight-desc">경기 방어 섹터와 에너지 섹터가 시장 약세 속 상승</div>
+  </div>
+</div><div class="highlight-item">
+  <div class="highlight-dot">·</div>
+  <div>
+    <div class="highlight-title">매그니피센트7 부진</div>
+    <div class="highlight-desc">애플 제외 대부분 종목 하락, 시장 하방 압력 가중</div>
+  </div>
+</div><div class="highlight-item">
+  <div class="highlight-dot">·</div>
+  <div>
+    <div class="highlight-title">VIX 공포지수 하락</div>
+    <div class="highlight-desc">주요 지수 하락에도 VIX는 안정적인 모습</div>
+  </div>
+</div><div class="highlight-item">
+  <div class="highlight-dot">·</div>
+  <div>
+    <div class="highlight-title">AI 스파이 활동 강화</div>
+    <div class="highlight-desc">베이징의 AI 스파이 활동 강화 소식, 기술주에 부담</div>
   </div>
 </div></div>
-      <div class="story-text">오늘 미국 주식시장은 주요 기술주 중심의 매도세가 두드러지며 전반적인 하락세를 기록했습니다. S&P500, 나스닥, 다우존스 모두 1%대 하락률을 보였으며, 특히 기술주 비중이 높은 나스닥의 낙폭이 가장 컸습니다. 이는 시장의 위험 회피 심리가 고조되었음을 시사하며, VIX 공포지수가 11.83% 급등한 것이 이를 뒷받침합니다. 전반적인 시장 불안정성이 증폭된 하루였습니다.</div>
+      <div class="story-text">오늘 미국 주식시장은 주요 지수가 모두 1% 이상 하락하며 전반적인 약세를 보였습니다. 특히 기술주 중심의 나스닥 지수가 가장 큰 폭으로 하락하며 시장의 하방 압력을 주도했습니다. 이는 베이징의 AI 스파이 활동 강화 소식과 같은 지정학적 리스크가 기술주 투자 심리에 부정적인 영향을 미친 것으로 풀이됩니다. 특이하게도 주요 지수가 하락했음에도 VIX 공포지수는 6% 이상 하락하여 시장의 패닉 매도는 나타나지 않았습니다.</div>
       <div class="story-block" style="margin-top:10px">
       <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
-      <div class="story-text">향후 시장은 지정학적 긴장과 AI 기술 경쟁 심화 등 거시적 요인에 민감하게 반응할 것으로 예상됩니다. 다음 주 발표될 기업 실적과 경제 지표를 통해 시장의 방향성을 가늠해 볼 필요가 있습니다.</div>
+      <div class="story-text">투자자들은 베이징의 AI 스파이 활동 강화와 같은 지정학적 리스크가 기술주에 미치는 영향을 지속적으로 주시해야 합니다. 또한, 시장 약세 속에서 방어 섹터와 원자재 시장의 흐름을 통해 투자 기회를 모색하는 전략이 유효해 보입니다.</div>
     </div>
     </div>
   </div>
@@ -824,7 +884,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="asset-sub">은</div>
   <div class="asset-pct dn">-2.29%</div>
 </div></div>
-      <div class="story-text" style="margin-top:12px">기술주 섹터가 2.29% 하락하며 시장의 하락을 주도한 반면, 에너지(+1.50%)와 필수소비재(+1.65%) 섹터는 상승하며 상대적으로 강세를 보였습니다. 이는 투자자들이 불확실한 시장 환경에서 경기 방어적인 섹터로 자금을 이동시키는 순환매가 발생했음을 의미합니다. 채권 시장에서는 단기채가 보합세를 유지한 반면 장기채와 중기채는 소폭 하락했으며, 원자재 시장에서는 금과 은이 하락하고 원유는 상승하며 인플레이션 우려와 경기 둔화 가능성이 복합적으로 작용하는 모습을 보였습니다.</div>
+      <div class="story-text" style="margin-top:12px">시장 전반의 하락세 속에서 에너지와 필수소비재 섹터가 각각 1.50%, 1.65% 상승하며 돋보였습니다. 이는 경기 둔화 우려 속에서 방어적인 성격의 섹터로 자금이 유입된 것으로 보이며, 유가 상승(USO +2.28%)이 에너지 섹터의 강세를 뒷받침했습니다. 반면 IT/기술, 산업재, 소재, 경기소비재 섹터는 큰 폭으로 하락하며 시장의 약세를 주도했습니다. 채권 시장에서는 장기채(TLT)와 중기채(IEF)가 소폭 하락했고, 단기채(SHY)는 보합세를 보이며 안전자산 선호 심리가 채권 시장에는 제한적으로 반영되었습니다. 금(GLD)과 은(SLV)은 큰 폭으로 하락하며 안전자산으로서의 매력이 감소했습니다.</div>
     </div>
   </div>
 
@@ -901,38 +961,38 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="asset-group-label">📋 최근 실적 리뷰</div>
       <div class="earn-list"><div class="earn-item">
+  <div class="ticker-badge">OR</div>
+  <div class="earn-body">
+    <div class="earn-head">오라클(ORCL) <span class="earn-period">2024년 3분기 실적 분석</span></div>
+    <div class="earn-summary">클라우드 매출 성장세, AI 수요 증가에 따른 전망 상향</div>
+  </div>
+</div><div class="earn-item">
+  <div class="ticker-badge">IN</div>
+  <div class="earn-body">
+    <div class="earn-head">인텔(INTC) <span class="earn-period">2024년 1분기 실적 분석</span></div>
+    <div class="earn-summary">PC 수요 회복 및 파운드리 사업 기대감, 가이던스 상향</div>
+  </div>
+</div><div class="earn-item is-extra">
+  <div class="ticker-badge">AM</div>
+  <div class="earn-body">
+    <div class="earn-head">어플라이드 머티리얼즈(AMAT) <span class="earn-period">2024년 2분기 실적 분석</span></div>
+    <div class="earn-summary">반도체 장비 수요 견조, AI 칩 생산 증가에 따른 수혜</div>
+  </div>
+</div><div class="earn-item is-extra">
+  <div class="ticker-badge">AA</div>
+  <div class="earn-body">
+    <div class="earn-head">알코아(AA) <span class="earn-period">2024년 1분기 실적 분석</span></div>
+    <div class="earn-summary">알루미늄 가격 상승 및 비용 절감 노력으로 이익 개선</div>
+  </div>
+</div><div class="earn-item is-extra">
   <div class="ticker-badge">SM</div>
   <div class="earn-body">
     <div class="earn-head">슈퍼 마이크로 컴퓨터(SMCI) <span class="earn-period">2024년 3분기 실적 분석</span></div>
-    <div class="earn-summary">예상치 상회하는 매출 및 EPS, 가이던스 상향</div>
-  </div>
-</div><div class="earn-item">
-  <div class="ticker-badge">CB</div>
-  <div class="earn-body">
-    <div class="earn-head">크래커 배럴(CBRL) <span class="earn-period">2024년 2분기 실적 분석</span></div>
-    <div class="earn-summary">예상치 하회하는 실적 발표, 가이던스 하향</div>
-  </div>
-</div><div class="earn-item is-extra">
-  <div class="ticker-badge">GS</div>
-  <div class="earn-body">
-    <div class="earn-head">GSK(GSK) <span class="earn-period">2024년 1분기 실적 분석</span></div>
-    <div class="earn-summary">견조한 매출 성장, 백신 부문 강세</div>
-  </div>
-</div><div class="earn-item is-extra">
-  <div class="ticker-badge">NK</div>
-  <div class="earn-body">
-    <div class="earn-head">나이키(NKE) <span class="earn-period">2024년 3분기 실적 분석</span></div>
-    <div class="earn-summary">예상치 부합하는 실적, 중국 시장 회복세</div>
-  </div>
-</div><div class="earn-item is-extra">
-  <div class="ticker-badge">SJ</div>
-  <div class="earn-body">
-    <div class="earn-head">J.M. 스머커(SJM) <span class="earn-period">2024년 4분기 실적 분석</span></div>
-    <div class="earn-summary">예상치 상회하는 매출, 마진 개선</div>
+    <div class="earn-summary">AI 서버 수요 폭발적 증가, 매출 및 이익 고성장 지속</div>
   </div>
 </div></div>
       <div class="earn-more-btn" data-more-label="▼ 3개 더 보기" data-less-label="▲ 접기" onclick="toggleEarnMore(this)">▼ 3개 더 보기</div>
-      <div class="story-text">매그니피센트 7 종목들은 대부분 하락세를 면치 못했습니다. 특히 ARM(-5.37%), 브로드컴(-5.12%), 테슬라(-3.80%), 엔비디아(-3.73%) 등 기술 성장주들의 하락폭이 컸습니다. 반면 애플(+0.35%)과 팔로알토(+1.04%)는 소폭 상승하며 선방했고, 월마트(+1.44%)와 같은 필수소비재 관련 종목은 강세를 보였습니다. 이는 기술주 전반에 대한 차익 실현 및 위험 회피 심리가 작용한 결과로 보입니다.</div>
+      <div class="story-text">매그니피센트 7 종목들은 애플(▲0.35%)을 제외하고 모두 하락하며 시장의 약세를 이끌었습니다. 특히 테슬라(▼3.80%), 엔비디아(▼3.73%), ARM(▼5.37%) 등 성장주와 반도체 관련 종목들의 하락 폭이 두드러져 기술주 전반의 투자 심리가 위축되었음을 보여줍니다. 브로드컴(▼5.12%) 역시 큰 폭으로 하락하며 반도체 섹터의 부진을 나타냈습니다. 반면 월마트(▲1.44%)는 필수소비재 섹터의 강세에 힘입어 상승했고, 팔로알토(▲1.04%)는 사이버 보안 관련 이슈 속에서 상승하며 개별 종목의 강세를 보였습니다.</div>
     </div>
   </div>
 
@@ -969,7 +1029,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <span class="tech-sig" style="background:rgba(255,64,96,.15);color:#ff4060">데드크로스</span>
 </div>
 <div class="tech-row">
-  <div class="tech-name">볼린저밴드 (VIX 22.2)</div>
+  <div class="tech-name">볼린저밴드 (VIX 20.9)</div>
   <span class="tech-sig" style="background:rgba(163,163,163,.12);color:#a3a3a3">밴드 내 정상</span>
 </div>
     </div>
@@ -985,18 +1045,18 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="dn-txt">100.03</span></div>
-        <div class="macro-chg"><span class="dn-txt">▲ 0.12 (0.12%)</span></div>
+        <div class="macro-val"><span class="dn-txt">100.06</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.11 (0.11%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="dn-txt">$4,080</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $180.10 (4.23%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$4,103</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $5.20 (0.13%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="dn-txt">$61,530</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ 113.30 (0.18%)</span></div>
+        <div class="macro-val"><span class="up-txt">$63,125</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ 1675.71 (2.73%)</span></div>
       </div>
     </div>
   </div>
@@ -1005,45 +1065,45 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">해외 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/citigroup-shares-outperform-down-market-after-trump-endorsement.html" target="_blank">트럼프 지지 후 씨티그룹 주가 하락장에서도 선방</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/11/stocks-making-the-biggest-moves-premarket-oracle-intel-applied-materials-alcoa-and-more.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: 오라클, 인텔, 어플라이드 머티리얼즈, 알코아 외</a></div>
+  <div class="news-orig">Stocks making the biggest moves premarket: Oracle, Intel, Applied Materials, Alc…</div>
+  <div class="news-summary">These are the stocks posting the largest moves in the premarket.</div>
+  <div class="news-meta">CNBC Markets · 6월 11일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/citigroup-shares-outperform-down-market-after-trump-endorsement.html" target="_blank">트럼프 지지 후 씨티그룹 주식, 하락장 속 선방</a></div>
   <div class="news-orig">Citigroup shares outperform down market after Trump endorsement</div>
   <div class="news-summary">Jane Fraser-led Citi fell 1%, less than the rest of the market and some other ma…</div>
   <div class="news-meta">CNBC Markets · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/stocks-making-the-biggest-moves-midday-smci-cbrl-hood-fdxf.html" target="_blank">정오 가장 큰 폭으로 움직이는 주식: 슈퍼 마이크로, 크래커 배럴, 로빈후드 마켓, 트럭 운송업체 외</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/stocks-making-the-biggest-moves-midday-smci-cbrl-hood-fdxf.html" target="_blank">장중 가장 큰 움직임을 보이는 주식: 슈퍼 마이크로, 크래커 배럴, 로빈후드 마켓, 트럭 운송업체 외</a></div>
   <div class="news-orig">Stocks making the biggest moves midday: Super Micro, Cracker Barrel, Robinhood M…</div>
   <div class="news-summary">These are some of the stocks posting the largest moves midday.</div>
   <div class="news-meta">CNBC Markets · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/regulators-proposed-prediction-markets-rules-ban-trading-on-terrorism-assassinations.html" target="_blank">규제 당국 제안 예측 시장 규정, 테러 및 암살 관련 거래 금지</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/regulators-proposed-prediction-markets-rules-ban-trading-on-terrorism-assassinations.html" target="_blank">규제 당국 제안 예측 시장 규칙, 테러 및 암살 관련 거래 금지</a></div>
   <div class="news-orig">Regulators' proposed prediction markets rules ban trading on terrorism, assassin…</div>
   <div class="news-summary">The proposed rules from the commission will now face a public comment period.</div>
   <div class="news-meta">CNBC Markets · 6월 10일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/stocks-making-the-biggest-moves-premarket-smci-crbl-nke-cava.html" target="_blank">개장 전 가장 큰 폭으로 움직이는 주식: 슈퍼 마이크로 컴퓨터, 크래커 배럴, 나이키 외</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/stocks-making-the-biggest-moves-premarket-smci-crbl-nke-cava.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: 슈퍼 마이크로 컴퓨터, 크래커 배럴, 나이키 외</a></div>
   <div class="news-orig">Stocks making the biggest moves premarket: Super Micro Computer, Cracker Barrel,…</div>
   <div class="news-summary">These are the stocks posting the largest moves in the premarket.</div>
   <div class="news-meta">CNBC Markets · 6월 10일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/crowdstrike-warns-of-increasing-chinese-ai-cyberattacks-on-us-tech.html" target="_blank">베이징, AI 스파이 활동 강화해 미국 기술 및 사이버 보안 따라잡으려 해</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/10/crowdstrike-warns-of-increasing-chinese-ai-cyberattacks-on-us-tech.html" target="_blank">베이징, 기술 및 사이버 보안 분야에서 미국을 따라잡기 위해 AI 스파이 활동 강화 중</a></div>
   <div class="news-orig">Beijing escalating AI espionage to catch up with the U.S. on tech, cybersecurity…</div>
   <div class="news-summary">U.S. cybersecurity giant CrowdStrike said China-based entities made over half of…</div>
   <div class="news-meta">CNBC Markets · 6월 10일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/09/stocks-making-the-biggest-moves-premarket-gsk-nuvalent-jm-smucker-sailpoint-and-more.html" target="_blank">개장 전 가장 큰 폭으로 움직이는 주식: GSK, 누발렌트, J.M. 스머커, 세일포인트 외</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/06/09/stocks-making-the-biggest-moves-premarket-gsk-nuvalent-jm-smucker-sailpoint-and-more.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: GSK, 누발렌트, J.M. 스머커, 세일포인트 외</a></div>
   <div class="news-orig">Stocks making the biggest moves premarket: GSK, Nuvalent, J.M. Smucker, SailPoin…</div>
   <div class="news-summary">These are the stocks posting the largest moves in early trading.</div>
-  <div class="news-meta">CNBC Markets · 6월 9일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/06/09/electric-vehicle-giant-byd-predicts-80percent-of-china-car-sales-will-soon-be-electric.html" target="_blank">전기차 대기업 BYD, 중국 자동차 판매의 80%가 곧 전기차가 될 것이라고 예측</a></div>
-  <div class="news-orig">Electric vehicle giant BYD predicts 80% of China car sales will soon be electric</div>
-  <div class="news-summary">BYD expects China's competitive electric vehicle market to continue growing, eve…</div>
   <div class="news-meta">CNBC Markets · 6월 9일</div>
 </div>
   </div>
@@ -1139,43 +1199,43 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">핫이슈 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606119780g" target="_blank">K 관광 랜드마크 거듭난 신세계 본점…외국인 결제액 '껑충'</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202606108588g" target="_blank">"요즘 누가 문구점 가요" 했는데…2030 '우르르' 대반전 [박수림의 요즘 여기]</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606119691g" target="_blank">대상, 'K-푸드 스마트제조 얼라이언스' 참여…AI 기반 제조혁신 추진</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202606111666i" target="_blank">배달 라이더 최저임금 끝내 '부결'…노동계 "강경 투쟁 불사"</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606119656g" target="_blank">'오징어게임' 다음은 유재석…관광공사, 광고 캠페인 '코리아 캠프' 전개</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061115551" target="_blank">고액 연봉자 '마통' 한도 줄어든다</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606119747i" target="_blank">미 샌프란시스코, 고액 CEO 기업 증세안 부결</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061113157" target="_blank">쿠팡 개인정보 유출에 과징금 6246억원…'역대 최대' [퇴근길 30초 경제]</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606119726i" target="_blank">칼시, 내부자거래 차단 위해 직장 공개 의무화</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061115321" target="_blank">이달 1~10일 수출 286억弗 사상최대</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606119608i" target="_blank">美 GE 어플라이언스 CEO "美 공장 지으라면서 설비 수입에 관세"</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026061115411" target="_blank">무조건 내국세 20% 떼가는 교육교부금 수술대 오른다</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202606119645g" target="_blank">"사탕 물면 신곡이 쏙"…GS25, 보이넥스트도어 정규 앨범 협업</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202606111314i" target="_blank">쿠팡이츠와 손잡은 오프뷰티, 오늘드림·뷰티컬리에 '도전장' [장서우의 하입:hype]</a></div>
   
   
   <div class="news-meta">한국경제 · 6월 11일</div>
@@ -1220,23 +1280,23 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 <div id="tab-etf" class="tab-panel">
   <div class="section">
     <div class="section-label">📊 주요 ETF</div>
-    <div class="stock-row"><div class="stock-name">KODEX 200</div><div class="stock-right"><span class="dn-txt">▼4.58%</span><span class="stock-amt">118,130</span></div></div><div class="stock-row"><div class="stock-name">KODEX 레버리지</div><div class="stock-right"><span class="dn-txt">▼9.07%</span><span class="stock-amt">151,950</span></div></div><div class="stock-row"><div class="stock-name">KODEX 인버스</div><div class="stock-right"><span class="up-txt">▲4.84%</span><span class="stock-amt">1,083</span></div></div><div class="stock-row"><div class="stock-name">KODEX 코스닥150</div><div class="stock-right"><span class="dn-txt">▼3.47%</span><span class="stock-amt">15,985</span></div></div><div class="stock-row"><div class="stock-name">TIGER 미국S&P500</div><div class="stock-right"><span class="dn-txt">▼1.70%</span><span class="stock-amt">27,400</span></div></div>
+    <div class="stock-row"><div class="stock-name">KODEX 200</div><div class="stock-right"><span class="up-txt">▲0.04%</span><span class="stock-amt">123,850</span></div></div><div class="stock-row"><div class="stock-name">KODEX 레버리지</div><div class="stock-right"><span class="dn-txt">▼0.22%</span><span class="stock-amt">166,730</span></div></div><div class="stock-row"><div class="stock-name">KODEX 인버스</div><div class="stock-right"><span class="dn-txt">▼0.19%</span><span class="stock-amt">1,031</span></div></div><div class="stock-row"><div class="stock-name">KODEX 코스닥150</div><div class="stock-right"><span class="up-txt">▲6.49%</span><span class="stock-amt">17,635</span></div></div><div class="stock-row"><div class="stock-name">TIGER 미국S&P500</div><div class="stock-right"><span class="dn-txt">▼0.65%</span><span class="stock-amt">27,695</span></div></div>
   </div>
   <div class="section">
     <div class="section-label">🎯 테마별 ETF</div>
     <div class="stock-story-wrap" style="flex-wrap:wrap;gap:14px;">
-      <div class="stock-list-col"><div class="ss-sub-label">🔬 반도체</div><div class="stock-row"><div class="stock-name">KODEX 반도체</div><div class="stock-right"><span class="dn-txt">▼3.81%</span><span class="stock-amt">145,720</span></div></div><div class="stock-row"><div class="stock-name">TIGER 반도체</div><div class="stock-right"><span class="dn-txt">▼3.75%</span><span class="stock-amt">152,485</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🔋 2차전지</div><div class="stock-row"><div class="stock-name">KODEX 2차전지산업</div><div class="stock-right"><span class="dn-txt">▼4.84%</span><span class="stock-amt">15,545</span></div></div><div class="stock-row"><div class="stock-name">TIGER 2차전지테마</div><div class="stock-right"><span class="dn-txt">▼5.45%</span><span class="stock-amt">19,260</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🤖 AI·로봇</div><div class="stock-row"><div class="stock-name">KODEX AI&로보틱스</div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div><div class="stock-row"><div class="stock-name">TIGER AI반도체</div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🇺🇸 미국</div><div class="stock-row"><div class="stock-name">TIGER 미국S&P500</div><div class="stock-right"><span class="dn-txt">▼1.70%</span><span class="stock-amt">27,400</span></div></div><div class="stock-row"><div class="stock-name">KODEX 미국나스닥100</div><div class="stock-right"><span class="dn-txt">▼1.67%</span><span class="stock-amt">24,980</span></div></div></div>
+      <div class="stock-list-col"><div class="ss-sub-label">🔬 반도체</div><div class="stock-row"><div class="stock-name">KODEX 반도체</div><div class="stock-right"><span class="up-txt">▲4.29%</span><span class="stock-amt">158,000</span></div></div><div class="stock-row"><div class="stock-name">TIGER 반도체</div><div class="stock-right"><span class="up-txt">▲4.87%</span><span class="stock-amt">166,140</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🔋 2차전지</div><div class="stock-row"><div class="stock-name">KODEX 2차전지산업</div><div class="stock-right"><span class="up-txt">▲0.24%</span><span class="stock-amt">16,375</span></div></div><div class="stock-row"><div class="stock-name">TIGER 2차전지테마</div><div class="stock-right"><span class="dn-txt">▼0.61%</span><span class="stock-amt">20,245</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🤖 AI·로봇</div><div class="stock-row"><div class="stock-name">KODEX AI&로보틱스</div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div><div class="stock-row"><div class="stock-name">TIGER AI반도체</div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🇺🇸 미국</div><div class="stock-row"><div class="stock-name">TIGER 미국S&P500</div><div class="stock-right"><span class="dn-txt">▼0.65%</span><span class="stock-amt">27,695</span></div></div><div class="stock-row"><div class="stock-name">KODEX 미국나스닥100</div><div class="stock-right"><span class="dn-txt">▼0.63%</span><span class="stock-amt">25,245</span></div></div></div>
     </div>
   </div>
   <div class="section">
     <div class="stock-story-wrap">
       <div class="stock-list-col">
         <div class="ss-sub-label">💰 거래대금 상위</div>
-        <div class="stock-row"><div class="stock-name">TIGER 12월자동연장금</div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">1억</span></div></div><div class="stock-row"><div class="stock-name">SOL 26-12 회사채(</div><div class="stock-right"><span class="up-txt">▲0.06%</span><span class="stock-amt">3억</span></div></div><div class="stock-row"><div class="stock-name">SOL 중단기회사채(A-이</div><div class="stock-right"><span class="up-txt">▲0.04%</span><span class="stock-amt">12억</span></div></div>
+        <div class="stock-row"><div class="stock-name">KB KIS CD금리투자 </div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">27억</span></div></div><div class="stock-row"><div class="stock-name">ACE 중장기국공채액티브</div><div class="stock-right"><span class="up-txt">▲0.05%</span><span class="stock-amt">1억</span></div></div><div class="stock-row"><div class="stock-name">KB제29호스팩</div><div class="stock-right"><span class="dn-txt">▼0.49%</span><span class="stock-amt">0.1억</span></div></div><div class="stock-row"><div class="stock-name">KODEX MSCI KOR</div><div class="stock-right"><span class="dn-txt">▼2.12%</span><span class="stock-amt">1억</span></div></div><div class="stock-row"><div class="stock-name">HANARO 27-06 회</div><div class="stock-right"><span class="up-txt">▲0.05%</span><span class="stock-amt">0.1억</span></div></div>
       </div>
       <div class="stock-story-col">
         <div class="ss-sub-label">⭐ 인기 ETF</div>
-        <div class="stock-row"><div class="stock-name">KODEX 200</div><div class="stock-right"><span class="dn-txt">▼4.58%</span><span class="stock-amt">118,130</span></div></div><div class="stock-row"><div class="stock-name">KODEX 레버리지</div><div class="stock-right"><span class="dn-txt">▼9.07%</span><span class="stock-amt">151,950</span></div></div><div class="stock-row"><div class="stock-name">KODEX 인버스</div><div class="stock-right"><span class="up-txt">▲4.84%</span><span class="stock-amt">1,083</span></div></div><div class="stock-row"><div class="stock-name">TIGER 미국S&P500</div><div class="stock-right"><span class="dn-txt">▼1.70%</span><span class="stock-amt">27,400</span></div></div><div class="stock-row"><div class="stock-name">KODEX 2차전지산업</div><div class="stock-right"><span class="dn-txt">▼4.84%</span><span class="stock-amt">15,545</span></div></div><div class="stock-row"><div class="stock-name">KODEX 반도체</div><div class="stock-right"><span class="dn-txt">▼3.81%</span><span class="stock-amt">145,720</span></div></div><div class="stock-row"><div class="stock-name">KODEX 골드선물(H)</div><div class="stock-right"><span class="dn-txt">▼4.16%</span><span class="stock-amt">22,805</span></div></div><div class="stock-row"><div class="stock-name">KODEX 미국나스닥100</div><div class="stock-right"><span class="dn-txt">▼1.67%</span><span class="stock-amt">24,980</span></div></div>
+        <div class="stock-row"><div class="stock-name">KODEX 200</div><div class="stock-right"><span class="up-txt">▲0.04%</span><span class="stock-amt">123,850</span></div></div><div class="stock-row"><div class="stock-name">KODEX 레버리지</div><div class="stock-right"><span class="dn-txt">▼0.22%</span><span class="stock-amt">166,730</span></div></div><div class="stock-row"><div class="stock-name">KODEX 인버스</div><div class="stock-right"><span class="dn-txt">▼0.19%</span><span class="stock-amt">1,031</span></div></div><div class="stock-row"><div class="stock-name">TIGER 미국S&P500</div><div class="stock-right"><span class="dn-txt">▼0.65%</span><span class="stock-amt">27,695</span></div></div><div class="stock-row"><div class="stock-name">KODEX 2차전지산업</div><div class="stock-right"><span class="up-txt">▲0.24%</span><span class="stock-amt">16,375</span></div></div><div class="stock-row"><div class="stock-name">KODEX 반도체</div><div class="stock-right"><span class="up-txt">▲4.29%</span><span class="stock-amt">158,000</span></div></div><div class="stock-row"><div class="stock-name">KODEX 골드선물(H)</div><div class="stock-right"><span class="dn-txt">▼2.94%</span><span class="stock-amt">23,095</span></div></div><div class="stock-row"><div class="stock-name">KODEX 미국나스닥100</div><div class="stock-right"><span class="dn-txt">▼0.63%</span><span class="stock-amt">25,245</span></div></div>
       </div>
     </div>
   </div>
@@ -1257,13 +1317,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div>
 
 <div class="footer-note">
-  2026년 6월 11일 목요일 · 09:10 생성<br>
+  2026년 6월 11일 목요일 · 20:52 생성<br>
   부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
 var MACRO_META={"kospi": {"name": "코스피", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "", "dec": 2}, "kosdaq": {"name": "코스닥", "color": "#3b82f6", "rgb": "59,130,246", "pre": "", "suf": "", "dec": 2}, "sp500": {"name": "S&P 500", "color": "#00e896", "rgb": "0,232,150", "pre": "", "suf": "", "dec": 2}, "nasdaq": {"name": "나스닥 100", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "", "dec": 2}, "dow": {"name": "다우존스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "vix": {"name": "VIX", "color": "#ffc940", "rgb": "255,201,64", "pre": "", "suf": "", "dec": 2}, "usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
-var MACRO_HIST={"kospi": [8476.1504, 8788.3799, 8801.4902, 8639.4102, 8160.5898, 7484.4102, 8096.9302], "kosdaq": [1074.8, 1050.03, 1026.03, 1049.73, 1002.44, 911.39, 967.81], "sp500": [7609.7798, 7553.6802, 7584.3101, 7383.7402, 7405.73, 7386.6499, 7266.9902], "nasdaq": [30660.5996, 30571.2402, 30407.8105, 28957.5996, 29414.2598, 29084.5, 28508.0273], "dow": [51307.7891, 50687.0703, 51561.9297, 50866.7812, 50786.0117, 50872.1094, 49918.7812], "vix": [15.77, 16.06, 15.4, 21.51, 18.92, 19.87, 22.22], "usdkrw": [1511.27, 1516.6, 1530.11, 1533.0699, 1554.48, 1528.88, 1525.8101], "brent": [96.0, 97.81, 95.03, 93.09, 94.25, 91.45, 94.97], "wti": [93.76, 96.02, 93.04, 90.54, 91.3, 88.2, 92.34], "tnx": [4.455, 4.491, 4.477, 4.536, 4.552, 4.528, 4.542], "gold": [4489.1001, 4436.7002, 4475.7998, 4337.1001, 4335.8999, 4260.0, 4079.8999], "dxy": [99.22, 99.53, 99.41, 100.07, 100.05, 99.91, 100.031], "btc": [63801.5742, 60922.668, 60867.4141, 63239.5195, 63090.5898, 61643.7812, 61530.4805]};
+var MACRO_HIST={"kospi": [8801.4902, 8639.4102, 8160.5898, 7484.4102, 8096.9302, 7730.8198, 7763.9502], "kosdaq": [1026.03, 1049.73, 1002.44, 911.39, 967.81, 951.63, 996.93], "sp500": [7609.7798, 7553.6802, 7584.3101, 7383.7402, 7405.73, 7386.6499, 7266.9902], "nasdaq": [30660.5996, 30571.2402, 30407.8105, 28957.5996, 29414.2598, 29084.5, 28508.0293], "dow": [51307.7891, 50687.0703, 51561.9297, 50866.7812, 50786.0117, 50872.1094, 49918.7812], "vix": [16.06, 15.4, 21.51, 18.92, 19.87, 22.22, 20.85], "usdkrw": [1516.6, 1530.11, 1533.0699, 1554.48, 1528.88, 1525.8101, 1529.64], "brent": [97.81, 95.03, 93.09, 94.25, 91.45, 93.1, 91.91], "wti": [96.02, 93.04, 90.54, 91.3, 88.2, 90.03, 88.92], "tnx": [4.455, 4.491, 4.477, 4.536, 4.552, 4.528, 4.542], "gold": [4436.7002, 4475.7998, 4337.1001, 4335.8999, 4260.0, 4108.2002, 4103.0], "dxy": [99.53, 99.41, 100.07, 100.05, 99.91, 99.95, 100.059], "btc": [60922.668, 60867.4141, 63239.5195, 63090.5898, 61643.7812, 61449.2891, 63125.0]};
 var _mc=null;
 function showMacroChart(k){
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
@@ -1290,7 +1350,7 @@ function closeMacroChart(){
   setTimeout(function(){document.getElementById('macroOverlay').style.display='none';},280);
 }
 var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF'};
-var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 1643.23, "change": -3.3101, "change_pct": -0.2, "currency": "USD", "market_cap": "$243.3B", "ev": "$239.8B", "pe": 56.06, "forward_pe": 8.98, "pb": 17.65, "ps": 18.46, "peg": null, "ev_ebitda": 42.58, "eps": 29.31, "shares_out": "$148M", "float_shares": "$146M", "revenue": "$13.2B", "net_income": "$4.5B", "op_margin": 69.98, "profit_margin": 34.19, "gross_margin": 56.04, "roe": 39.3, "roa": 22.82, "roic": null, "rev_growth": 251.0, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 4.78, "quick_ratio": 3.43, "debt_equity": 1.5, "total_debt": "$207M", "total_cash": "$3.7B", "fcf": "$2.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 1861.0, "low52": 39.44, "target": 1751.32, "ret_1w": -10.28, "ret_1m": 6.18, "ret_3m": 150.71, "ret_6m": 628.8, "ret_ytd": 497.02, "ret_1y": 3829.29, "ret_3y": null, "ret_5y": null, "rsi": 58, "beta": null, "sma20_gap": 4.52, "sma50_gap": 32.23, "sma200_gap": 196.49, "atr": 142.79, "vol_weekly": 42.68, "vol_monthly": 98.74, "volume": 10234049, "avg_volume": 15545872, "rel_volume": 0.66, "exchange": "NMS", "inst_pct": null, "insider_pct": 1.12, "short_float": 9.71, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "스페이스X 열풍이 반도체 거래를 시험하다: 오늘의 차트", "link": "https://finance.yahoo.com/markets/article/spacex-fever-is-testing-the-chip-trade-chart-of-the-day-100000045.html", "publisher": "Yahoo Finance", "date": "", "title_orig": "SpaceX fever is testing the chip trade: Chart of the Day"}, {"title": "샌디스크 주식에 3만 달러를 투자했다면 오늘날 얼마를 가지고 있을까 (힌트: 백만장자가 되었을 것)", "link": "https://finance.yahoo.com/markets/stocks/articles/invested-30-000-sandisk-stock-204800593.html", "publisher": "Motley Fool", "date": "", "title_orig": "If You Invested $30,000 in Sandisk Stock at Its Spinoff, Here's How Much You'd Have Today (Hint: You'd Be a Millionaire)"}, {"title": "샌디스크 주가가 크게 올랐다가 오늘 하락한 이유", "link": "https://finance.yahoo.com/markets/stocks/articles/why-sandisk-stock-fell-today-204242062.html", "publisher": "Motley Fool", "date": "", "title_orig": "Why Sandisk Stock Fell Today After Being Up Big"}, {"title": "2026년까지 500% 상승: 6월 반등에도 불구하고 샌디스크 주식을 고수해야 할 한 가지 깊이 우려되는 이유", "link": "https://finance.yahoo.com/markets/stocks/articles/500-2026-1-deeply-concerning-192258211.html", "publisher": "24/7 Wall St.", "date": "", "title_orig": "Up 500% in 2026: 1 Deeply Concerning Reason to Stand Pat on SanDisk Stock Despite the June Rebound"}, {"title": "시장이 들떠 있다. 당신의 포트폴리오는 위험한가?", "link": "#", "publisher": "Barrons.com", "date": "", "title_orig": "The Market Is Giddy. Is Your Portfolio at Risk?"}]}];
+var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 1643.23, "change": -3.3101, "change_pct": -0.2, "currency": "USD", "market_cap": "$243.3B", "ev": "$239.8B", "pe": 56.18, "forward_pe": 8.98, "pb": 17.65, "ps": 18.46, "peg": null, "ev_ebitda": 42.58, "eps": 29.25, "shares_out": "$148M", "float_shares": "$146M", "revenue": "$13.2B", "net_income": "$4.5B", "op_margin": 69.98, "profit_margin": 34.19, "gross_margin": 56.04, "roe": 39.3, "roa": 22.82, "roic": null, "rev_growth": 251.0, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 4.78, "quick_ratio": 3.43, "debt_equity": 1.5, "total_debt": "$207M", "total_cash": "$3.7B", "fcf": "$2.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 1861.0, "low52": 39.44, "target": 1751.32, "ret_1w": -10.28, "ret_1m": 6.18, "ret_3m": 150.71, "ret_6m": 628.8, "ret_ytd": 497.02, "ret_1y": 3829.29, "ret_3y": null, "ret_5y": null, "rsi": 58, "beta": null, "sma20_gap": 4.52, "sma50_gap": 32.23, "sma200_gap": 196.49, "atr": 142.79, "vol_weekly": 42.68, "vol_monthly": 98.74, "volume": 10234049, "avg_volume": 15468411, "rel_volume": 0.66, "exchange": "NMS", "inst_pct": null, "insider_pct": 1.12, "short_float": 9.71, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "스페이스X, 오픈AI, 앤트로픽 IPO가 강세장을 꺾지 못할 이유", "link": "https://finance.yahoo.com/markets/article/why-the-spacex-openai-and-anthropic-ipos-wont-derail-the-bull-market-112903023.html", "publisher": "Yahoo Finance", "date": "", "title_orig": "Why the SpaceX, OpenAI, and Anthropic IPOs won't derail the bull market"}, {"title": "이란 불안 후 마이크론, 샌디스크, 웨스턴디지털, 씨게이트 반등: SK하이닉스, 2034년까지 웨이퍼 생산 능력 3배 증대", "link": "https://finance.yahoo.com/markets/stocks/articles/mu-sndk-wdc-stx-rebound-081801190.html", "publisher": "Stocktwits", "date": "", "title_orig": "MU, SNDK, WDC, STX Rebound After Iran Jitters: SK Hynix To Triple Wafer Capacity By 2034"}, {"title": "뱅크오브아메리카, 샌디스크(SNDK) 목표 주가 2,100달러로 상향 조정, 매수 등급 유지", "link": "https://finance.yahoo.com/markets/stocks/articles/bofa-raises-sandisk-sndk-price-011456059.html", "publisher": "Insider Monkey", "date": "", "title_orig": "BofA Raises SanDisk (SNDK) Price Target to $2,100, Keeps Buy Rating"}, {"title": "애널리스트들이 샌디스크(SNDK)에 대해 낙관적인 이유", "link": "https://finance.yahoo.com/markets/stocks/articles/analysts-bullish-sandisk-sndk-why-011311755.html", "publisher": "Insider Monkey", "date": "", "title_orig": "Analysts Bullish on Sandisk (SNDK), Here’s Why"}, {"title": "샌디스크 주식 분사 시 3만 달러를 투자했다면 오늘날 얼마를 가지고 있을까 (힌트: 백만장자가 되었을 것)", "link": "https://finance.yahoo.com/markets/stocks/articles/invested-30-000-sandisk-stock-204800593.html", "publisher": "Motley Fool", "date": "", "title_orig": "If You Invested $30,000 in Sandisk Stock at Its Spinoff, Here's How Much You'd Have Today (Hint: You'd Be a Millionaire)"}]}];
 function _fmt(v,dec,suf){if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}
 function _pctColor(v){
   if(v===null||v===undefined)return'<span style="color:var(--t3)">N/A</span>';
