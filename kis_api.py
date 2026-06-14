@@ -158,6 +158,7 @@ def get_volume_ranking(token, top_n=5):
         for item in d.get('output', [])[:top_n]:
             result.append({
                 'Name':        item.get('hts_kor_isnm', ''),
+                'Code':        item.get('mksc_shrn_iscd', ''),
                 'Close':       float(item.get('stck_prpr', 0) or 0),
                 'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
                 'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
@@ -207,6 +208,7 @@ def get_fluctuation_ranking(token, top_n=5):
                 continue
             result.append({
                 'Name':        item.get('hts_kor_isnm', ''),
+                'Code':        item.get('mksc_shrn_iscd', ''),
                 'Close':       float(item.get('stck_prpr', 0) or 0),
                 'ChagesRatio': pct,
                 'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
@@ -270,6 +272,7 @@ def get_decline_ranking(token, top_n=5):
                 continue
             result.append({
                 'Name':        item.get('hts_kor_isnm', ''),
+                'Code':        item.get('mksc_shrn_iscd', ''),
                 'Close':       float(item.get('stck_prpr', 0) or 0),
                 'ChagesRatio': pct,
                 'Amount':      float(item.get('acml_tr_pbmn', 0) or 0),
@@ -308,6 +311,7 @@ def get_foreign_net_buy_ranking(token, top_n=5):
         for item in d.get('output', [])[:top_n]:
             result.append({
                 'Name':        item.get('hts_kor_isnm', ''),
+                'Code':        item.get('mksc_shrn_iscd', ''),
                 'Close':       float(item.get('stck_prpr', 0) or 0),
                 'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
                 'Amount':      float(item.get('frgn_ntby_tr_pbmn', 0) or 0),
@@ -344,6 +348,7 @@ def get_institutional_net_buy_ranking(token, top_n=5):
         for item in d.get('output', [])[:top_n]:
             result.append({
                 'Name':        item.get('hts_kor_isnm', ''),
+                'Code':        item.get('mksc_shrn_iscd', ''),
                 'Close':       float(item.get('stck_prpr', 0) or 0),
                 'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
                 'Amount':      float(item.get('orgn_ntby_tr_pbmn', 0) or 0),
@@ -388,6 +393,7 @@ def get_52week_high(token, top_n=5):
             vol   = float(item.get('acml_vol', 0) or 0)
             result.append({
                 'Name':        item.get('hts_kor_isnm', ''),
+                'Code':        item.get('mksc_shrn_iscd', ''),
                 'Close':       close,
                 'ChagesRatio': float(item.get('prdy_ctrt', 0) or 0),
                 'Amount':      close * vol,  # 거래대금 필드가 없어 현재가×거래량으로 근사

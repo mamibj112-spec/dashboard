@@ -113,6 +113,14 @@ US_STOCK_MAP = {
     'nvda': '엔비디아', 'aapl': '애플', 'msft': '마이크로소프트', 'meta': '메타'
 }
 
+# TradingView 차트 연결용 거래소 매핑 (Mag7 + US_STOCK_MAP 종목)
+US_EXCHANGE_MAP = {
+    'nvda': 'NASDAQ', 'aapl': 'NASDAQ', 'msft': 'NASDAQ', 'googl': 'NASDAQ',
+    'amzn': 'NASDAQ', 'meta': 'NASDAQ', 'tsla': 'NASDAQ', 'avgo': 'NASDAQ',
+    'arm': 'NASDAQ', 'panw': 'NASDAQ', 'intc': 'NASDAQ',
+    'unh': 'NYSE', 'anet': 'NYSE', 'wmt': 'NYSE', 'pfe': 'NYSE',
+}
+
 # 관심 종목 목록 — 티커/이름/시장(US or KR)
 WATCHLIST = [
     {'ticker': 'SNDK',    'name': '샌디스크',   'market': 'US'},
@@ -291,13 +299,13 @@ def fetch_market_stocks():
         down = int((all_s['ChagesRatio'] < 0).sum())
         flat = int((all_s['ChagesRatio'] == 0).sum())
 
-        fdr_top_amt     = all_s.nlargest(5, 'Amount')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        fdr_top_amt     = all_s.nlargest(5, 'Amount')[['Name','Close','ChagesRatio','Amount','Market','Code']].to_dict('records')
         gainers         = all_s[(all_s['ChagesRatio'] > 0) & (all_s['ChagesRatio'] <= 30)]
-        fdr_top_gain    = gainers.nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        fdr_top_gain    = gainers.nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market','Code']].to_dict('records')
         losers          = all_s[(all_s['ChagesRatio'] < 0) & (all_s['ChagesRatio'] >= -30)]
-        fdr_top_decline = losers.nsmallest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        fdr_top_decline = losers.nsmallest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market','Code']].to_dict('records')
         # 상승률 상위: 상한가 포함 전체 상승 종목
-        fdr_top_rise    = all_s[all_s['ChagesRatio'] > 0].nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market']].to_dict('records')
+        fdr_top_rise    = all_s[all_s['ChagesRatio'] > 0].nlargest(5, 'ChagesRatio')[['Name','Close','ChagesRatio','Amount','Market','Code']].to_dict('records')
         print(f"  FDR 체감 수집 완료: 상승 {up} / 하락 {down}")
     except Exception as e:
         print(f"  FDR 주도주 오류: {e}")
@@ -492,6 +500,7 @@ def stocks_html(rows):
     out = ''
     for r in rows:
         name = str(r.get('Name', ''))[:10]
+        code = str(r.get('Code', '') or '')
         pct  = float(r.get('ChagesRatio', 0) or 0)
         amt  = r.get('Amount', 0) or 0
         mkt  = str(r.get('Market', ''))
@@ -499,9 +508,13 @@ def stocks_html(rows):
         sign = '▲' if pct >= 0 else '▼'
         amt_str = f"{amt/100000000:.0f}억" if amt >= 100000000 else f"{amt/100000000:.1f}억"
         mkt_badge = '<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span>' if 'KOSDAQ' in mkt else ''
+        clickable = code.isdigit() and len(code) == 6
+        name_attrs = f' onclick="openChart(\'KRX:{code}\')" style="cursor:pointer"' if clickable else ''
+        chart_ico = f' <span onclick="openChart(\'KRX:{code}\')" style="cursor:pointer;font-size:9px">📈</span>' if clickable else ''
         out += f'''<div class="stock-row">
-  <div class="stock-name">{name}{mkt_badge}</div>
+  <div class="stock-name"{name_attrs}>{name}{mkt_badge}</div>
   <div class="stock-right">
+    {chart_ico}
     <span class="{cls}">{sign}{abs(pct):.1f}%</span>
     <span class="stock-amt">{amt_str}</span>
   </div>
@@ -2045,12 +2058,14 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         us_asset_story = us_ai_brief.get('sector_story', '')
 
     # 섹터 & 자산 동향 카드 그리드 HTML
-    def _asset_card(ticker, sub, pct):
+    def _asset_card(ticker, sub, pct, chart_symbol=None):
         cls = 'up' if pct >= 0 else 'dn'
         sign = '+' if pct >= 0 else ''
         sub_html = f'<div class="asset-sub">{sub}</div>' if sub else ''
-        return f'''<div class="asset-card">
-  <div class="asset-ticker">{ticker}</div>
+        card_attrs = f' onclick="openChart(\'{chart_symbol}\')" style="cursor:pointer"' if chart_symbol else ''
+        chart_ico = ' 📈' if chart_symbol else ''
+        return f'''<div class="asset-card"{card_attrs}>
+  <div class="asset-ticker">{ticker}{chart_ico}</div>
   {sub_html}
   <div class="asset-pct {cls}">{sign}{pct:.2f}%</div>
 </div>'''
@@ -2076,7 +2091,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
     # ③ 주요 종목 동향 — 매그니피센트 7 카드 그리드
     mag7_html = ''.join(
-        _asset_card(k.upper(), name, d(market, k).get('pct', 0) or 0)
+        _asset_card(k.upper(), name, d(market, k).get('pct', 0) or 0, chart_symbol=f"{US_EXCHANGE_MAP.get(k,'NASDAQ')}:{k.upper()}")
         for k, name in MAG7_MAP.items()
     )
 
@@ -2089,9 +2104,10 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     def _mover_row(k, pct):
         cls = 'up' if pct >= 0 else 'dn'
         sign = '+' if pct >= 0 else ''
-        return f'''<div class="mover-row">
+        ex = US_EXCHANGE_MAP.get(k, 'NASDAQ')
+        return f'''<div class="mover-row" onclick="openChart('{ex}:{k.upper()}')" style="cursor:pointer">
   <div class="ticker-badge">{k.upper()[:2]}</div>
-  <div class="mover-ticker">{k.upper()}</div>
+  <div class="mover-ticker">{k.upper()} 📈</div>
   <div class="mover-pct {cls}">{sign}{pct:.2f}%</div>
 </div>'''
 
@@ -2755,6 +2771,15 @@ function _pctColor(v){{
   var c=v>=0?'var(--up)':'var(--dn)';
   return'<span style="color:'+c+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</span>';
 }}
+var TV_EXCHANGE_MAP={{'NMS':'NASDAQ','NGM':'NASDAQ','NCM':'NASDAQ','NYQ':'NYSE','ASE':'AMEX','PCX':'AMEX','BTS':'CBOE','KSC':'KRX','KOE':'KRX'}};
+function tvSymbol(s){{
+  var ex=TV_EXCHANGE_MAP[s.exchange]||'NASDAQ';
+  var t=s.ticker.replace('.KS','').replace('.KQ','');
+  return ex+':'+t;
+}}
+function openChart(symbol){{
+  window.open('chart.html?symbol='+encodeURIComponent(symbol),'_blank');
+}}
 function renderWatchlist(q){{
   var grid=document.getElementById('watchGrid');
   if(!grid)return;
@@ -2770,7 +2795,8 @@ function renderWatchlist(q){{
     return'<div class="wl-card" data-ticker="'+s.ticker+'" onclick="showStock(this.dataset.ticker)">'+
       '<div class="wl-card-top">'+
         '<div><div class="wl-name">'+s.name+'</div>'+
-        '<div class="wl-ticker"><span class="wl-mkt-badge">'+s.market+'</span> '+s.ticker+'</div></div>'+
+        '<div class="wl-ticker"><span class="wl-mkt-badge">'+s.market+'</span> '+s.ticker+
+        ' <span onclick="event.stopPropagation();openChart(\\''+tvSymbol(s)+'\\')" style="cursor:pointer" title="차트 보기">📈</span></div></div>'+
         '<div style="text-align:right">'+
           '<div class="wl-price '+cls+'-txt">'+cur+s.price.toLocaleString(undefined,{{maximumFractionDigits:2}})+'</div>'+
           '<div class="wl-pct '+cls+'-txt">'+sign+s.change_pct.toFixed(2)+'%</div>'+
@@ -2810,7 +2836,10 @@ function showStock(ticker){{
           (s.sector?' · '+s.sector:'')+
         '</div>'+
       '</div>'+
-      '<button onclick="closeStockModal()" style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;padding:0;line-height:1;">✕</button>'+
+      '<div style="display:flex;align-items:center;gap:10px;">'+
+        '<button onclick="openChart(\\''+tvSymbol(s)+'\\')" style="background:none;border:none;color:var(--t3);font-size:20px;cursor:pointer;padding:0;line-height:1;" title="차트 보기">📈</button>'+
+        '<button onclick="closeStockModal()" style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;padding:0;line-height:1;">✕</button>'+
+      '</div>'+
     '</div>'+
     // ── 가격 카드 ──
     '<div style="background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:4px;">'+
