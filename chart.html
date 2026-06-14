@@ -59,6 +59,26 @@
   .fc-bench-text{font-size:10px;color:var(--t3);margin-top:6px}
   .fc-tip{font-size:10px;color:var(--t3);margin-top:3px}
   .fc-footnote{font-size:9px;color:var(--t3);margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+  .fc-badge.fc-neutral{color:var(--blue);background:rgba(77,166,255,.12)}
+  .ov-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .ov-name{font-size:15px;font-weight:700;color:var(--t1)}
+  .ov-ticker{font-size:11px;font-weight:400;color:var(--t3)}
+  .ov-badges{display:flex;gap:6px;flex-wrap:wrap}
+  .ov-highlight{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.6;color:var(--t2);margin-bottom:14px}
+  .ov-compare{margin:14px 0}
+  .ov-compare-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11px}
+  .ov-compare-label{width:96px;flex-shrink:0;color:var(--t2)}
+  .ov-compare-track{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+  .ov-compare-fill{height:10px;background:var(--blue);border-radius:5px}
+  .ov-compare-value{width:64px;flex-shrink:0;text-align:right;color:var(--t1);font-weight:600}
+  .ov-tags{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+  .ov-tag{font-size:10px;color:var(--t2);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:3px 9px}
+  .ov-events{margin-top:14px}
+  .ov-event{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+  .ov-event:last-of-type{border-bottom:none}
+  .ov-event-date{width:96px;flex-shrink:0;font-size:11px;color:var(--t3);font-weight:600}
+  .ov-event-title{font-size:12px;color:var(--t1);font-weight:600}
+  .ov-event-detail{font-size:11px;color:var(--t3);margin-top:2px}
 </style>
 </head>
 <body>
@@ -70,6 +90,11 @@
   <div class="widget-box" style="height:120px" id="tv-symbol-info">
     <div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget"></div></div>
   </div>
+</div>
+
+<div class="section">
+  <h3>어떤 회사인가요?</h3>
+  <div id="fc-overview" class="fc-empty">데이터 불러오는 중...</div>
 </div>
 
 <div class="section">
@@ -178,6 +203,8 @@
 </script>
 <script src="chart-health-data.js"></script>
 <script src="chart-outlook-data.js"></script>
+<script src="chart-overview-data.js"></script>
+<script src="chart-overview.js"></script>
 <script src="chart-fundamentals.js"></script>
 </body>
 </html>

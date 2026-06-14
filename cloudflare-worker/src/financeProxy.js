@@ -2,7 +2,7 @@ import { jsonResponse } from './cors.js';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 const SAMSUNG_SYMBOL = '005930.KS';
-const MODULES = 'price,summaryDetail,defaultKeyStatistics,financialData,assetProfile,calendarEvents,earningsTrend';
+const MODULES = 'price,summaryDetail,defaultKeyStatistics,financialData,assetProfile,calendarEvents,earningsTrend,earningsHistory';
 
 let crumbCache = null; // { cookie, crumb, expiresAt }
 
@@ -32,6 +32,15 @@ async function fetchQuoteSummary(yahooSymbol) {
   if (!res.ok) return null;
   const data = await res.json();
   return data?.quoteSummary?.result?.[0] || null;
+}
+
+// Yahoo 차트 API (인증 불필요) — IPO일(firstTradeDate)과 최근 배당이력 추출용
+async function fetchChartMeta(yahooSymbol) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1mo&range=2y&events=div`;
+  const res = await fetch(url, { headers: { 'User-Agent': UA } });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data?.chart?.result?.[0] || null;
 }
 
 async function fetchFxRate(pair) {
@@ -73,6 +82,20 @@ function estimateEpsGrowth5Y(forwardPE, pegRatio) {
   return (forwardPE / pegRatio) / 100;
 }
 
+// earningsHistory.history → 최근 4개 분기 EPS 실적/추정치/서프라이즈%
+function extractEarningsHistory(eh) {
+  const history = eh?.history;
+  if (!Array.isArray(history)) return [];
+  return history
+    .map((h) => ({
+      date: h.quarter?.fmt || null,
+      epsActual: num(h, 'epsActual'),
+      epsEstimate: num(h, 'epsEstimate'),
+      surprisePercent: num(h, 'surprisePercent'),
+    }))
+    .filter((h) => h.date);
+}
+
 const ROIC_TAX_RATE = 0.21;
 
 // ROIC ≈ 영업이익 × (1 - 세율) / (총부채 + 자기자본 - 현금성자산)
@@ -108,8 +131,14 @@ function buildResult(raw, yahooSymbol) {
   const ap = raw.assetProfile || {};
   const ce = raw.calendarEvents || {};
   const et = raw.earningsTrend || {};
+  const eh = raw.earningsHistory || {};
 
   const earningsDate = ce.earnings?.earningsDate?.[0]?.fmt || null;
+  const nextEarnings = earningsDate ? {
+    date: earningsDate,
+    epsEstimate: num(ce.earnings, 'earningsAverage'),
+    revenueEstimate: num(ce.earnings, 'revenueAverage'),
+  } : null;
   const forwardPE = num(sd, 'forwardPE');
   const pegRatio = num(ks, 'pegRatio');
 
@@ -153,6 +182,10 @@ function buildResult(raw, yahooSymbol) {
     fullTimeEmployees: ap.fullTimeEmployees || null,
     country: ap.country || null,
     earningsDate,
+    nextEarnings,
+    earningsHistory: extractEarningsHistory(eh),
+    exchange: price.exchange || null,
+    exchangeName: price.exchangeName || null,
   };
 }
 
@@ -181,18 +214,36 @@ export async function handleFinance(request) {
 
   const data = buildResult(result, usedSymbol);
 
+  // KRW per 1 USD 환율 — KRW 환산 표시 및 통화가 다른 종목 간 시가총액 비교에 사용
+  const fxRate = await fetchFxRate('KRW=X');
+  if (fxRate) {
+    if (data.currency !== 'KRW' && data.price != null) data.priceKRW = data.price * fxRate;
+    if (data.marketCap != null) {
+      data.marketCapUSD = data.currency === 'KRW' ? data.marketCap / fxRate : data.marketCap;
+    }
+  }
+
   // 삼성전자 시가총액 비교 (대상 종목이 삼성전자 자신이면 생략)
   if (!/^005930\.(KS|KQ)$/i.test(usedSymbol)) {
     const samsung = await fetchQuoteSummary(SAMSUNG_SYMBOL);
     let samsungCap = samsung ? num(samsung.summaryDetail || {}, 'marketCap') : null;
-    if (samsungCap !== null && data.marketCap !== null) {
-      if (data.currency && data.currency !== 'KRW') {
-        const fxRate = await fetchFxRate('KRW=X'); // KRW per 1 USD
-        if (fxRate) samsungCap = samsungCap / fxRate;
-      }
+    if (samsungCap !== null && fxRate) {
+      samsungCap = samsungCap / fxRate; // KRW → USD
       data.samsungMarketCap = samsungCap;
-      data.marketCapVsSamsung = data.marketCap / samsungCap;
+      if (data.marketCapUSD != null) data.marketCapVsSamsung = data.marketCapUSD / samsungCap;
     }
+  }
+
+  // IPO일 / 최근 배당이력 (Yahoo 차트 API, 인증 불필요)
+  const chartMeta = await fetchChartMeta(usedSymbol);
+  if (chartMeta?.meta?.firstTradeDate) {
+    data.firstTradeDate = new Date(chartMeta.meta.firstTradeDate * 1000).toISOString().slice(0, 10);
+  }
+  if (chartMeta?.events?.dividends) {
+    data.recentDividends = Object.values(chartMeta.events.dividends)
+      .sort((a, b) => b.date - a.date)
+      .slice(0, 2)
+      .map((dv) => ({ date: new Date(dv.date * 1000).toISOString().slice(0, 10), amount: dv.amount }));
   }
 
   return jsonResponse(data);

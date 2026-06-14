@@ -62,6 +62,9 @@
     el.textContent = msg;
   }
 
+  // 다른 chart-*.js 렌더 모듈(예: chart-overview.js)에서 재사용할 공용 헬퍼
+  window.fcShared = { symbol: symbol, WORKER_BASE: WORKER_BASE, fmtPct: fmtPct, fmtNum: fmtNum, fmtCap: fmtCap, fmtPrice: fmtPrice, setSection: setSection, showEmpty: showEmpty };
+
   function renderCore(d) {
     var html = '';
     html += card('시가총액', fmtCap(d.marketCap, d.currency),
@@ -241,16 +244,19 @@
     .then(function (res) { return res.json(); })
     .then(function (d) {
       if (!d || d.error) {
+        showEmpty('fc-overview', '데이터를 불러올 수 없습니다.');
         showEmpty('fc-core', '데이터를 불러올 수 없습니다.');
         showEmpty('fc-health', '데이터를 불러올 수 없습니다.');
         showEmpty('fc-outlook', '데이터를 불러올 수 없습니다.');
         return;
       }
+      if (window.renderOverview) window.renderOverview(d);
       renderCore(d);
       renderHealth(d);
       renderOutlook(d);
     })
     .catch(function () {
+      showEmpty('fc-overview', '데이터를 불러올 수 없습니다.');
       showEmpty('fc-core', '데이터를 불러올 수 없습니다.');
       showEmpty('fc-health', '데이터를 불러올 수 없습니다.');
       showEmpty('fc-outlook', '데이터를 불러올 수 없습니다.');

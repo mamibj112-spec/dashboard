@@ -769,6 +769,100 @@ def translate_news_to_korean(items):
     return items
 
 
+# ── 종목 개요 (차트 상세페이지 "어떤 회사인가요" 섹션) ───────────────────────────────
+
+def _tracked_overview_symbols():
+    """company-overview.json 생성 대상 TV 심볼 목록 (MAG7 + US_STOCK_MAP + 삼성전자, 중복 제거)"""
+    symbols = []
+    seen = set()
+    for k in list(MAG7_MAP.keys()) + list(US_STOCK_MAP.keys()):
+        ex = US_EXCHANGE_MAP.get(k, 'NASDAQ')
+        sym = f'{ex}:{k.upper()}'
+        if sym not in seen:
+            seen.add(sym)
+            symbols.append(sym)
+    symbols.append('KRX:005930')
+    return symbols
+
+
+def fetch_company_overview():
+    """추적 종목별 한글 회사소개 + 특징배지를 Gemini로 일괄 생성 → company-overview.json 데이터"""
+    import os, re
+    from concurrent.futures import ThreadPoolExecutor
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not api_key:
+        print("  GEMINI_API_KEY 없음, 회사 개요 스킵")
+        return {}
+
+    symbols = _tracked_overview_symbols()
+    worker_base = 'https://dashboard-trigger.mamibj112.workers.dev'
+
+    def fetch_one(sym):
+        try:
+            r = requests.get(f'{worker_base}/finance', params={'symbol': sym}, timeout=20)
+            r.raise_for_status()
+            d = r.json()
+            return sym, (d if not d.get('error') else None)
+        except Exception as e:
+            print(f"  [{sym}] 데이터 조회 오류: {e}")
+            return sym, None
+
+    print("  종목 데이터 수집 중...")
+    with ThreadPoolExecutor(max_workers=4) as ex:
+        fetched = dict(ex.map(fetch_one, symbols))
+
+    blocks = []
+    valid_symbols = []
+    for sym in symbols:
+        d = fetched.get(sym)
+        if not d:
+            continue
+        cap = d.get('marketCap')
+        cap_str = f"${cap/1e12:.2f}T" if cap else "정보없음"
+        rev_g = d.get('revenueGrowth')
+        earn_g = d.get('earningsGrowth')
+        summary = (d.get('longBusinessSummary') or '')[:400]
+        blocks.append(
+            f"[{sym}] {d.get('name')}\n"
+            f"- 섹터/업종: {d.get('sector') or '-'} / {d.get('industry') or '-'}\n"
+            f"- 시가총액: {cap_str}\n"
+            f"- 매출 성장률(YoY): {f'{rev_g*100:.1f}%' if rev_g is not None else '정보없음'}\n"
+            f"- 순이익 성장률(YoY): {f'{earn_g*100:.1f}%' if earn_g is not None else '정보없음'}\n"
+            f"- 사업 설명(영문): {summary}"
+        )
+        valid_symbols.append(sym)
+
+    if not blocks:
+        return {}
+
+    prompt = (
+        "다음은 여러 주식 종목에 대한 실제 데이터입니다. 한국 개인투자자를 위한 종목 소개를 작성하세요.\n\n"
+        + "\n\n".join(blocks)
+        + "\n\n각 종목에 대해 다음 두 가지를 작성하세요.\n"
+        "- description: 이 회사가 어떤 사업을 하는지 한국어로 2~3문장 소개 (전문용어 최소화, 일반인이 이해하기 쉽게)\n"
+        "- badges: 위 데이터(시가총액, 성장률 등)에 근거한 이 회사의 특징을 나타내는 짧은 키워드 1~2개 "
+        "(예: 초고성장주, 글로벌 시총 최상위권, 고배당 우량주, 안정성장주 — 8자 이내)\n\n"
+        "아래 JSON 형식으로만 응답하세요. 다른 텍스트나 설명은 절대 포함하지 마세요.\n"
+        "{\n"
+        + ",\n".join(f'  "{sym}": {{"description": "...", "badges": ["...", "..."]}}' for sym in valid_symbols)
+        + "\n}"
+    )
+
+    try:
+        print(f"  회사 개요 생성 중... ({len(blocks)}개 종목)")
+        text = _gemini_post(api_key, prompt, temperature=0.5, max_tokens=4096)
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if not m:
+            print(f"  회사 개요 JSON 파싱 실패: {text[:100]}")
+            return {}
+        data = json.loads(m.group(0))
+        print(f"  회사 개요 생성 완료 ({len(data)}개)")
+        return data
+    except Exception as e:
+        print(f"  회사 개요 생성 오류: {e}")
+        return {}
+
+
 # ── 캘린더 ─────────────────────────────────────────────────────────────────────
 
 # FOMC 2026 (발표일 기준)
@@ -3050,6 +3144,7 @@ def main():
         f_stock_story     = ex.submit(fetch_stock_story, stocks)
         f_investor_flow   = ex.submit(fetch_investor_flow_story, stocks)
         f_watchlist       = ex.submit(fetch_watchlist_data, WATCHLIST)
+        f_company_overview = ex.submit(fetch_company_overview)
 
     ai_brief           = f_ai_brief.result()
     us_ai_brief        = f_us_ai_brief.result()
@@ -3057,12 +3152,20 @@ def main():
     stock_story        = f_stock_story.result()
     investor_flow_story = f_investor_flow.result()
     watchlist          = f_watchlist.result()
+    company_overview   = f_company_overview.result()
 
     html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
     print(f"저장 완료: {out}")
+
+    if company_overview:
+        overview_out = Path(__file__).parent / 'company-overview.json'
+        overview_out.write_text(json.dumps(company_overview, ensure_ascii=False, indent=2), encoding='utf-8')
+        print(f"저장 완료: {overview_out}")
+    else:
+        print("  회사 개요 생성 결과 없음 — company-overview.json 유지")
 
     for icon in ['icon-192.png', 'icon-512.png']:
         if not (Path(__file__).parent / icon).exists():
