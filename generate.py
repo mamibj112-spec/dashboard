@@ -403,6 +403,22 @@ def calc_us_fear_greed(market):
     return int(round(score))
 
 
+def fetch_cnn_fear_greed():
+    """CNN Fear & Greed Index 실제 값 조회 (0~100)"""
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
+            'Accept': 'application/json',
+        }
+        r = requests.get('https://production.dataviz.cnn.io/index/fearandgreed/graphdata', headers=headers, timeout=10)
+        r.raise_for_status()
+        score = r.json()['fear_and_greed']['score']
+        return int(round(score))
+    except Exception as e:
+        print(f"  CNN 공포/탐욕 지수 오류: {e}")
+        return None
+
+
 MACRO_HISTORY_TICKERS = {
     'kospi':  '^KS11',
     'kosdaq': '^KQ11',
@@ -1739,7 +1755,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -1988,9 +2004,9 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 일정 없음</div>'
 
 
-    # 미국 공포/탐욕 지수
-    us_fg = calc_us_fear_greed(market)
-    
+    # 미국 공포/탐욕 지수 (CNN 실제 지수 우선, 실패 시 자체 추정치로 대체)
+    us_fg = cnn_fear_greed if cnn_fear_greed is not None else calc_us_fear_greed(market)
+
     # 테마에 따른 이모지 및 라벨 설정
     if us_fg <= 25: 
         us_fg_emoji, us_fg_label, us_fg_color = '💀', '극도공포', '#3b82f6'
@@ -2984,6 +3000,7 @@ def main():
         f_research_reports = ex.submit(fetch_research_reports)
         f_kr_sectors      = ex.submit(fetch_kr_sectors)
         f_etf             = ex.submit(fetch_etf_data)
+        f_cnn_fg          = ex.submit(fetch_cnn_fear_greed)
 
     market           = f_market.result()
     news             = f_news.result()
@@ -2993,6 +3010,7 @@ def main():
     research_reports = f_research_reports.result()
     kr_sectors       = f_kr_sectors.result()
     etf_data         = f_etf.result()
+    cnn_fear_greed   = f_cnn_fg.result()
 
     # 2단계: AI 분석 (병렬 — Gemini 호출)
     print("AI 분석 중 (병렬)...")
@@ -3011,7 +3029,7 @@ def main():
     investor_flow_story = f_investor_flow.result()
     watchlist          = f_watchlist.result()
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
