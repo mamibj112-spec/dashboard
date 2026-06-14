@@ -16,6 +16,12 @@
     return Number(n).toLocaleString('ko-KR', { maximumFractionDigits: digits === undefined ? 1 : digits, minimumFractionDigits: 0 });
   }
 
+  function fmtPrice(n, currency) {
+    if (n === null || n === undefined || isNaN(n)) return '-';
+    if (currency === 'KRW') return fmtNum(n, 0) + '원';
+    return '$' + fmtNum(n, 2);
+  }
+
   function fmtCap(n, currency) {
     if (n === null || n === undefined) return '-';
     if (currency === 'KRW') return (n / 1e12).toFixed(1) + '조원';
@@ -152,12 +158,65 @@
   }
 
   function renderOutlook(d) {
-    var html = '';
-    html += card('Forward PER', d.forwardPE != null ? d.forwardPE.toFixed(1) + '배' : '-');
-    html += card('PEG', d.pegRatio != null ? d.pegRatio.toFixed(2) : '-',
-      d.pegRatio != null ? (d.pegRatio < 1 ? '저평가' : d.pegRatio <= 2 ? '적정 평가' : '고평가') : null);
-    html += card('EPS 성장률(연간)', fmtPct(d.earningsGrowth));
-    html += card('매출 성장률', fmtPct(d.revenueGrowth));
+    var upside = (d.targetMeanPrice != null && d.price) ? (d.targetMeanPrice / d.price - 1) : null;
+
+    var values = {
+      upside: upside,
+      forwardPE: d.forwardPE,
+      pegRatio: (d.pegRatio != null && d.pegRatio > 0) ? d.pegRatio : null,
+      epsGrowthNextYear: d.epsGrowthNextYear,
+      epsGrowthNext5Y: d.epsGrowthNext5Y
+    };
+
+    if (Object.keys(values).every(function (k) { return values[k] == null; })) {
+      showEmpty('fc-outlook', '데이터를 불러올 수 없습니다.');
+      return;
+    }
+
+    var scoreSum = 0, scoreCnt = 0;
+    var cards = '';
+
+    OUTLOOK_METRICS.forEach(function (m) {
+      var val = values[m.key];
+      if (m.scored) {
+        var tier = outlookTier(val, m.thresholds, m.higherIsBetter);
+        if (tier != null) { scoreSum += tier; scoreCnt++; }
+      }
+
+      var valStr = '-', valCls = '', subHtml = '';
+
+      if (val != null) {
+        if (m.key === 'upside') {
+          valStr = fmtPrice(d.targetMeanPrice, d.currency);
+          subHtml = '<div class="fc-sub ' + (upside >= 0 ? 'fc-up' : 'fc-down') + '">현재가 대비 ' +
+            (upside >= 0 ? '+' : '') + (upside * 100).toFixed(1) + '%</div>';
+        } else if (m.key === 'forwardPE') {
+          valStr = val.toFixed(2) + '배';
+        } else if (m.key === 'pegRatio') {
+          valStr = val.toFixed(2);
+          var t = outlookTier(val, m.thresholds, m.higherIsBetter);
+          subHtml = '<div class="fc-sub ' + (t === 2 ? 'fc-up' : t === 0 ? 'fc-down' : '') + '">' + m.tierLabels[t] + '</div>';
+        } else {
+          valStr = (val >= 0 ? '+' : '') + fmtPct(val);
+          valCls = val >= 0 ? 'fc-up' : 'fc-down';
+        }
+      }
+
+      cards += '<div class="fc-card">' +
+        '<div class="fc-label">' + m.label + '</div>' +
+        '<div class="fc-value' + (valCls ? ' ' + valCls : '') + '">' + valStr + '</div>' +
+        subHtml +
+        '<div class="fc-tip">💡 ' + m.tip + '</div>' +
+        '</div>';
+    });
+
+    var ratio = scoreCnt ? scoreSum / (scoreCnt * 2) : null;
+    var verdict = outlookVerdict(ratio);
+
+    var html = '<div class="fc-verdict fc-verdict-' + verdict.cls + '">' +
+      '<div class="fc-verdict-title">' + verdict.emoji + ' ' + verdict.title + '</div>' +
+      '<div class="fc-verdict-sub">' + verdict.sub + '</div></div>' +
+      '<div class="fc-grid">' + cards + '</div>';
 
     var recMap = {
       strong_buy: '적극매수', buy: '매수', hold: '중립',
@@ -169,13 +228,13 @@
         (d.numberOfAnalystOpinions ? ' (' + d.numberOfAnalystOpinions + '명 평균)' : '') + '</div>';
     }
     if (d.targetHighPrice != null && d.targetLowPrice != null) {
-      extra += '<div class="fc-rec">목표가 범위: <b>' + fmtNum(d.targetLowPrice, 2) + ' ~ ' + fmtNum(d.targetHighPrice, 2) + '</b></div>';
+      extra += '<div class="fc-rec">목표가 범위: <b>' + fmtPrice(d.targetLowPrice, d.currency) + ' ~ ' + fmtPrice(d.targetHighPrice, d.currency) + '</b></div>';
     }
-    if (d.earningsDate) {
-      extra += '<div class="fc-rec">다음 실적발표: <b>' + d.earningsDate + '</b></div>';
-    }
+    if (extra) html += extra;
 
-    setSection('fc-outlook', '<div class="fc-grid">' + html + '</div>' + extra);
+    html += '<div class="fc-footnote">⚠️ 이 데이터는 애널리스트 추정치이며 실제 결과와 다를 수 있습니다. 투자 결정은 추가 검토와 함께 하세요.</div>';
+
+    setSection('fc-outlook', html);
   }
 
   fetch(WORKER_BASE + '/finance?symbol=' + encodeURIComponent(symbol))

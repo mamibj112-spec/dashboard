@@ -2,7 +2,7 @@ import { jsonResponse } from './cors.js';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 const SAMSUNG_SYMBOL = '005930.KS';
-const MODULES = 'price,summaryDetail,defaultKeyStatistics,financialData,assetProfile,calendarEvents';
+const MODULES = 'price,summaryDetail,defaultKeyStatistics,financialData,assetProfile,calendarEvents,earningsTrend';
 
 let crumbCache = null; // { cookie, crumb, expiresAt }
 
@@ -58,6 +58,21 @@ function num(obj, key) {
   return typeof v?.raw === 'number' ? v.raw : null;
 }
 
+// earningsTrend.trend 배열에서 특정 기간(period: '+1y' 등)의 성장률 추출
+function earningsTrendGrowth(et, period) {
+  const trend = et?.trend;
+  if (!Array.isArray(trend)) return null;
+  const entry = trend.find((t) => t.period === period);
+  return entry ? num(entry, 'growth') : null;
+}
+
+// 5년 EPS 연평균 성장률 추정치: Yahoo가 earningsTrend에 '+5y'를 더 이상 제공하지 않아,
+// PEG = PER(Forward) / 5년 성장률(%) 관계를 역산해 근사
+function estimateEpsGrowth5Y(forwardPE, pegRatio) {
+  if (forwardPE == null || pegRatio == null || pegRatio <= 0) return null;
+  return (forwardPE / pegRatio) / 100;
+}
+
 const ROIC_TAX_RATE = 0.21;
 
 // ROIC ≈ 영업이익 × (1 - 세율) / (총부채 + 자기자본 - 현금성자산)
@@ -92,8 +107,11 @@ function buildResult(raw, yahooSymbol) {
   const fd = raw.financialData || {};
   const ap = raw.assetProfile || {};
   const ce = raw.calendarEvents || {};
+  const et = raw.earningsTrend || {};
 
   const earningsDate = ce.earnings?.earningsDate?.[0]?.fmt || null;
+  const forwardPE = num(sd, 'forwardPE');
+  const pegRatio = num(ks, 'pegRatio');
 
   return {
     symbol: yahooSymbol,
@@ -102,14 +120,14 @@ function buildResult(raw, yahooSymbol) {
     price: num(price, 'regularMarketPrice'),
     marketCap: num(sd, 'marketCap') ?? num(price, 'marketCap'),
     trailingPE: num(sd, 'trailingPE'),
-    forwardPE: num(sd, 'forwardPE'),
+    forwardPE,
     dividendYield: num(sd, 'dividendYield'),
     beta: num(sd, 'beta'),
     fiftyTwoWeekHigh: num(sd, 'fiftyTwoWeekHigh'),
     fiftyTwoWeekLow: num(sd, 'fiftyTwoWeekLow'),
     eps: num(ks, 'trailingEps'),
     forwardEps: num(ks, 'forwardEps'),
-    pegRatio: num(ks, 'pegRatio'),
+    pegRatio,
     priceToBook: num(ks, 'priceToBook'),
     targetMeanPrice: num(fd, 'targetMeanPrice'),
     targetHighPrice: num(fd, 'targetHighPrice'),
@@ -126,6 +144,8 @@ function buildResult(raw, yahooSymbol) {
     profitMargins: num(fd, 'profitMargins'),
     revenueGrowth: num(fd, 'revenueGrowth'),
     earningsGrowth: num(fd, 'earningsGrowth'),
+    epsGrowthNextYear: earningsTrendGrowth(et, '+1y'),
+    epsGrowthNext5Y: estimateEpsGrowth5Y(forwardPE, pegRatio),
     roic: calcRoic(fd, ks, sd, price),
     sector: ap.sector || null,
     industry: ap.industry || null,
