@@ -137,7 +137,25 @@
       "Bash(cat package.json)",
       "Bash(cat .tmp_test/package.json)",
       "PowerShell(Get-NetTCPConnection *)",
-      "PowerShell(Stop-Process *)"
+      "PowerShell(Stop-Process *)",
+      "PowerShell(Start-Process \"https://mamibj112-spec.github.io/dashboard/chart.html?symbol=NASDAQ:NVDA\")",
+      "Bash(grep -o '\"text\":\"[^\"]\\\\{0,200\\\\}수익성[^\"]\\\\{0,200\\\\}\"' \"C:\\\\Users\\\\user\\\\.claude\\\\projects\\\\D--Dalily-Dash-Board\\\\9f9516fc-900b-4770-bf04-527978be967e.jsonl\")",
+      "Bash(grep -o '\"text\":\"[^\"]\\\\{0,100\\\\}\\\\\\(캡처\\\\|capture\\\\|스샷\\\\|스크린샷\\\\|이미지\\\\|참고\\\\\\)[^\"]\\\\{0,300\\\\}\"' \"C:\\\\Users\\\\user\\\\.claude\\\\projects\\\\D--Dalily-Dash-Board\\\\9f9516fc-900b-4770-bf04-527978be967e.jsonl\")",
+      "Bash(grep -o '\"text\":\"[^\"]\\\\{0,50\\\\}\\\\\\(캡처\\\\|capture\\\\\\)[^\"]\\\\{0,300\\\\}\"' \"/c/Users/user/.claude/projects/D--Dalily-Dash-Board/6374efff-8bf3-4e9b-915c-a47c7f1a4676.jsonl\")",
+      "Bash(grep -o '\"text\":\"[^\"]\\\\{0,50\\\\}캡처[^\"]\\\\{0,1500\\\\}\"' \"/c/Users/user/.claude/projects/D--Dalily-Dash-Board/6374efff-8bf3-4e9b-915c-a47c7f1a4676.jsonl\")",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('sector:', d.get\\('sector'\\)\\); print\\('roic:', d.get\\('roic'\\)\\); print\\('operatingMargins:', d.get\\('operatingMargins'\\)\\); print\\('debtToEquity:', d.get\\('debtToEquity'\\)\\); print\\('currentRatio:', d.get\\('currentRatio'\\)\\); print\\('quickRatio:', d.get\\('quickRatio'\\)\\)\")",
+      "Bash(node -e \"const d=require\\('/tmp/nvda.json'\\); console.log\\('sector:',d.sector\\); console.log\\('roic:',d.roic\\); console.log\\('operatingMargins:',d.operatingMargins\\); console.log\\('debtToEquity:',d.debtToEquity\\); console.log\\('currentRatio:',d.currentRatio\\); console.log\\('quickRatio:',d.quickRatio\\); console.log\\('grossMargins:',d.grossMargins\\); console.log\\('returnOnEquity:',d.returnOnEquity\\); console.log\\('returnOnAssets:',d.returnOnAssets\\); console.log\\('profitMargins:',d.profitMargins\\);\")",
+      "Bash(node -e \"const d=require\\('./nvda.json'\\); console.log\\(JSON.stringify\\({sector:d.sector, roic:d.roic, operatingMargins:d.operatingMargins, debtToEquity:d.debtToEquity, currentRatio:d.currentRatio, quickRatio:d.quickRatio, grossMargins:d.grossMargins, returnOnEquity:d.returnOnEquity, returnOnAssets:d.returnOnAssets, profitMargins:d.profitMargins}, null, 2\\)\\)\")",
+      "Bash(rm nvda.json)",
+      "Bash(npm root *)",
+      "Bash(node shot.js)",
+      "Bash(node -e \"const d=require\\('./samsung.json'\\); console.log\\(JSON.stringify\\({name:d.name, sector:d.sector, industry:d.industry, roic:d.roic, operatingMargins:d.operatingMargins, debtToEquity:d.debtToEquity, currentRatio:d.currentRatio, quickRatio:d.quickRatio, returnOnEquity:d.returnOnEquity, returnOnAssets:d.returnOnAssets, profitMargins:d.profitMargins, grossMargins:d.grossMargins}, null, 2\\)\\)\")",
+      "Bash(rm samsung.json)",
+      "Bash(node debug_roic.js 005930.KS)",
+      "Bash(node shot2.js)",
+      "Bash(pkill -f \"wrangler dev\")",
+      "Bash(pkill -f \"http.server\")",
+      "Bash(rm -rf .tmp_verify cloudflare-worker/wrangler_debug.log)"
     ]
   }
 }

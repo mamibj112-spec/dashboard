@@ -72,22 +72,83 @@
     setSection('fc-core', '<div class="fc-grid">' + html + '</div>' + rangeBar(d.fiftyTwoWeekLow, d.fiftyTwoWeekHigh, d.price));
   }
 
-  function healthCard(label, value, goodCond) {
-    var cls = goodCond === null ? '' : (goodCond ? 'fc-good' : 'fc-warn');
-    return card(label, value, null, cls);
-  }
-
   function renderHealth(d) {
-    var html = '';
-    html += healthCard('영업이익률', fmtPct(d.operatingMargins), d.operatingMargins != null ? d.operatingMargins >= 0.1 : null);
-    html += healthCard('순이익률', fmtPct(d.profitMargins), d.profitMargins != null ? d.profitMargins >= 0.08 : null);
-    html += healthCard('매출총이익률', fmtPct(d.grossMargins), d.grossMargins != null ? d.grossMargins >= 0.3 : null);
-    html += healthCard('ROE', fmtPct(d.returnOnEquity), d.returnOnEquity != null ? d.returnOnEquity >= 0.15 : null);
-    html += healthCard('ROA', fmtPct(d.returnOnAssets), d.returnOnAssets != null ? d.returnOnAssets >= 0.05 : null);
-    html += healthCard('부채비율(D/E)', d.debtToEquity != null ? (d.debtToEquity / 100).toFixed(2) : '-', d.debtToEquity != null ? d.debtToEquity <= 150 : null);
-    html += healthCard('유동비율', d.currentRatio != null ? d.currentRatio.toFixed(2) : '-', d.currentRatio != null ? d.currentRatio >= 1.5 : null);
-    html += healthCard('당좌비율', d.quickRatio != null ? d.quickRatio.toFixed(2) : '-', d.quickRatio != null ? d.quickRatio >= 1.0 : null);
-    setSection('fc-health', '<div class="fc-grid">' + html + '</div>');
+    var sector = (d.sector && HEALTH_BENCHMARKS[d.sector]) ? d.sector : 'default';
+    var bench = HEALTH_BENCHMARKS[sector];
+    var sectorLabel = d.sector || '전체';
+
+    var values = {
+      operatingMargins: d.operatingMargins,
+      profitMargins: d.profitMargins,
+      grossMargins: d.grossMargins,
+      returnOnEquity: d.returnOnEquity,
+      returnOnAssets: d.returnOnAssets,
+      roic: d.roic,
+      debtToEquity: d.debtToEquity != null ? d.debtToEquity / 100 : null,
+      currentRatio: d.currentRatio,
+      quickRatio: d.quickRatio
+    };
+
+    var profRows = '', healthRows = '';
+    var profSum = 0, profCnt = 0, healthSum = 0, healthCnt = 0;
+
+    HEALTH_METRICS.forEach(function (m) {
+      var val = values[m.key];
+      if (val == null) return;
+
+      var t = healthTier(val, m.thresholds, m.higherIsBetter);
+      var labels = m.tierLabels || ['주의', '양호', '우수'];
+      var badgeCls = t === 0 ? 'fc-warn' : 'fc-good';
+      var badgeIcon = t === 0 ? '⚠️' : '✅';
+      var valStr = m.unit === 'pct' ? fmtPct(val) : val.toFixed(2);
+
+      var pos = healthPosition(val, bench[m.key], m.higherIsBetter);
+      var medianStr = m.unit === 'pct' ? fmtPct(bench[m.key]) : bench[m.key].toFixed(2);
+      var labelPct = pos ? Math.min(92, Math.max(8, pos.pct)) : 0;
+
+      var rowHtml = '<div class="fc-metric">' +
+        '<div class="fc-metric-head">' +
+          '<div><div class="fc-metric-label">' + m.label + '</div><div class="fc-metric-desc">' + m.desc + '</div></div>' +
+          '<div class="fc-metric-val"><span class="fc-value-num">' + valStr + '</span><span class="fc-badge ' + badgeCls + '">' + badgeIcon + ' ' + labels[t] + '</span></div>' +
+        '</div>' +
+        (pos ?
+          '<div class="fc-bar-wrap">' +
+            '<div class="fc-bar-marker-label" style="left:' + labelPct + '%">내 위치 ' + pos.label + '</div>' +
+            '<div class="fc-bar-track"><div class="fc-bar-marker" style="left:' + pos.pct + '%"></div></div>' +
+          '</div>' +
+          '<div class="fc-bench-text">' + sectorLabel + ' 중앙값 ' + medianStr + ' · ' + pos.label + '</div>'
+          : '') +
+        '<div class="fc-tip">💡 ' + m.tip + '</div>' +
+        '</div>';
+
+      if (m.group === 'profit') {
+        profRows += rowHtml;
+        profSum += t; profCnt++;
+      } else {
+        healthRows += rowHtml;
+        healthSum += t; healthCnt++;
+      }
+    });
+
+    if (!profRows && !healthRows) {
+      showEmpty('fc-health', '데이터를 불러올 수 없습니다.');
+      return;
+    }
+
+    var profRatio = profCnt ? profSum / (profCnt * 2) : null;
+    var healthRatio = healthCnt ? healthSum / (healthCnt * 2) : null;
+    var verdict = healthVerdict(profRatio, healthRatio);
+
+    var html = '<div class="fc-verdict fc-verdict-' + verdict.cls + '">' +
+      '<div class="fc-verdict-title">' + verdict.emoji + ' ' + verdict.title + '</div>' +
+      '<div class="fc-verdict-sub">' + verdict.sub + '</div></div>';
+
+    if (profRows) html += '<div class="fc-subhead">수익성 — 얼마나 효율적으로 돈을 버나</div>' + profRows;
+    if (healthRows) html += '<div class="fc-subhead">재무 건전성 — 빚·유동성 부담은 괜찮나</div>' + healthRows;
+
+    html += '<div class="fc-footnote">* 평가는 업종 중앙값 대비 상대 위치(근사값) + 절대 기준을 함께 참고한 결과입니다.</div>';
+
+    setSection('fc-health', html);
   }
 
   function renderOutlook(d) {

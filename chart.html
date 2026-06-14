@@ -33,6 +33,30 @@
   .fc-rec{font-size:12px;color:var(--t2);margin-top:10px}
   .fc-rec b{color:var(--t1)}
   .fc-empty{font-size:12px;color:var(--t3);text-align:center;padding:20px}
+  .fc-verdict{border-left:4px solid var(--t3);background:var(--card);border-radius:8px;padding:10px 12px;margin-bottom:14px}
+  .fc-verdict-good{border-color:var(--up)}
+  .fc-verdict-warn{border-color:var(--gold)}
+  .fc-verdict-bad{border-color:var(--dn)}
+  .fc-verdict-neutral{border-color:var(--t3)}
+  .fc-verdict-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:2px}
+  .fc-verdict-sub{font-size:11px;color:var(--t3)}
+  .fc-subhead{font-size:12px;font-weight:600;color:var(--t2);margin:14px 0 8px}
+  .fc-metric{margin-bottom:16px}
+  .fc-metric-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .fc-metric-label{font-size:12px;font-weight:600;color:var(--t1)}
+  .fc-metric-desc{font-size:10px;color:var(--t3);margin-top:2px}
+  .fc-metric-val{text-align:right;flex-shrink:0}
+  .fc-value-num{display:block;font-size:15px;font-weight:700;color:var(--t1)}
+  .fc-badge{display:inline-block;font-size:10px;font-weight:600;border-radius:4px;padding:1px 5px;margin-top:2px}
+  .fc-badge.fc-good{color:var(--up);background:rgba(0,232,150,.12)}
+  .fc-badge.fc-warn{color:var(--gold);background:rgba(255,201,64,.12)}
+  .fc-bar-wrap{position:relative;height:22px;margin-top:14px}
+  .fc-bar-marker-label{position:absolute;top:-14px;transform:translateX(-50%);font-size:9px;font-weight:600;color:var(--t2);white-space:nowrap}
+  .fc-bar-track{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--dn),var(--gold),var(--up));margin-top:8px}
+  .fc-bar-marker{position:absolute;top:-3px;width:12px;height:12px;background:var(--t1);border:2px solid var(--bg);border-radius:50%;transform:translateX(-50%)}
+  .fc-bench-text{font-size:10px;color:var(--t3);margin-top:6px}
+  .fc-tip{font-size:10px;color:var(--t3);margin-top:3px}
+  .fc-footnote{font-size:9px;color:var(--t3);margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
 </style>
 </head>
 <body>
@@ -150,6 +174,7 @@
     "showIntervalTabs": true
   });
 </script>
+<script src="chart-health-data.js"></script>
 <script src="chart-fundamentals.js"></script>
 </body>
 </html>

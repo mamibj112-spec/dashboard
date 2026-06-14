@@ -58,6 +58,33 @@ function num(obj, key) {
   return typeof v?.raw === 'number' ? v.raw : null;
 }
 
+const ROIC_TAX_RATE = 0.21;
+
+// ROIC ≈ 영업이익 × (1 - 세율) / (총부채 + 자기자본 - 현금성자산)
+// Yahoo가 ROIC를 직접 제공하지 않아 financialData/defaultKeyStatistics 항목으로 근사 계산
+function calcRoic(fd, ks, sd, price) {
+  const operatingMargins = num(fd, 'operatingMargins');
+  const totalRevenue = num(fd, 'totalRevenue');
+  const totalDebt = num(fd, 'totalDebt');
+  const totalCash = num(fd, 'totalCash');
+  const priceToBook = num(ks, 'priceToBook');
+  const marketCap = num(sd, 'marketCap') ?? num(price, 'marketCap');
+
+  if (operatingMargins == null || totalRevenue == null || totalDebt == null ||
+      totalCash == null || !marketCap) {
+    return null;
+  }
+
+  const ebit = totalRevenue * operatingMargins;
+  const nopat = ebit * (1 - ROIC_TAX_RATE);
+  // priceToBook이 없는 종목(일부 한국 종목)은 시가총액을 자기자본 근사값으로 사용
+  const equity = priceToBook ? marketCap / priceToBook : marketCap;
+  const investedCapital = totalDebt + equity - totalCash;
+
+  if (investedCapital <= 0) return null;
+  return nopat / investedCapital;
+}
+
 function buildResult(raw, yahooSymbol) {
   const price = raw.price || {};
   const sd = raw.summaryDetail || {};
@@ -99,6 +126,7 @@ function buildResult(raw, yahooSymbol) {
     profitMargins: num(fd, 'profitMargins'),
     revenueGrowth: num(fd, 'revenueGrowth'),
     earningsGrowth: num(fd, 'earningsGrowth'),
+    roic: calcRoic(fd, ks, sd, price),
     sector: ap.sector || null,
     industry: ap.industry || null,
     longBusinessSummary: ap.longBusinessSummary || null,
