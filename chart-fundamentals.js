@@ -78,6 +78,14 @@
       upside != null ? (upside >= 0 ? '+' : '') + (upside * 100).toFixed(1) + '% 여력' : null,
       upside != null ? (upside >= 0 ? 'fc-up' : 'fc-down') : null);
 
+    var low = d.fiftyTwoWeekLow, high = d.fiftyTwoWeekHigh, cur = d.price;
+    var posPct = (low != null && high != null && cur != null && high > low)
+      ? Math.max(0, Math.min(100, (cur - low) / (high - low) * 100)) : null;
+    html += card('52주 위치', posPct != null ? posPct.toFixed(0) + '%' : '-',
+      '0% = 52주 최저, 100% = 52주 최고');
+
+    html += card('애널리스트 의견수', d.numberOfAnalystOpinions != null ? fmtNum(d.numberOfAnalystOpinions, 0) + '명' : '-');
+
     setSection('fc-core', '<div class="fc-grid">' + html + '</div>' + rangeBar(d.fiftyTwoWeekLow, d.fiftyTwoWeekHigh, d.price));
   }
 
@@ -246,18 +254,21 @@
       if (!d || d.error) {
         showEmpty('fc-overview', '데이터를 불러올 수 없습니다.');
         showEmpty('fc-core', '데이터를 불러올 수 없습니다.');
+        showEmpty('fc-detail', '데이터를 불러올 수 없습니다.');
         showEmpty('fc-health', '데이터를 불러올 수 없습니다.');
         showEmpty('fc-outlook', '데이터를 불러올 수 없습니다.');
         return;
       }
       if (window.renderOverview) window.renderOverview(d);
       renderCore(d);
+      if (window.renderDetail) window.renderDetail(d);
       renderHealth(d);
       renderOutlook(d);
     })
     .catch(function () {
       showEmpty('fc-overview', '데이터를 불러올 수 없습니다.');
       showEmpty('fc-core', '데이터를 불러올 수 없습니다.');
+      showEmpty('fc-detail', '데이터를 불러올 수 없습니다.');
       showEmpty('fc-health', '데이터를 불러올 수 없습니다.');
       showEmpty('fc-outlook', '데이터를 불러올 수 없습니다.');
     });
