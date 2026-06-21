@@ -127,7 +127,7 @@ async function summarizeWithText(transcript, title, apiKey, model) {
 
 // 자막 없을 때: Gemini가 YouTube 영상 직접 분석 → 요약 + 스크립트 동시 생성
 async function analyzeVideoDirectly(videoId, title, apiKey, model) {
-  const videoModel = model.includes('1.5') ? model : 'gemini-1.5-flash';
+  const videoModel = model || 'gemini-2.0-flash';
   const prompt = `YouTube 영상 "${title}"을 시청하고 아래 두 가지를 한국어로 작성해주세요.
 
 ===SUMMARY===
