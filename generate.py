@@ -1003,7 +1003,90 @@ CALENDAR_EVENTS = [
     ('🇺🇸 미국 고용지표', '2026-10-02'),
     ('🇺🇸 미국 고용지표', '2026-11-06'),
     ('🇺🇸 미국 고용지표', '2026-12-04'),
+    # 미국 PCE 물가 (BEA, 월말 전후 발표)
+    ('🇺🇸 미국 PCE 물가', '2026-01-30'),
+    ('🇺🇸 미국 PCE 물가', '2026-02-27'),
+    ('🇺🇸 미국 PCE 물가', '2026-03-27'),
+    ('🇺🇸 미국 PCE 물가', '2026-04-30'),
+    ('🇺🇸 미국 PCE 물가', '2026-05-29'),
+    ('🇺🇸 미국 PCE 물가', '2026-06-26'),
+    ('🇺🇸 미국 PCE 물가', '2026-07-31'),
+    ('🇺🇸 미국 PCE 물가', '2026-08-28'),
+    ('🇺🇸 미국 PCE 물가', '2026-09-25'),
+    ('🇺🇸 미국 PCE 물가', '2026-10-30'),
+    ('🇺🇸 미국 PCE 물가', '2026-11-25'),
+    ('🇺🇸 미국 PCE 물가', '2026-12-23'),
+    # 미국 GDP 속보치 (분기별, BEA)
+    ('🇺🇸 미국 GDP 속보치', '2026-01-29'),
+    ('🇺🇸 미국 GDP 속보치', '2026-04-29'),
+    ('🇺🇸 미국 GDP 속보치', '2026-07-30'),
+    ('🇺🇸 미국 GDP 속보치', '2026-10-29'),
+    # ISM 제조업 PMI (매월 첫 영업일)
+    ('🇺🇸 ISM 제조업 PMI', '2026-01-05'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-02-03'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-03-02'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-04-01'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-05-01'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-06-01'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-07-01'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-08-03'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-09-01'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-10-01'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-11-02'),
+    ('🇺🇸 ISM 제조업 PMI', '2026-12-01'),
+    # 한국 GDP (한국은행, 분기별 속보)
+    ('🇰🇷 한국 GDP 속보', '2026-01-23'),
+    ('🇰🇷 한국 GDP 속보', '2026-04-24'),
+    ('🇰🇷 한국 GDP 속보', '2026-07-24'),
+    ('🇰🇷 한국 GDP 속보', '2026-10-23'),
 ]
+
+
+def fetch_upcoming_earnings(dt):
+    """Finnhub API로 향후 7일 이내 주요 기업 실적 발표 예정 수집"""
+    import os, requests
+    from datetime import timedelta
+    key = os.environ.get('FINNHUB_API_KEY', '').strip()
+    if not key:
+        return []
+    try:
+        today = dt.date()
+        end = today + timedelta(days=7)
+        r = requests.get('https://finnhub.io/api/v1/calendar/earnings',
+                         params={'from': str(today), 'to': str(end), 'token': key},
+                         timeout=10)
+        items = r.json().get('earningsCalendar', [])
+        # EPS 예상치가 있는 기업 (애널리스트 커버리지 = 비교적 주요 기업)
+        notable = sorted(
+            [it for it in items if it.get('epsEstimate') is not None],
+            key=lambda x: x.get('date', '')
+        )
+        result = []
+        for it in notable[:20]:
+            d_str = it.get('date', '')
+            try:
+                from datetime import datetime as _dt2, date as _date2
+                d = _dt2.strptime(d_str, '%Y-%m-%d').date()
+                diff = (d - today).days
+                if diff == 0:   label, badge = '오늘', 'nb-red'
+                elif diff == 1: label, badge = '내일', 'nb-gold'
+                else:           label, badge = f'{d.month}/{d.day}({["월","화","수","목","금","토","일"][d.weekday()]})', 'nb-blue'
+            except Exception:
+                label, badge = d_str, 'nb-blue'
+            result.append({
+                'symbol':       it.get('symbol', ''),
+                'date':         d_str,
+                'label':        label,
+                'badge':        badge,
+                'year':         it.get('year'),
+                'quarter':      it.get('quarter'),
+                'eps_estimate': it.get('epsEstimate'),
+            })
+        print(f"  실적 발표 예정 수집 완료: {len(result)}건")
+        return result
+    except Exception as e:
+        print(f"  실적 발표 예정 오류: {e}")
+        return []
 
 
 def get_weekly_calendar(dt):
@@ -2252,7 +2335,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, upcoming_earnings=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -2596,7 +2679,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     if not theme_etf_html:
         theme_etf_html = no_data
 
-    # 캘린더
+    # 캘린더 - 경기 지표
     cal_events = get_weekly_calendar(dt)
     if cal_events:
         cal_html = ''.join(f'''<div class="cal-row">
@@ -2604,7 +2687,17 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <span class="cal-name">{e["name"]}</span>
 </div>''' for e in cal_events)
     else:
-        cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 일정 없음</div>'
+        cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 지표 일정 없음</div>'
+
+    # 캘린더 - 실적 발표 예정
+    if upcoming_earnings:
+        earn_cal_html = ''.join(f'''<div class="cal-row">
+  <span class="news-badge {e["badge"]}">{e["label"]}</span>
+  <span class="cal-name" style="font-weight:700">{e["symbol"]}</span>
+  <span style="font-size:10px;color:var(--t3);margin-left:4px;">{e["year"]}Q{e["quarter"]} · EPS 예상 {e["eps_estimate"]}</span>
+</div>''' for e in upcoming_earnings)
+    else:
+        earn_cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 실적 발표 없음</div>'
 
 
     # 미국 공포/탐욕 지수 (CNN 실제 지수 우선, 실패 시 자체 추정치로 대체)
@@ -3265,14 +3358,32 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <div class="section">
     <div class="banner blue">
       <strong>📅 이번 주 주요 일정</strong><br>
-      FOMC · CPI · 한국은행 금통위 · 고용지표
+      FOMC · CPI · PCE · GDP · ISM PMI · 고용 · 금통위 · 실적 발표
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">D-7 이내 일정</div>
-    {cal_html}
-    <div style="font-size:10px;color:var(--t3);margin-top:10px;">공모주 일정은 <a href="https://dart.fss.or.kr" target="_blank">DART</a> · <a href="https://ipo.38.co.kr" target="_blank">38커뮤니케이션</a> 확인</div>
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📊</span>
+        <span class="mkt-sec-title">경기 지표 발표</span>
+        <span class="mkt-sec-num">01</span>
+      </div>
+      {cal_html}
+      <div style="font-size:10px;color:var(--t3);margin-top:10px;">공모주 일정은 <a href="https://dart.fss.or.kr" target="_blank">DART</a> · <a href="https://ipo.38.co.kr" target="_blank">38커뮤니케이션</a> 확인</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📋</span>
+        <span class="mkt-sec-title">실적 발표 예정</span>
+        <span class="mkt-sec-num">02</span>
+      </div>
+      {earn_cal_html}
+      <div style="font-size:10px;color:var(--t3);margin-top:8px;">출처: Finnhub · EPS 예상치 보유 기업 기준</div>
+    </div>
   </div>
 
 </div>
@@ -3687,14 +3798,15 @@ def main():
     watchlist           = f_watchlist.result()
     company_overview    = f_company_overview.result()
 
-    kr_news_insight = fetch_kr_news_insight(news.get('domestic', []))
-    re_rates        = fetch_re_rates()
-    apt_trade       = fetch_apt_trade_trend()
-    subscription    = fetch_subscription_schedule()
-    tracked_apt     = fetch_tracked_apt_trades()
-    re_news_insight = fetch_re_news_insight(news.get('realestate', []))
+    kr_news_insight  = fetch_kr_news_insight(news.get('domestic', []))
+    re_rates         = fetch_re_rates()
+    apt_trade        = fetch_apt_trade_trend()
+    subscription     = fetch_subscription_schedule()
+    tracked_apt      = fetch_tracked_apt_trades()
+    upcoming_earnings = fetch_upcoming_earnings(dt)
+    re_news_insight  = fetch_re_news_insight(news.get('realestate', []))
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt, upcoming_earnings=upcoming_earnings)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
