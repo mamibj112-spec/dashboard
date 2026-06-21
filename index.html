@@ -284,6 +284,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <button class="tab-btn" onclick="sw('watch',this)">📊 종목</button>
   <button class="tab-btn" onclick="sw('etf',this)">📦 ETF</button>
   <button class="tab-btn" onclick="sw('ai',this)">💡 AI</button>
+  <button class="tab-btn" onclick="sw('sub',this)">📝 자막</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -1667,6 +1668,36 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   </div>
 </div>
 
+<!-- ===== 자막 탭 ===== -->
+<div id="tab-sub" class="tab-panel">
+  <div class="section">
+    <div class="section-label">YouTube 자막 추출 · AI 요약</div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <input id="subUrlInput" type="url" placeholder="YouTube URL 붙여넣기..."
+        style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--t1);font-size:13px;outline:none;font-family:inherit;min-width:0"
+        onkeydown="if(event.key==='Enter')fetchTranscript()">
+      <button onclick="fetchTranscript()" id="subBtn"
+        style="background:var(--blue);border:none;border-radius:8px;padding:10px 14px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">
+        추출
+      </button>
+    </div>
+    <div id="subStatus" style="font-size:11px;color:var(--t3);min-height:16px;padding:4px 0 0"></div>
+  </div>
+  <div id="subResult" style="display:none">
+    <div id="subTitle" style="font-size:14px;font-weight:700;padding:14px 0 2px;color:var(--t1);line-height:1.4"></div>
+    <div class="section-label" style="margin-top:14px">💡 AI 요약 (Gemini)</div>
+    <div id="subSummary" class="banner blue" style="white-space:pre-wrap;line-height:1.75;font-size:12.5px;margin-top:6px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">
+      <div class="section-label" style="margin:0">📄 자막 원문</div>
+      <button onclick="toggleSubTranscript()" id="subToggleBtn"
+        style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--t3);font-size:10px;cursor:pointer;font-family:inherit">
+        펼치기
+      </button>
+    </div>
+    <div id="subTranscript" style="display:none;background:var(--card);border-radius:10px;padding:14px;margin-top:8px;font-size:12px;color:var(--t2);line-height:1.8;white-space:pre-wrap;max-height:400px;overflow-y:auto;word-break:break-word"></div>
+  </div>
+</div>
+
 <!-- 종목 상세 모달 -->
 <div id="stockOverlay" onclick="closeStockModal()"></div>
 <div id="stockModal"></div>
@@ -1736,7 +1767,44 @@ function closeMacroChart(){
   document.getElementById('macroModal').classList.remove('open');
   setTimeout(function(){document.getElementById('macroOverlay').style.display='none';},280);
 }
-var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어'};
+var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어',sub:'📝 YouTube 자막 추출'};
+var _WORKER='https://dashboard-trigger.mamibj112.workers.dev';
+function fetchTranscript(){
+  var input=document.getElementById('subUrlInput');
+  var btn=document.getElementById('subBtn');
+  var status=document.getElementById('subStatus');
+  var result=document.getElementById('subResult');
+  var url=input.value.trim();
+  if(!url){status.textContent='⚠️ URL을 입력해주세요.';return;}
+  btn.disabled=true;btn.textContent='추출 중...';
+  status.textContent='⏳ 자막 및 AI 요약 생성 중... (10~30초 소요)';
+  result.style.display='none';
+  fetch(_WORKER+'/transcript?url='+encodeURIComponent(url))
+    .then(function(r){return r.json();})
+    .then(function(data){
+      btn.disabled=false;btn.textContent='추출';
+      if(data.error){status.textContent='❌ '+data.error;return;}
+      var chars=data.transcript?data.transcript.length:0;
+      status.textContent='✅ '+data.language+' 자막 · 약 '+Math.ceil(chars/500)+'분 분량';
+      document.getElementById('subTitle').textContent='🎬 '+data.title;
+      document.getElementById('subSummary').textContent=data.summary;
+      document.getElementById('subTranscript').textContent=data.transcript;
+      document.getElementById('subTranscript').style.display='none';
+      document.getElementById('subToggleBtn').textContent='펼치기';
+      result.style.display='block';
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent='추출';
+      status.textContent='❌ 네트워크 오류';
+    });
+}
+function toggleSubTranscript(){
+  var el=document.getElementById('subTranscript');
+  var btn=document.getElementById('subToggleBtn');
+  var hidden=el.style.display==='none';
+  el.style.display=hidden?'block':'none';
+  btn.textContent=hidden?'접기':'펼치기';
+}
 var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 2184.75, "change": 225.95, "change_pct": 11.54, "currency": "USD", "market_cap": "$323.5B", "ev": "$320.0B", "pe": 74.62, "forward_pe": 11.94, "pb": 23.47, "ps": 24.54, "peg": null, "ev_ebitda": 56.82, "eps": 29.28, "shares_out": "$148M", "float_shares": "$146M", "revenue": "$13.2B", "net_income": "$4.5B", "op_margin": 69.98, "profit_margin": 34.19, "gross_margin": 56.04, "roe": 39.3, "roa": 22.82, "roic": null, "rev_growth": 251.0, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 4.78, "quick_ratio": 3.43, "debt_equity": 1.5, "total_debt": "$207M", "total_cash": "$3.7B", "fcf": "$2.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 2191.69, "low52": 40.1, "target": 1751.32, "ret_1w": 16.12, "ret_1m": 57.94, "ret_3m": 182.97, "ret_6m": 943.79, "ret_ytd": 693.76, "ret_1y": 4855.21, "ret_3y": null, "ret_5y": null, "rsi": 70, "beta": null, "sma20_gap": 24.13, "sma50_gap": 56.07, "sma200_gap": 256.25, "atr": 169.1, "vol_weekly": 44.19, "vol_monthly": 100.34, "volume": 12178323, "avg_volume": 14591703, "rel_volume": 0.83, "exchange": "NMS", "inst_pct": null, "insider_pct": 1.12, "short_float": 9.71, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "샌디스크 주식, 웨스턴 디지털에서 분사 이후 5,900% 이상 상승. 지금 사기엔 너무 늦었을까?", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-stock-more-5-900-142100788.html", "publisher": "Motley Fool", "date": "", "title_orig": "Sandisk Stock Is Up More Than 5,900% Since It Spun Off From Western Digital. Is It Too Late to Buy?"}, {"title": "샌디스크 AI 메모리 붐은 아직 끝나지 않았다", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-stock-looks-wildly-overbought-140002787.html", "publisher": "Barchart", "date": "", "title_orig": "Sandisk AI Memory Boom Is Far From Over"}, {"title": "짐 크레이머, JP모건 같은 은행들은 \"여전히 저렴하다\"고 말한다", "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-says-banks-jpmorgan-134006156.html", "publisher": "Insider Monkey", "date": "", "title_orig": "Jim Cramer Says Banks Like JPMorgan “Are Still Inexpensive”"}, {"title": "이 인공지능(AI) 주식, 지난 1년간 4,800% 상승. 월스트리트는 다음을 예측한다.", "link": "https://finance.yahoo.com/markets/stocks/articles/artificial-intelligence-ai-stock-4-090800896.html", "publisher": "Motley Fool", "date": "", "title_orig": "This Artificial Intelligence (AI) Stock Is Up 4,800% in the Past Year. Wall Street Says This Will Happen Next."}, {"title": "연초 대비 700% 상승한 샌디스크, 얼마나 더 오를 수 있을까?", "link": "https://finance.yahoo.com/markets/stocks/articles/700-ytd-high-sandisk-rally-200042094.html", "publisher": "24/7 Wall St.", "date": "", "title_orig": "Up 700% YTD, How High Can SanDisk Rally?"}]}];
 function _fmt(v,dec,suf){if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}
 function _pctColor(v){
