@@ -3938,7 +3938,12 @@ function tvSymbol(s){{
   return ex+':'+t;
 }}
 function openChart(symbol){{
-  window.open('chart.html?symbol='+encodeURIComponent(symbol),'_blank');
+  if(symbol.startsWith('KRX:')){
+    var code=symbol.replace('KRX:','');
+    window.open('https://finance.naver.com/item/main.naver?code='+code,'_blank');
+  }}else{{
+    window.open('chart.html?symbol='+encodeURIComponent(symbol),'_blank');
+  }}
 }}
 function renderWatchlist(q){{
   var grid=document.getElementById('watchGrid');
