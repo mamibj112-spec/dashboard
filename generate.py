@@ -1219,12 +1219,12 @@ JSON 형식으로만 응답하세요.
 
 
 def fetch_re_rates():
-    """한국은행 ECOS sample API로 기준금리·국고채·주담대 금리 수집"""
-    import requests
+    """한국은행 ECOS API로 기준금리·국고채·주담대 금리 수집"""
+    import os, requests
     from datetime import datetime, timedelta
     result = {}
     try:
-        key = 'sample'
+        key = os.environ.get('ECOS_API_KEY', 'sample').strip() or 'sample'
         today = datetime.now()
         s = (today - timedelta(days=60)).strftime('%Y%m%d')
         e = today.strftime('%Y%m%d')
@@ -1264,6 +1264,85 @@ def fetch_re_rates():
     except Exception as e:
         print(f"  금리 데이터 오류: {e}")
     return result
+
+
+def fetch_apt_trade_trend():
+    """국토부 아파트 실거래가 API - 서울 주요 구 최근 거래 동향"""
+    import os, requests, xml.etree.ElementTree as ET
+    from datetime import datetime, timedelta
+    api_key = os.environ.get('DATA_GO_KR_API_KEY', '').strip()
+    if not api_key:
+        return None
+    print("  아파트 실거래 동향 수집 중...")
+    today = datetime.now()
+    ym = today.strftime('%Y%m')
+    ym_prev = (today.replace(day=1) - timedelta(days=1)).strftime('%Y%m')
+    districts = {'11680':'강남구','11650':'서초구','11710':'송파구',
+                 '11440':'마포구','11500':'강서구','11350':'노원구'}
+    result = []
+    for lawd_cd, name in districts.items():
+        for deal_ym in [ym, ym_prev]:
+            try:
+                url = 'https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade'
+                r = requests.get(url, params={
+                    'serviceKey': api_key, 'LAWD_CD': lawd_cd,
+                    'DEAL_YMD': deal_ym, 'pageNo': 1, 'numOfRows': 100,
+                }, timeout=10)
+                root = ET.fromstring(r.text)
+                items = root.findall('.//item')
+                if items:
+                    prices = []
+                    for item in items:
+                        amt = item.findtext('dealAmount','').replace(',','').strip()
+                        if amt.isdigit():
+                            prices.append(int(amt))
+                    if prices:
+                        result.append({'name': name, 'count': len(prices),
+                                       'avg': sum(prices)//len(prices), 'ym': deal_ym})
+                        break
+            except:
+                pass
+    print(f"  실거래 동향 수집 완료: {len(result)}개 구")
+    return result or None
+
+
+def fetch_subscription_schedule():
+    """청약홈 APT 분양정보 API - 최근 청약 공고"""
+    import os, requests, xml.etree.ElementTree as ET
+    from datetime import datetime, timedelta
+    api_key = os.environ.get('DATA_GO_KR_API_KEY', '').strip()
+    if not api_key:
+        return []
+    print("  청약 일정 수집 중...")
+    today = datetime.now()
+    # 이번 달 / 다음 달 청약 공고 조회
+    results = []
+    for endpoint in [
+        'https://apis.data.go.kr/B551528/APTInfoService/getAPTLttotPblancMdlInfo',
+        'https://apis.data.go.kr/B551528/APTInfoService/getAPTLttotPblancDetail',
+    ]:
+        try:
+            r = requests.get(endpoint, params={
+                'serviceKey': api_key, 'pageNo': 1, 'numOfRows': 5,
+            }, timeout=10)
+            if r.status_code != 200 or not r.text.strip().startswith('<'):
+                continue
+            root = ET.fromstring(r.text)
+            items = root.findall('.//item')
+            for item in items:
+                name = item.findtext('houseNm', '') or item.findtext('aptNm', '')
+                area = item.findtext('hssplyAdres', '') or item.findtext('sggNm', '')
+                rcpt_bgn = item.findtext('rcptBgnde', '') or item.findtext('subscrptRceptBgnde', '')
+                rcpt_end = item.findtext('rcptEndde', '') or item.findtext('subscrptRceptEndde', '')
+                if name:
+                    results.append({'name': name, 'area': area,
+                                    'rcpt_bgn': rcpt_bgn, 'rcpt_end': rcpt_end})
+            if results:
+                break
+        except Exception as e:
+            continue
+    print(f"  청약 일정 수집 완료: {len(results)}건")
+    return results
 
 
 def fetch_re_news_insight(news_items):
@@ -1991,7 +2070,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -2212,6 +2291,42 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   {_rate_card('주담대 금리', rr.get('mortgage_rate'), sub=mort_date+' 은행평균')}
 </div>
 <div style="font-size:10px;color:var(--t3);margin-top:8px;">출처: 한국은행 ECOS · <a href="https://ecos.bok.or.kr" target="_blank" style="color:var(--t3)">ecos.bok.or.kr</a></div>'''
+
+    # 실거래 동향 HTML
+    if apt_trade:
+        ym_str = apt_trade[0]['ym'] if apt_trade else ''
+        ym_label = f"{ym_str[:4]}년 {int(ym_str[4:]):}월" if len(ym_str)==6 else ym_str
+        rows = ''.join(
+            f'<tr><td><strong>{t["name"]}</strong></td>'
+            f'<td style="text-align:right">{t["avg"]:,}만원</td>'
+            f'<td style="text-align:right;color:var(--t3)">{t["count"]}건</td></tr>'
+            for t in apt_trade
+        )
+        apt_trade_html = f'''<div style="font-size:10px;color:var(--t3);margin-bottom:6px;">서울 주요 구 평균 · {ym_label}</div>
+<table class="apt-table">
+  <thead><tr><th>구</th><th>평균가</th><th>거래량</th></tr></thead>
+  <tbody>{rows}</tbody>
+</table>
+<div style="font-size:10px;color:var(--t3);margin-top:6px;">출처: 국토교통부 실거래가 · <a href="https://rt.molit.go.kr" target="_blank" style="color:var(--t3)">rt.molit.go.kr</a></div>'''
+    else:
+        apt_trade_html = '<div style="color:var(--t3);font-size:12px;padding:12px 0;">데이터 수집 중</div>'
+
+    # 청약 일정 HTML
+    if subscription:
+        def _fmt_date(d):
+            return f"{d[:4]}.{d[4:6]}.{d[6:]}" if len(d)==8 else d
+        sub_rows = ''.join(
+            f'<div class="apt-card" style="margin-bottom:8px;padding:10px 12px">'
+            f'<div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px">{s["name"]}</div>'
+            f'<div style="font-size:11px;color:var(--t3);margin-bottom:4px">{s["area"]}</div>'
+            f'<div style="font-size:11px;color:var(--gold)">청약: {_fmt_date(s["rcpt_bgn"])} ~ {_fmt_date(s["rcpt_end"])}</div>'
+            f'</div>'
+            for s in subscription[:4]
+        )
+        subscription_html = sub_rows or '<div style="color:var(--t3);font-size:12px;padding:8px 0;">일정 없음</div>'
+    else:
+        subscription_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 수집 중</div>'
+
     hot_news = news_html(news.get('hot', []),          'nb-red',  '이슈')
 
     # 주도주 & 체감
@@ -2858,9 +2973,32 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <div class="section">
     <div class="story-wrap">
       <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📊</span>
+        <span class="mkt-sec-title">서울 실거래 동향</span>
+        <span class="mkt-sec-num">02</span>
+      </div>
+      {apt_trade_html}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📋</span>
+        <span class="mkt-sec-title">청약 일정</span>
+        <span class="mkt-sec-num">03</span>
+      </div>
+      {subscription_html}
+      <div style="font-size:10px;color:var(--t3);margin-top:8px;">출처: 청약홈 · <a href="https://www.applyhome.co.kr" target="_blank" style="color:var(--t3)">applyhome.co.kr</a></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
         <span class="mkt-sec-icon">📰</span>
         <span class="mkt-sec-title">부동산 뉴스</span>
-        <span class="mkt-sec-num">02</span>
+        <span class="mkt-sec-num">04</span>
       </div>
       {re_news}
       {f'<div class="story-text" style="margin-top:12px">{re_news_insight}</div>' if re_news_insight else ''}
@@ -2872,7 +3010,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
       <div class="mkt-sec-head">
         <span class="mkt-sec-icon">🏠</span>
         <span class="mkt-sec-title">관심 단지</span>
-        <span class="mkt-sec-num">03</span>
+        <span class="mkt-sec-num">05</span>
       </div>
       <div class="apt-card">
         <div class="apt-header">
@@ -3376,9 +3514,11 @@ def main():
 
     kr_news_insight = fetch_kr_news_insight(news.get('domestic', []))
     re_rates        = fetch_re_rates()
+    apt_trade       = fetch_apt_trade_trend()
+    subscription    = fetch_subscription_schedule()
     re_news_insight = fetch_re_news_insight(news.get('realestate', []))
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')

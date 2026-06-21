@@ -44,9 +44,11 @@ jobs:
       - name: 대시보드 생성
         run: python generate.py
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          KIS_APP_KEY:    ${{ secrets.KIS_APP_KEY }}
-          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          GEMINI_API_KEY:      ${{ secrets.GEMINI_API_KEY }}
+          KIS_APP_KEY:         ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET:      ${{ secrets.KIS_APP_SECRET }}
+          ECOS_API_KEY:        ${{ secrets.ECOS_API_KEY }}
+          DATA_GO_KR_API_KEY:  ${{ secrets.DATA_GO_KR_API_KEY }}
 
       - name: 변경사항 커밋 & 푸시
         run: |
