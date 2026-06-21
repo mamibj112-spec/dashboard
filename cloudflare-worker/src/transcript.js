@@ -88,7 +88,7 @@ async function getTranscript(videoId) {
   return { title, transcript: paragraphs.join('\n\n'), language };
 }
 
-async function summarizeWithGemini(transcript, title, apiKey) {
+async function summarizeWithGemini(transcript, title, apiKey, model = 'gemini-2.0-flash') {
   const prompt = `다음은 YouTube 영상 "${title}"의 자막 전문입니다.
 아래 형식으로 한국어로 정리해주세요:
 
@@ -107,7 +107,7 @@ async function summarizeWithGemini(transcript, title, apiKey) {
 ${transcript.slice(0, 10000)}`;
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -144,10 +144,12 @@ export async function handleTranscript(request, env) {
   const apiKey = env.GEMINI_API_KEY;
   if (!apiKey) return jsonResponse({ error: 'GEMINI_API_KEY secret이 설정되지 않았습니다.' }, 500);
 
+  const model = url.searchParams.get('model') || 'gemini-2.0-flash';
+
   try {
     const { title, transcript, language } = await getTranscript(videoId);
-    const summary = await summarizeWithGemini(transcript, title, apiKey);
-    return jsonResponse({ title, transcript, summary, language, videoId });
+    const summary = await summarizeWithGemini(transcript, title, apiKey, model);
+    return jsonResponse({ title, transcript, summary, language, videoId, model });
   } catch (err) {
     return jsonResponse({ error: err.message || '알 수 없는 오류 발생' }, 500);
   }
