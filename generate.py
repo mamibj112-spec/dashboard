@@ -652,6 +652,94 @@ def fetch_ai_briefing(market, news):
         return None
 
 
+def fetch_ai_investment_idea(market, news, stocks, dt):
+    """Gemini로 오늘의 AI 투자 아이디어 생성"""
+    import os, json, re
+    from datetime import timedelta
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not api_key:
+        return None
+    try:
+        print("  AI 투자 아이디어 생성 중...")
+        today_str = dt.strftime('%Y년 %m월 %d일')
+
+        def mv(name):
+            item = d(market, name)
+            v, pct = item.get('val'), item.get('pct') or 0
+            if v is None: return 'N/A'
+            sign = '▲' if pct >= 0 else '▼'
+            return f"{v:,.2f} ({sign}{abs(pct):.2f}%)"
+
+        # 향후 7일 이벤트
+        cal = get_weekly_calendar(dt)
+        cal_text = '\n'.join(f"- {e['label']}: {e['name']}" for e in cal) or '없음'
+
+        # 뉴스 헤드라인
+        dom_news = [it['title'] for it in news.get('domestic', [])[:5]]
+        int_news = [it['title'] for it in news.get('international', [])[:5]]
+
+        # 수급 데이터
+        flow_text = ''
+        if stocks and stocks.get('foreign_buy'):
+            flow_text += '외국인 순매수: ' + ', '.join(s.get('name','') for s in stocks['foreign_buy'][:3]) + '\n'
+        if stocks and stocks.get('inst_buy'):
+            flow_text += '기관 순매수: ' + ', '.join(s.get('name','') for s in stocks['inst_buy'][:3])
+
+        prompt = f"""오늘 날짜: {today_str}
+
+[국내 시장]
+코스피: {mv('kospi')}  코스닥: {mv('kosdaq')}
+USD/KRW: {mv('usdkrw')}
+
+[해외 시장]
+S&P500: {mv('sp500')}  나스닥: {mv('nasdaq')}  VIX: {mv('vix')}
+미 10년물: {mv('tnx')}  달러인덱스: {mv('dxy')}
+금: {mv('gold')}  브렌트유: {mv('brent')}
+
+[수급 흐름]
+{flow_text or '정보 없음'}
+
+[국내 주요 뉴스]
+{chr(10).join(f"- {h}" for h in dom_news)}
+
+[해외 주요 뉴스]
+{chr(10).join(f"- {h}" for h in int_news)}
+
+[D-7 이내 주요 이벤트]
+{cal_text}
+
+위 데이터를 바탕으로 실제 투자에 도움이 되는 오늘의 AI 투자 아이디어를 작성하세요.
+단순 시황 요약이 아닌 "지금 어디를 봐야 하는가" 관점의 실행 가능한 인사이트여야 합니다.
+아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
+{{
+  "headline": "오늘 시장 핵심 한 줄 (이모지 포함, 20자 이내)",
+  "weekly_theme": "이번 주 시장 지배 테마 및 전반적 투자 방향 (3~4문장)",
+  "focus_sectors": [
+    {{"sector": "섹터명", "reason": "주목 이유 2~3문장", "catalyst": "핵심 촉매제 1줄", "risk": "단기 리스크 1줄"}},
+    {{"sector": "섹터명", "reason": "주목 이유 2~3문장", "catalyst": "핵심 촉매제 1줄", "risk": "단기 리스크 1줄"}}
+  ],
+  "avoid_sectors": [
+    {{"sector": "섹터명", "reason": "이유 1~2줄"}},
+    {{"sector": "섹터명", "reason": "이유 1~2줄"}}
+  ],
+  "key_risks": ["리스크1 (1~2줄)", "리스크2 (1~2줄)", "리스크3 (1~2줄)"],
+  "event_ideas": [
+    {{"event": "이벤트명", "date": "날짜", "idea": "이벤트 기반 트레이딩 아이디어 2줄"}}
+  ]
+}}"""
+
+        text = _gemini_post(api_key, prompt, temperature=0.7, max_tokens=2048)
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            data_out = json.loads(m.group(0))
+            print("  AI 투자 아이디어 생성 완료")
+            return data_out
+        return None
+    except Exception as e:
+        print(f"  AI 투자 아이디어 오류: {e}")
+        return None
+
+
 def fetch_us_recent_earnings():
     """Finnhub API로 최근 2주 미국 실적 발표 데이터 수집"""
     import os, requests
@@ -2167,6 +2255,23 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .invest-point{margin-top:10px;padding:8px 10px;background:var(--card2);border-radius:6px;font-size:11px;color:var(--t2);line-height:1.5}
 .warn{color:var(--gold);font-size:10px}
 .footer-note{font-size:10px;color:var(--t3);text-align:center;padding:16px 0 4px;line-height:1.6}
+.idea-headline{font-size:15px;font-weight:800;color:var(--t1);text-align:center;padding:14px 0 6px;letter-spacing:-.3px;line-height:1.4}
+.idea-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.idea-card-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.idea-sector{font-size:13px;font-weight:700;color:var(--t1)}
+.idea-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.idea-badge.up{background:rgba(0,232,150,.15);color:var(--up)}
+.idea-badge.dn{background:rgba(255,64,96,.15);color:var(--dn)}
+.idea-badge.warn{background:rgba(255,201,64,.15);color:var(--gold)}
+.idea-body{font-size:12px;color:var(--t2);line-height:1.6}
+.idea-meta{font-size:10.5px;margin-top:6px;display:flex;flex-direction:column;gap:3px}
+.idea-meta span{display:flex;gap:5px}
+.idea-meta-label{color:var(--t3);font-weight:600;flex-shrink:0}
+.idea-theme{background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(77,166,255,.08));border:1px solid rgba(167,139,250,.25);border-radius:12px;padding:14px;margin-bottom:10px}
+.idea-theme-title{font-size:11px;color:var(--purple);font-weight:700;letter-spacing:.5px;margin-bottom:8px}
+.risk-row{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;color:var(--t2);line-height:1.5}
+.risk-row:last-child{border-bottom:none}
+.risk-num{color:var(--dn);font-weight:700;flex-shrink:0}
 .stock-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--card);border-radius:6px;margin-bottom:4px}
 .stock-name{font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px}
 .stock-right{display:flex;align-items:center;gap:5px;font-size:11px;flex-shrink:0}
@@ -2335,7 +2440,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, upcoming_earnings=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, upcoming_earnings=None, ai_idea=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -2633,6 +2738,70 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     for apt_cfg in TRACKED_APTS:
         pyeong_data = (tracked_apt or {}).get(apt_cfg['name'])
         tracked_apt_html += _apt_card(apt_cfg, pyeong_data)
+
+    # AI 투자 아이디어 HTML
+    if ai_idea:
+        headline    = ai_idea.get('headline', '')
+        weekly_theme = ai_idea.get('weekly_theme', '')
+        focus_sectors = ai_idea.get('focus_sectors', [])
+        avoid_sectors = ai_idea.get('avoid_sectors', [])
+        key_risks   = ai_idea.get('key_risks', [])
+        event_ideas = ai_idea.get('event_ideas', [])
+
+        focus_html = ''
+        for s in focus_sectors:
+            focus_html += f'''<div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">{s.get("sector","")}</span>
+    <span class="idea-badge up">주목</span>
+  </div>
+  <div class="idea-body">{s.get("reason","")}</div>
+  <div class="idea-meta">
+    <span><span class="idea-meta-label">촉매</span>{s.get("catalyst","")}</span>
+    <span><span class="idea-meta-label">리스크</span>{s.get("risk","")}</span>
+  </div>
+</div>'''
+
+        avoid_html = ''
+        for s in avoid_sectors:
+            avoid_html += f'''<div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">{s.get("sector","")}</span>
+    <span class="idea-badge dn">주의</span>
+  </div>
+  <div class="idea-body">{s.get("reason","")}</div>
+</div>'''
+
+        risks_html = ''.join(
+            f'<div class="risk-row"><span class="risk-num">{i+1}</span><span>{r}</span></div>'
+            for i, r in enumerate(key_risks)
+        )
+
+        events_html = ''
+        for e in event_ideas:
+            events_html += f'''<div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">{e.get("event","")}</span>
+    <span class="idea-badge warn">{e.get("date","")}</span>
+  </div>
+  <div class="idea-body">{e.get("idea","")}</div>
+</div>'''
+
+        ai_idea_html = f'''<div class="idea-headline">{headline}</div>
+<div class="idea-theme">
+  <div class="idea-theme-title">🔭 이번 주 시장 테마</div>
+  <div style="font-size:12.5px;color:var(--t1);line-height:1.7">{weekly_theme}</div>
+</div>
+<div class="section-label" style="margin-top:16px">📈 주목 섹터</div>
+{focus_html}
+<div class="section-label" style="margin-top:16px">⚠️ 주의 섹터</div>
+{avoid_html}
+<div class="section-label" style="margin-top:16px">🚨 핵심 리스크</div>
+<div class="apt-card">{risks_html}</div>
+<div class="section-label" style="margin-top:16px">📅 이벤트 트레이딩 아이디어</div>
+{events_html}'''
+    else:
+        ai_idea_html = '<div style="color:var(--t3);font-size:12px;padding:20px 0;text-align:center;">AI 분석 준비 중</div>'
 
     hot_news = news_html(news.get('hot', []),          'nb-red',  '이슈')
 
@@ -2950,6 +3119,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <button class="tab-btn" onclick="sw('cal',this)">📅 일정</button>
   <button class="tab-btn" onclick="sw('watch',this)">📊 종목</button>
   <button class="tab-btn" onclick="sw('etf',this)">📦 ETF</button>
+  <button class="tab-btn" onclick="sw('ai',this)">💡 AI</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -3425,6 +3595,22 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 </div>
 
+<!-- ===== AI 투자 아이디어 탭 ===== -->
+<div id="tab-ai" class="tab-panel">
+  <div class="section">
+    <div class="banner" style="background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(77,166,255,.08));border-left:3px solid var(--purple);">
+      <strong style="color:var(--purple)">💡 AI 투자 아이디어</strong><br>
+      오늘의 시장 데이터·뉴스·수급을 AI가 분석한 실행 가능한 투자 인사이트
+    </div>
+  </div>
+  <div class="section">
+    {ai_idea_html}
+    <div style="font-size:10px;color:var(--t3);margin-top:16px;padding:8px;background:var(--card);border-radius:8px;">
+      ⚠️ 본 내용은 AI 생성 정보로 투자 조언이 아닙니다. 실제 투자 결정은 본인 판단 하에 하세요.
+    </div>
+  </div>
+</div>
+
 <!-- 종목 상세 모달 -->
 <div id="stockOverlay" onclick="closeStockModal()"></div>
 <div id="stockModal"></div>
@@ -3494,7 +3680,7 @@ function closeMacroChart(){{
   document.getElementById('macroModal').classList.remove('open');
   setTimeout(function(){{document.getElementById('macroOverlay').style.display='none';}},280);
 }}
-var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF'}};
+var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어'}};
 var WATCHLIST={watchlist_json};
 function _fmt(v,dec,suf){{if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}}
 function _pctColor(v){{
@@ -3798,15 +3984,16 @@ def main():
     watchlist           = f_watchlist.result()
     company_overview    = f_company_overview.result()
 
-    kr_news_insight  = fetch_kr_news_insight(news.get('domestic', []))
-    re_rates         = fetch_re_rates()
-    apt_trade        = fetch_apt_trade_trend()
-    subscription     = fetch_subscription_schedule()
-    tracked_apt      = fetch_tracked_apt_trades()
+    kr_news_insight   = fetch_kr_news_insight(news.get('domestic', []))
+    re_rates          = fetch_re_rates()
+    apt_trade         = fetch_apt_trade_trend()
+    subscription      = fetch_subscription_schedule()
+    tracked_apt       = fetch_tracked_apt_trades()
     upcoming_earnings = fetch_upcoming_earnings(dt)
-    re_news_insight  = fetch_re_news_insight(news.get('realestate', []))
+    ai_idea           = fetch_ai_investment_idea(market, news, stocks, dt)
+    re_news_insight   = fetch_re_news_insight(news.get('realestate', []))
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt, upcoming_earnings=upcoming_earnings)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt, upcoming_earnings=upcoming_earnings, ai_idea=ai_idea)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
