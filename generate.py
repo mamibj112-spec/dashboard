@@ -179,30 +179,67 @@ WATCHLIST = [
     {'ticker': 'SNDK',    'name': '샌디스크',   'market': 'US'},
 ]
 
+# 국내 주요 ETF (KIS API)
 MAJOR_ETFS = [
-    {'name': 'KODEX 200',             'ticker': '069500'},
-    {'name': 'KODEX 레버리지',         'ticker': '122630'},
-    {'name': 'KODEX 인버스',           'ticker': '114800'},
-    {'name': 'KODEX 코스닥150',        'ticker': '229200'},
-    {'name': 'TIGER 미국S&P500',       'ticker': '360750'},
+    {'name': 'KODEX 200',            'ticker': '069500'},
+    {'name': 'KODEX 레버리지',        'ticker': '122630'},
+    {'name': 'KODEX 인버스',          'ticker': '114800'},
+    {'name': 'KODEX 코스닥150',       'ticker': '229200'},
+    {'name': 'TIGER 미국S&P500',      'ticker': '360750'},
+    {'name': 'KODEX 미국나스닥100TR', 'ticker': '379800'},
+    {'name': 'KODEX 골드선물(H)',     'ticker': '132030'},
+    {'name': 'TIGER 미국채10년선물',  'ticker': '305080'},
 ]
 
+# 미국 상장 ETF (yfinance)
+US_LISTED_ETFS = [
+    {'name': 'SPY',  'ticker': 'SPY',  'desc': 'S&P 500'},
+    {'name': 'QQQ',  'ticker': 'QQQ',  'desc': '나스닥 100'},
+    {'name': 'IWM',  'ticker': 'IWM',  'desc': '러셀 2000'},
+    {'name': 'SOXX', 'ticker': 'SOXX', 'desc': '반도체'},
+    {'name': 'GLD',  'ticker': 'GLD',  'desc': '금'},
+    {'name': 'TLT',  'ticker': 'TLT',  'desc': '미국 장기채'},
+    {'name': 'ARKK', 'ticker': 'ARKK', 'desc': 'ARK 혁신'},
+    {'name': 'XLE',  'ticker': 'XLE',  'desc': '에너지 섹터'},
+]
+
+# 테마별 ETF (KIS API)
 THEME_ETFS = [
-    {'theme': '🔬 반도체',  'etfs': [
-        {'name': 'KODEX 반도체',       'ticker': '091160'},
-        {'name': 'TIGER 반도체',       'ticker': '091230'},
+    {'theme': '🔬 반도체',   'etfs': [
+        {'name': 'KODEX 반도체',      'ticker': '091160'},
+        {'name': 'TIGER 반도체',      'ticker': '091230'},
     ]},
-    {'theme': '🔋 2차전지', 'etfs': [
-        {'name': 'KODEX 2차전지산업',  'ticker': '305720'},
-        {'name': 'TIGER 2차전지테마',  'ticker': '305540'},
+    {'theme': '🔋 2차전지',  'etfs': [
+        {'name': 'KODEX 2차전지산업', 'ticker': '305720'},
+        {'name': 'TIGER 2차전지테마', 'ticker': '305540'},
     ]},
-    {'theme': '🤖 AI·로봇', 'etfs': [
-        {'name': 'KODEX AI&로보틱스',  'ticker': '427270'},
-        {'name': 'TIGER AI반도체',     'ticker': '483150'},
+    {'theme': '🤖 AI·로봇',  'etfs': [
+        {'name': 'KODEX AI&로보틱스', 'ticker': '427270'},
+        {'name': 'TIGER AI반도체',    'ticker': '483150'},
     ]},
-    {'theme': '🇺🇸 미국',   'etfs': [
-        {'name': 'TIGER 미국S&P500',       'ticker': '360750'},
-        {'name': 'KODEX 미국나스닥100TR',  'ticker': '379800'},
+    {'theme': '🛡️ 방산',     'etfs': [
+        {'name': 'TIGER 방산',        'ticker': '515570'},
+        {'name': 'HANARO 방산항공',   'ticker': '438900'},
+    ]},
+    {'theme': '💊 헬스케어',  'etfs': [
+        {'name': 'KODEX 헬스케어',    'ticker': '266410'},
+        {'name': 'TIGER 헬스케어',    'ticker': '143540'},
+    ]},
+    {'theme': '💰 배당',      'etfs': [
+        {'name': 'TIGER 배당성장',    'ticker': '289040'},
+        {'name': 'KODEX 배당성장',    'ticker': '283580'},
+    ]},
+    {'theme': '🏢 리츠',      'etfs': [
+        {'name': 'TIGER 리츠부동산',  'ticker': '329650'},
+        {'name': 'KODEX 리츠',        'ticker': '348970'},
+    ]},
+    {'theme': '🪙 원자재',   'etfs': [
+        {'name': 'KODEX 골드선물(H)', 'ticker': '132030'},
+        {'name': 'TIGER 원자재',      'ticker': '271560'},
+    ]},
+    {'theme': '🇺🇸 미국',    'etfs': [
+        {'name': 'TIGER 미국S&P500',      'ticker': '360750'},
+        {'name': 'KODEX 미국나스닥100TR', 'ticker': '379800'},
     ]},
 ]
 
@@ -1392,15 +1429,15 @@ JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 �
 
 
 def fetch_etf_data():
-    """ETF 데이터 수집 (KIS API)"""
-    result = {'major': [], 'themes': [], 'volume': [], 'popular': []}
+    """ETF 데이터 수집 (KIS API + yfinance)"""
+    result = {'major': [], 'themes': [], 'volume': [], 'popular': [], 'us_etfs': []}
     try:
         import kis_api
         token = kis_api.get_token()
         if not token:
             return result
 
-        # 모든 ETF 티커 중복 제거 후 일괄 조회
+        # 국내 ETF: KIS API
         all_etfs = {e['ticker']: e['name'] for e in MAJOR_ETFS + POPULAR_ETFS}
         for t in THEME_ETFS:
             for e in t['etfs']:
@@ -1420,10 +1457,68 @@ def fetch_etf_data():
         result['popular'] = [make(e) for e in POPULAR_ETFS]
         result['themes']  = [{'theme': t['theme'], 'etfs': [make(e) for e in t['etfs']]} for t in THEME_ETFS]
         result['volume']  = kis_api.get_etf_volume_ranking(token, top_n=5)
-        print(f"  ETF 데이터 수집 완료: {len(price_map)}개")
+
+        # 미국 상장 ETF: yfinance
+        try:
+            import yfinance as yf
+            us_data = []
+            for etf in US_LISTED_ETFS:
+                try:
+                    t_obj = yf.Ticker(etf['ticker'])
+                    info = t_obj.fast_info
+                    price = getattr(info, 'last_price', None)
+                    prev  = getattr(info, 'previous_close', None)
+                    if price and prev:
+                        pct = (price - prev) / prev * 100
+                        us_data.append({
+                            'name': etf['name'], 'desc': etf['desc'],
+                            'val': round(price, 2), 'pct': round(pct, 2),
+                        })
+                except Exception:
+                    us_data.append({'name': etf['name'], 'desc': etf['desc'], 'val': 0, 'pct': 0})
+            result['us_etfs'] = us_data
+        except Exception as e:
+            print(f"  미국 ETF 오류: {e}")
+
+        print(f"  ETF 데이터 수집 완료: {len(price_map)}개 (미국 {len(result['us_etfs'])}개)")
     except Exception as e:
         print(f"  ETF 데이터 오류: {e}")
     return result
+
+
+def fetch_etf_ai_insight(etf_data):
+    """오늘의 ETF 흐름 AI 인사이트"""
+    import os, json, re
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not api_key or not etf_data:
+        return ''
+    try:
+        print("  ETF AI 인사이트 생성 중...")
+        lines = []
+        for t in etf_data.get('themes', []):
+            for e in t.get('etfs', []):
+                if e.get('pct') is not None:
+                    lines.append(f"{t['theme']} | {e['name']}: {e['pct']:+.2f}%")
+        for e in etf_data.get('us_etfs', []):
+            if e.get('pct') is not None:
+                lines.append(f"🇺🇸 {e['name']}({e['desc']}): {e['pct']:+.2f}%")
+        if not lines:
+            return ''
+        prompt = f"""오늘 ETF 시장 흐름 데이터입니다:
+{chr(10).join(lines)}
+
+위 데이터를 바탕으로 오늘 ETF 시장의 주요 흐름과 주목할 테마를 2~3줄로 요약해주세요.
+JSON 형식으로만 응답하세요.
+{{"insight": "ETF 흐름 인사이트 2~3줄"}}"""
+        text = _gemini_post(api_key, prompt, temperature=0.4)
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            print("  ETF AI 인사이트 완료")
+            return json.loads(m.group(0)).get('insight', '')
+        return ''
+    except Exception as e:
+        print(f"  ETF AI 인사이트 오류: {e}")
+        return ''
 
 
 def fetch_research_reports():
@@ -2513,7 +2608,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, upcoming_earnings=None, ai_idea=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, upcoming_earnings=None, ai_idea=None, etf_insight=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -2911,9 +3006,20 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     # ETF HTML
     no_data = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>'
     etf = etf_data or {}
-    major_etf_html  = ''.join(_etf_row(e) for e in etf.get('major', [])) or no_data
+    major_etf_html   = ''.join(_etf_row(e) for e in etf.get('major', [])) or no_data
     popular_etf_html = ''.join(_etf_row(e) for e in etf.get('popular', [])) or no_data
     volume_etf_html  = ''.join(_etf_row(e, show_amt=True) for e in etf.get('volume', [])) or no_data
+
+    # 미국 ETF HTML
+    def _us_etf_row(e):
+        cls = 'up-txt' if (e.get('pct') or 0) >= 0 else 'dn-txt'
+        sign = '▲' if (e.get('pct') or 0) >= 0 else '▼'
+        pct_str = f'{sign}{abs(e.get("pct") or 0):.2f}%'
+        val_str = f'${e.get("val") or 0:,.2f}'
+        return f'<div class="stock-row"><div class="stock-name" title="{e.get("desc","")}">{e.get("name","")} <span style="font-size:9px;color:var(--t3)">{e.get("desc","")}</span></div><div class="stock-right"><span class="{cls}">{pct_str}</span><span class="stock-amt">{val_str}</span></div></div>'
+    us_etf_html = ''.join(_us_etf_row(e) for e in etf.get('us_etfs', [])) or no_data
+
+    # 테마별 ETF HTML
     theme_etf_html = ''
     for t in etf.get('themes', []):
         rows = ''.join(_etf_row(e) for e in t.get('etfs', []))
@@ -3649,28 +3755,63 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
 <!-- ===== ETF 탭 ===== -->
 <div id="tab-etf" class="tab-panel">
+
   <div class="section">
-    <div class="section-label">📊 주요 ETF</div>
-    {major_etf_html}
-  </div>
-  <div class="section">
-    <div class="section-label">🎯 테마별 ETF</div>
-    <div class="stock-story-wrap" style="flex-wrap:wrap;gap:14px;">
-      {theme_etf_html}
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">🇰🇷</span>
+        <span class="mkt-sec-title">국내 주요 ETF</span>
+        <span class="mkt-sec-num">01</span>
+      </div>
+      {major_etf_html}
     </div>
   </div>
+
   <div class="section">
-    <div class="stock-story-wrap">
-      <div class="stock-list-col">
-        <div class="ss-sub-label">💰 거래대금 상위</div>
-        {volume_etf_html}
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">🇺🇸</span>
+        <span class="mkt-sec-title">미국 ETF</span>
+        <span class="mkt-sec-num">02</span>
       </div>
-      <div class="stock-story-col">
-        <div class="ss-sub-label">⭐ 인기 ETF</div>
-        {popular_etf_html}
+      {us_etf_html}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">🎯</span>
+        <span class="mkt-sec-title">테마별 ETF</span>
+        <span class="mkt-sec-num">03</span>
+      </div>
+      <div class="stock-story-wrap" style="flex-wrap:wrap;gap:14px;">
+        {theme_etf_html}
       </div>
     </div>
   </div>
+
+  <div class="section">
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📊</span>
+        <span class="mkt-sec-title">수급 & 인사이트</span>
+        <span class="mkt-sec-num">04</span>
+      </div>
+      <div class="stock-story-wrap">
+        <div class="stock-list-col">
+          <div class="ss-sub-label">💰 거래대금 상위</div>
+          {volume_etf_html}
+        </div>
+        <div class="stock-story-col">
+          <div class="ss-sub-label">⭐ 인기 ETF</div>
+          {popular_etf_html}
+        </div>
+      </div>
+      {f'<div class="story-text" style="margin-top:12px">{etf_insight}</div>' if etf_insight else ''}
+    </div>
+  </div>
+
 </div>
 
 <!-- ===== AI 투자 아이디어 탭 ===== -->
@@ -4069,9 +4210,10 @@ def main():
     tracked_apt       = fetch_tracked_apt_trades()
     upcoming_earnings = fetch_upcoming_earnings(dt)
     ai_idea           = fetch_ai_investment_idea(market, news, stocks, dt)
+    etf_insight       = fetch_etf_ai_insight(etf_data)
     re_news_insight   = fetch_re_news_insight(news.get('realestate', []))
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt, upcoming_earnings=upcoming_earnings, ai_idea=ai_idea)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt, upcoming_earnings=upcoming_earnings, ai_idea=ai_idea, etf_insight=etf_insight)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
