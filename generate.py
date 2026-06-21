@@ -1218,6 +1218,110 @@ JSON 형식으로만 응답하세요.
         return ''
 
 
+TRACKED_APTS = [
+    {
+        'name': '거여4단지', 'lawd_cd': '11710', 'search': '거여4단지',
+        'status': '투기지역', 'status_cls': 'status-normal',
+        'info': '거여동 · 5호선 거여역 도보 6분 · 546세대 · 1997년',
+        'note': '거여역 도보권 · 재건축 인근 단지 · 송파구 저평가',
+        'pyeong': [
+            {'label': '17평', 'area_label': '49㎡', 'area_min': 47.0, 'area_max': 52.0},
+            {'label': '21평', 'area_label': '59㎡', 'area_min': 57.0, 'area_max': 63.0},
+            {'label': '26평', 'area_label': '72㎡', 'area_min': 69.0, 'area_max': 76.0},
+        ],
+    },
+    {
+        'name': '문정시영', 'lawd_cd': '11710', 'search': '문정시영',
+        'status': '리모델링', 'status_cls': 'status-remodel',
+        'info': '문정동 · 개롱역~거여역 사이 · 1,316세대 · 1989년',
+        'note': '강남3구 소형 최저가 · 더샵 브랜드 예정 · 18평 프리미엄↑',
+        'pyeong': [
+            {'label': '12평', 'area_label': '25㎡', 'area_min': 23.0, 'area_max': 27.0},
+            {'label': '16평', 'area_label': '35㎡', 'area_min': 33.0, 'area_max': 37.5},
+            {'label': '18평', 'area_label': '39㎡', 'area_min': 37.5, 'area_max': 42.0},
+            {'label': '22평', 'area_label': '46㎡', 'area_min': 44.0, 'area_max': 49.0},
+        ],
+        'remodel': '포스코이앤씨 · 더샵 골든하임',
+        'remodel_steps': [
+            ('done',    '조합설립 · 시공사 선정 · 안전진단 · 교통영향평가 · 도시건축위 사전자문 완료'),
+            ('current', '건축심의 + 안전성검토 진행 중 (2026년 중반 결론 예상)'),
+            ('todo',    '사업계획승인 → 1,316 → 1,440세대 (+124가구)'),
+        ],
+    },
+]
+
+
+def fetch_tracked_apt_trades():
+    """관심 단지 실거래가 자동 수집 (국토부 API)"""
+    import os, requests, xml.etree.ElementTree as ET
+    from datetime import datetime, timedelta
+    api_key = os.environ.get('DATA_GO_KR_API_KEY', '').strip()
+    if not api_key:
+        return None
+    print("  관심 단지 실거래 수집 중...")
+    today = datetime.now()
+    # 최근 6개월 YYYYMM 리스트 생성
+    months = []
+    dt = today.replace(day=1)
+    for _ in range(6):
+        months.append(dt.strftime('%Y%m'))
+        dt = (dt - timedelta(days=1)).replace(day=1)
+
+    result = {}
+    for apt in TRACKED_APTS:
+        all_trades = []
+        seen_months = set()
+        for ym in months:
+            if ym in seen_months:
+                continue
+            seen_months.add(ym)
+            try:
+                url = 'https://apis.data.go.kr/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade'
+                r = requests.get(url, params={
+                    'serviceKey': api_key, 'LAWD_CD': apt['lawd_cd'],
+                    'DEAL_YMD': ym, 'pageNo': 1, 'numOfRows': 1000,
+                }, timeout=12)
+                root = ET.fromstring(r.text)
+                for item in root.findall('.//item'):
+                    nm = item.findtext('aptNm', '').strip()
+                    if apt['search'] not in nm:
+                        continue
+                    amt_str = item.findtext('dealAmount', '').replace(',', '').strip()
+                    area_str = item.findtext('excluUseAr', '').strip()
+                    day_str = item.findtext('dealDay', '').strip().zfill(2)
+                    if amt_str.isdigit() and area_str:
+                        all_trades.append({
+                            'amt': int(amt_str),
+                            'area': float(area_str),
+                            'ym': ym,
+                            'day': day_str,
+                        })
+            except Exception:
+                pass
+
+        pyeong_result = []
+        for py in apt['pyeong']:
+            matching = [t for t in all_trades
+                        if py['area_min'] <= t['area'] <= py['area_max']]
+            if matching:
+                latest = sorted(matching, key=lambda x: (x['ym'], x['day']), reverse=True)[0]
+                amt_disp = f"{latest['amt']//10000}억{latest['amt']%10000:,}만" if latest['amt'] >= 10000 else f"{latest['amt']:,}만"
+                date_disp = f"{latest['ym'][:4]}.{latest['ym'][4:]}"
+                pyeong_result.append({
+                    'label': py['label'], 'area_label': py['area_label'],
+                    'amt': amt_disp, 'date': date_disp,
+                })
+            else:
+                pyeong_result.append({
+                    'label': py['label'], 'area_label': py['area_label'],
+                    'amt': None, 'date': '',
+                })
+        result[apt['name']] = pyeong_result
+
+    print(f"  관심 단지 수집 완료")
+    return result
+
+
 def fetch_re_rates():
     """한국은행 ECOS API로 기준금리·국고채·주담대 금리 수집"""
     import os, requests
@@ -2075,7 +2179,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -2332,6 +2436,47 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         subscription_html = sub_rows or '<div style="color:var(--t3);font-size:12px;padding:8px 0;">일정 없음</div>'
     else:
         subscription_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 수집 중</div>'
+
+    # 관심 단지 HTML 빌더
+    def _apt_card(apt_cfg, pyeong_data):
+        rows = ''
+        latest_date = ''
+        for py in (pyeong_data or []):
+            amt_cell = py['amt'] if py['amt'] else '<span style="color:var(--t3)">거래없음</span>'
+            rows += f'<tr><td><strong>{py["label"]}</strong> {py["area_label"]}</td><td>{amt_cell}</td></tr>'
+            if py.get('date'):
+                latest_date = py['date']
+        header_label = f'실거래 ({latest_date})' if latest_date else '실거래 (정보없음)'
+        table = f'''<table class="apt-table">
+          <thead><tr><th>평형</th><th>{header_label}</th></tr></thead>
+          <tbody>{rows}</tbody>
+        </table>'''
+        remodel_html = ''
+        if apt_cfg.get('remodel_steps'):
+            steps = ''.join(
+                f'<div class="step-row step-{s}"><div class="step-dot"></div><div class="step-text">{t}</div></div>'
+                for s, t in apt_cfg['remodel_steps']
+            )
+            remodel_html = f'<div class="remodel-steps"><div class="remodel-label">리모델링 진행 — {apt_cfg.get("remodel","")}</div>{steps}</div>'
+        return f'''<div class="apt-card">
+          <div class="apt-header">
+            <div>
+              <div class="apt-name">{apt_cfg["name"]}</div>
+              <div class="apt-info">{apt_cfg["info"]}</div>
+            </div>
+            <div class="apt-status {apt_cfg["status_cls"]}">{apt_cfg["status"]}</div>
+          </div>
+          {table}
+          {remodel_html}
+          <div class="invest-point">📍 {apt_cfg["note"]}<br>
+            <span class="warn">⚠ 최신 실거래가는 호갱노노·KB부동산에서 확인</span>
+          </div>
+        </div>'''
+
+    tracked_apt_html = ''
+    for apt_cfg in TRACKED_APTS:
+        pyeong_data = (tracked_apt or {}).get(apt_cfg['name'])
+        tracked_apt_html += _apt_card(apt_cfg, pyeong_data)
 
     hot_news = news_html(news.get('hot', []),          'nb-red',  '이슈')
 
@@ -3018,58 +3163,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         <span class="mkt-sec-title">관심 단지</span>
         <span class="mkt-sec-num">05</span>
       </div>
-      <div class="apt-card">
-        <div class="apt-header">
-          <div>
-            <div class="apt-name">거여4단지</div>
-            <div class="apt-info">거여동 · 5호선 거여역 도보 6분 · 546세대 · 1997년</div>
-          </div>
-          <div class="apt-status status-normal">투기지역</div>
-        </div>
-        <table class="apt-table">
-          <thead><tr><th>평형</th><th>실거래 (2025.11)</th><th>KB시세</th></tr></thead>
-          <tbody>
-            <tr><td><strong>17평</strong> 49㎡</td><td>8억4,790만</td><td style="color:var(--t3)">하위 8억5천</td></tr>
-            <tr><td><strong>21평</strong> 59㎡</td><td>10억4,000만</td><td style="color:var(--t3)">상위 9억2천</td></tr>
-            <tr><td><strong>26평</strong> 72㎡</td><td>8억9,000만</td><td style="color:var(--t3)">평균 8억9천</td></tr>
-          </tbody>
-        </table>
-        <div class="invest-point">
-          📍 1년 상승률 +3.81% · 거여역 도보권 · 재건축 인근 단지<br>
-          <span class="warn">⚠ 최신 실거래가는 호갱노노·KB부동산에서 확인</span>
-        </div>
-      </div>
-      <div class="apt-card" style="margin-top:10px">
-        <div class="apt-header">
-          <div>
-            <div class="apt-name">문정시영</div>
-            <div class="apt-info">문정동 · 개롱역~거여역 사이 · 1,316세대 · 1989년</div>
-          </div>
-          <div class="apt-status status-remodel">리모델링</div>
-        </div>
-        <table class="apt-table">
-          <thead><tr><th>평형</th><th>실거래 (2025 하반기)</th><th>현재 호가</th></tr></thead>
-          <tbody>
-            <tr><td><strong>12평</strong> 25㎡</td><td>4억7,270만</td><td style="color:var(--orange)">6억</td></tr>
-            <tr><td><strong>16평</strong> 35㎡</td><td>5억8,100만</td><td style="color:var(--orange)">7억 중반</td></tr>
-            <tr><td><strong>18평</strong> 39㎡</td><td>7억5,705만</td><td style="color:var(--orange)">9억 초반</td></tr>
-            <tr><td><strong>22평</strong> 46㎡</td><td>9억5,850만</td><td style="color:var(--orange)">10억 초반</td></tr>
-          </tbody>
-        </table>
-        <div class="remodel-steps">
-          <div class="remodel-label">리모델링 진행 — 포스코이앤씨 · 더샵 골든하임</div>
-          <div class="step-row step-done"><div class="step-dot"></div>
-            <div class="step-text">조합설립 · 시공사 선정 · 안전진단 · 교통영향평가 · 도시건축위 사전자문 완료</div></div>
-          <div class="step-row step-current"><div class="step-dot"></div>
-            <div class="step-text">건축심의 + 안전성검토 진행 중 (2026년 중반 결론 예상)</div></div>
-          <div class="step-row step-todo"><div class="step-dot"></div>
-            <div class="step-text">사업계획승인 → 1,316 → 1,440세대 (+124가구)</div></div>
-        </div>
-        <div class="invest-point">
-          📍 강남3구 소형 최저가 · 더샵 브랜드 예정 · 18평 프리미엄↑<br>
-          <span class="warn">⚠ 최신 실거래가는 호갱노노·직방에서 확인</span>
-        </div>
-      </div>
+      {tracked_apt_html}
     </div>
   </div>
 
@@ -3522,9 +3616,10 @@ def main():
     re_rates        = fetch_re_rates()
     apt_trade       = fetch_apt_trade_trend()
     subscription    = fetch_subscription_schedule()
+    tracked_apt     = fetch_tracked_apt_trades()
     re_news_insight = fetch_re_news_insight(news.get('realestate', []))
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
