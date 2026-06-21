@@ -1254,11 +1254,16 @@ def fetch_re_rates():
         if row3:
             result['bond_10y'] = float(row3['DATA_VALUE'])
 
-        # 주택담보대출 금리 (월별)
-        row4 = ecos('098Y007', '0000001', freq='M', start=sm, end=em)
+        # 주택담보대출 금리 (신규취급액 기준, 월별)
+        row4 = ecos('121Y006', 'BECBLA0302', freq='M', start=sm, end=em)
         if row4:
             result['mortgage_rate'] = float(row4['DATA_VALUE'])
             result['mortgage_date'] = row4['TIME']
+
+        # 전세자금대출 금리
+        row5 = ecos('121Y006', 'BECBLA03041', freq='M', start=sm, end=em)
+        if row5:
+            result['jeonse_rate'] = float(row5['DATA_VALUE'])
 
         print(f"  금리 데이터 수집 완료: 기준금리 {result.get('base_rate','?')}%")
     except Exception as e:
@@ -2288,7 +2293,8 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   {_rate_card('한은 기준금리', rr.get('base_rate'), sub=base_date)}
   {_rate_card('국고채 3년', rr.get('bond_3y'), sub='시장금리')}
   {_rate_card('국고채 10년', rr.get('bond_10y'), sub='장기금리')}
-  {_rate_card('주담대 금리', rr.get('mortgage_rate'), sub=mort_date+' 은행평균')}
+  {_rate_card('주담대 금리', rr.get('mortgage_rate'), sub=mort_date+' 신규취급')}
+  {_rate_card('전세자금대출', rr.get('jeonse_rate'), sub=mort_date+' 신규취급')}
 </div>
 <div style="font-size:10px;color:var(--t3);margin-top:8px;">출처: 한국은행 ECOS · <a href="https://ecos.bok.or.kr" target="_blank" style="color:var(--t3)">ecos.bok.or.kr</a></div>'''
 
