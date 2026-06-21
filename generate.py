@@ -652,7 +652,52 @@ def fetch_ai_briefing(market, news):
         return None
 
 
-def fetch_us_ai_briefing(market, news):
+def fetch_us_recent_earnings():
+    """Finnhub API로 최근 2주 미국 실적 발표 데이터 수집"""
+    import os, requests
+    from datetime import datetime, timedelta
+    key = os.environ.get('FINNHUB_API_KEY', '').strip()
+    if not key:
+        return []
+    try:
+        today = datetime.now()
+        frm = (today - timedelta(days=14)).strftime('%Y-%m-%d')
+        to = today.strftime('%Y-%m-%d')
+        r = requests.get('https://finnhub.io/api/v1/calendar/earnings',
+                         params={'from': frm, 'to': to, 'token': key}, timeout=10)
+        items = r.json().get('earningsCalendar', [])
+        # EPS 실제 수치가 있는 기업만 필터
+        reported = [it for it in items if it.get('epsActual') is not None]
+        # 예상치와 실제치 모두 있는 기업 우선 정렬 (beat/miss 판단 가능)
+        reported.sort(key=lambda x: (x.get('epsEstimate') is None, x.get('date', '')), reverse=False)
+        result = []
+        for it in reported[:15]:
+            eps_a = it.get('epsActual')
+            eps_e = it.get('epsEstimate')
+            rev_a = it.get('revenueActual')
+            rev_e = it.get('revenueEstimate')
+            beat = None
+            if eps_a is not None and eps_e is not None:
+                beat = 'beat' if eps_a >= eps_e else 'miss'
+            result.append({
+                'symbol':  it.get('symbol', ''),
+                'date':    it.get('date', ''),
+                'year':    it.get('year'),
+                'quarter': it.get('quarter'),
+                'eps_actual':   eps_a,
+                'eps_estimate': eps_e,
+                'rev_actual':   rev_a,
+                'rev_estimate': rev_e,
+                'beat': beat,
+            })
+        print(f"  최근 실적 발표 수집 완료: {len(result)}건")
+        return result
+    except Exception as e:
+        print(f"  최근 실적 수집 오류: {e}")
+        return []
+
+
+def fetch_us_ai_briefing(market, news, recent_earnings=None):
     """Gemini API로 미국 증시 AI 브리핑 생성"""
     import os
     api_key = os.environ.get('GEMINI_API_KEY', '').strip()
@@ -692,7 +737,31 @@ def fetch_us_ai_briefing(market, news):
         for item in news.get('international', [])[:6]:
             headlines.append(item['title'])
 
-        prompt = f"""오늘 미국 주식시장 데이터 (현지 종가 기준):
+        from datetime import datetime as _dt
+        today_str = _dt.now().strftime('%Y년 %m월 %d일')
+
+        # 실제 실적 발표 데이터 텍스트 구성
+        earnings_text = ''
+        if recent_earnings:
+            lines = []
+            for e in recent_earnings:
+                sym = e.get('symbol', '')
+                dt = e.get('date', '')
+                yr = e.get('year', '')
+                q = e.get('quarter', '')
+                ea = e.get('eps_actual')
+                ee = e.get('eps_estimate')
+                beat = e.get('beat', '')
+                beat_str = f' ({"예상 상회" if beat=="beat" else "예상 하회"})' if beat else ''
+                eps_str = f'EPS {ea}' if ea is not None else ''
+                est_str = f'(예상 {ee})' if ee is not None else ''
+                lines.append(f"- {sym} [{dt}, {yr}년 Q{q}]: {eps_str} {est_str}{beat_str}")
+            earnings_text = '\n'.join(lines)
+        else:
+            earnings_text = '(실적 데이터 없음)'
+
+        prompt = f"""오늘 날짜: {today_str}
+오늘 미국 주식시장 데이터 (현지 종가 기준):
 주요 지수:
 - S&P500: {mv('sp500')}
 - 나스닥: {mv('nasdaq')}
@@ -714,11 +783,15 @@ def fetch_us_ai_briefing(market, news):
 매그니피센트 7 동향:
 {mag7_data}
 
+최근 2주 실제 실적 발표 기업 (Finnhub 데이터):
+{earnings_text}
+
 주요 뉴스 헤드라인:
 {chr(10).join(f"- {h}" for h in headlines)}
 
 위 데이터를 바탕으로 단순 나열이 아닌, 지표 간 인과관계와 섹터/종목별 흐름이 있는 시황 분석을 작성하세요.
 한국어 뉴스레터 형식으로 작성하며, 투자자들이 오늘 무엇에 집중해야 했는지 명확히 설명하세요.
+earnings_reviews는 반드시 위의 "최근 2주 실제 실적 발표 기업" 데이터에서만 선정하고, 오늘 날짜({today_str}) 기준으로 작성하세요.
 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
 {{
   "keyword": "오늘 미국 시장 핵심 키워드 (이모지 포함, 20자 이내)",
@@ -3595,9 +3668,11 @@ def main():
 
     # 2단계: AI 분석 (병렬 — Gemini 호출)
     print("AI 분석 중 (병렬)...")
+    recent_earnings = fetch_us_recent_earnings()
+
     with ThreadPoolExecutor(max_workers=7) as ex:
         f_ai_brief         = ex.submit(fetch_ai_briefing, market, news)
-        f_us_ai_brief      = ex.submit(fetch_us_ai_briefing, market, news)
+        f_us_ai_brief      = ex.submit(fetch_us_ai_briefing, market, news, recent_earnings)
         f_research_summary = ex.submit(fetch_research_summary, research_reports)
         f_stock_story      = ex.submit(fetch_stock_story, stocks)
         f_investor_flow    = ex.submit(fetch_investor_flow_story, stocks)
