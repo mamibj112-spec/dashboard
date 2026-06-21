@@ -24,7 +24,7 @@ self.addEventListener('fetch', e => {
 
   if (isHTML) {
     e.respondWith(
-      fetch(e.request, { cache: 'no-store' })
+      fetch(new Request(e.request.url, { cache: 'no-store' }))
         .catch(() => caches.match(e.request))
     );
     return;

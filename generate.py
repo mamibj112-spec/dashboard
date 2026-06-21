@@ -443,18 +443,33 @@ MACRO_HISTORY_TICKERS = {
     'btc':    'BTC-USD',
 }
 
+_HIST_DEC = {
+    'kospi':2,'kosdaq':2,'sp500':2,'nasdaq':2,'dow':2,'vix':2,
+    'usdkrw':0,'brent':1,'wti':1,'tnx':2,'gold':0,'dxy':2,'btc':0
+}
+
 def fetch_macro_history():
-    """매크로 지표 최근 7일 종가 데이터"""
+    """매크로 지표 최근 2주 OHLC 데이터"""
     print("매크로 추이 데이터 수집 중...")
     result = {}
     for key, sym in MACRO_HISTORY_TICKERS.items():
         try:
             t = yf.Ticker(sym)
-            hist = t.history(period='14d', auto_adjust=True)
+            hist = t.history(period='30d', auto_adjust=True)
             hist = hist.dropna(subset=['Close'])
-            closes = [round(float(v), 4) for v in hist['Close'].tail(7).tolist()]
-            if len(closes) >= 2:
-                result[key] = closes
+            tail = hist.tail(14)
+            dec = _HIST_DEC.get(key, 2)
+            candles = []
+            for idx, row in tail.iterrows():
+                candles.append({
+                    'time': idx.strftime('%Y-%m-%d'),
+                    'open':  round(float(row['Open']),  dec),
+                    'high':  round(float(row['High']),  dec),
+                    'low':   round(float(row['Low']),   dec),
+                    'close': round(float(row['Close']), dec),
+                })
+            if len(candles) >= 2:
+                result[key] = candles
         except Exception as e:
             print(f"  [{key}] 추이 오류: {e}")
     return result
@@ -2333,6 +2348,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 <style>{CSS}</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2/dist/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.7/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
 
@@ -2344,7 +2360,10 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
   <div class="header-right">
     {gen_time}<br>
-    <button class="update-btn" id="updBtn" onclick="triggerUpdate()">지금 업데이트</button>
+    <div style="display:flex;gap:4px;margin-top:5px;justify-content:flex-end;">
+      <button class="update-btn" id="refreshBtn" onclick="doReload()">↻ 새로고침</button>
+      <button class="update-btn" id="updBtn" onclick="triggerUpdate()">지금 업데이트</button>
+    </div>
     <span class="update-status" id="updStatus"></span>
   </div>
 </div>
@@ -2820,8 +2839,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <div id="macroModalTitle" style="font-size:14px;font-weight:700;color:var(--t1);"></div>
     <button onclick="closeMacroChart()" style="background:none;border:none;color:var(--t3);font-size:22px;cursor:pointer;line-height:1;padding:0;">✕</button>
   </div>
-  <canvas id="macroChartCanvas" height="110"></canvas>
-  <div id="macroNoData" style="display:none;color:var(--t3);font-size:12px;text-align:center;padding:36px 0;">다음 업데이트 시 데이터 표시</div>
+  <div id="macroChartContainer" style="width:100%;height:260px;"></div>
 </div>
 
 <div class="footer-note">
@@ -2832,7 +2850,6 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 <script>
 var MACRO_META={macro_meta_json};
 var MACRO_HIST={macro_hist_json};
-var _mc=null;
 function showMacroChart(k){{
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
   if(!m)return;
@@ -2841,18 +2858,42 @@ function showMacroChart(k){{
     document.getElementById('macroOverlay').classList.add('open');
     document.getElementById('macroModal').classList.add('open');
   }},10);
-  document.getElementById('macroModalTitle').textContent=m.name+' 최근 7일';
-  var cv=document.getElementById('macroChartCanvas'),nd=document.getElementById('macroNoData');
-  if(_mc){{_mc.destroy();_mc=null;}}
-  if(!vals.length){{nd.style.display='block';cv.style.display='none';return;}}
-  nd.style.display='none';cv.style.display='block';
-  var ctx=cv.getContext('2d');
-  var g=ctx.createLinearGradient(0,0,0,130);
-  g.addColorStop(0,'rgba('+m.rgb+',0.25)');g.addColorStop(1,'rgba('+m.rgb+',0.02)');
-  function fmt(v){{return m.pre+(m.dec===0?Math.round(v).toLocaleString():v.toFixed(m.dec))+m.suf;}}
-  _mc=new Chart(ctx,{{type:'line',data:{{labels:vals.map(function(){{return '';}}),datasets:[{{data:vals,borderColor:m.color,backgroundColor:g,borderWidth:2,pointRadius:4,pointBackgroundColor:m.color,fill:true,tension:0.4,clip:false}}]}},options:{{layout:{{padding:{{top:24,bottom:4,left:16,right:16}}}},clip:false,responsive:true,plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{label:function(c){{return fmt(c.raw);}}}}}},datalabels:{{color:m.color,font:{{size:9,weight:'600'}},formatter:function(v){{return fmt(v);}},anchor:'end',align:'top',offset:2,clamp:true}}}},scales:{{x:{{display:false}},y:{{display:false}}}}}},plugins:[ChartDataLabels]}});
+  document.getElementById('macroModalTitle').textContent=m.name+' 최근 2주';
+  var ct=document.getElementById('macroChartContainer');
+  if(ct._lwc){{ct._lwc.remove();ct._lwc=null;}}
+  ct.innerHTML='';
+  if(!vals.length){{ct.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--t3);font-size:12px;">다음 업데이트 시 데이터 표시</div>';return;}}
+  var data;
+  if(typeof vals[0]==='object'&&vals[0].time){{
+    data=vals;
+  }}else{{
+    var base=new Date();base.setHours(0,0,0,0);
+    data=vals.map(function(c,i){{
+      var d=new Date(base);d.setDate(d.getDate()-(vals.length-1-i));
+      return{{time:d.toISOString().slice(0,10),open:c,high:c,low:c,close:c}};
+    }});
+  }}
+  var chart=LightweightCharts.createChart(ct,{{
+    width:ct.offsetWidth,height:240,
+    layout:{{background:{{type:'solid',color:'transparent'}},textColor:'#6a80aa'}},
+    grid:{{vertLines:{{color:'rgba(255,255,255,0.05)'}},horzLines:{{color:'rgba(255,255,255,0.05)'}}}},
+    rightPriceScale:{{borderColor:'rgba(255,255,255,0.1)'}},
+    timeScale:{{borderColor:'rgba(255,255,255,0.1)',timeVisible:true,minBarSpacing:18,tickMarkFormatter:function(t){{var p=t.split('-');return(p[1]|0)+'/'+(p[2]|0);}}}},
+    crosshair:{{mode:1}},
+  }});
+  var series=chart.addCandlestickSeries({{
+    upColor:'#00e896',downColor:'#ff4060',
+    borderUpColor:'#00e896',borderDownColor:'#ff4060',
+    wickUpColor:'#00e896',wickDownColor:'#ff4060',
+  }});
+  series.setData(data);
+  chart.timeScale().fitContent();
+  ct._lwc=chart;
 }}
 function closeMacroChart(){{
+  var ct=document.getElementById('macroChartContainer');
+  if(ct._lwc){{ct._lwc.remove();ct._lwc=null;}}
+  ct.innerHTML='';
   document.getElementById('macroOverlay').classList.remove('open');
   document.getElementById('macroModal').classList.remove('open');
   setTimeout(function(){{document.getElementById('macroOverlay').style.display='none';}},280);
@@ -3039,6 +3080,11 @@ function toggleEarnMore(btn){{
   var opened = extras.length && extras[0].classList.contains('show');
   extras.forEach(function(el){{el.classList.toggle('show', !opened);}});
   btn.textContent = opened ? btn.dataset.moreLabel : btn.dataset.lessLabel;
+}}
+function doReload(){{
+  var btn=document.getElementById('refreshBtn');
+  btn.disabled=true;btn.textContent='로딩 중...';
+  location.reload();
 }}
 var _updTimer=null;
 function triggerUpdate(){{
