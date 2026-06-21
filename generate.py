@@ -1137,7 +1137,7 @@ def fetch_research_reports():
 
 
 def fetch_research_summary(reports):
-    """Gemini로 오늘의 핵심 리포트 3개 선정 및 요약"""
+    """Gemini로 오늘의 핵심 리포트 5개 선정 및 요약 + 전체 인사이트"""
     import os, json, re
     api_key = os.environ.get('GEMINI_API_KEY', '').strip()
     if not api_key or not reports:
@@ -1152,15 +1152,19 @@ def fetch_research_summary(reports):
 
 {report_text}
 
-위 리포트 중 오늘 가장 주목할 만한 3개를 선정하고, 각각의 핵심 투자 포인트를 2줄로 요약해주세요.
+위 리포트 중 오늘 가장 주목할 만한 5개를 선정하고, 각각의 핵심 투자 포인트를 2줄로 요약해주세요.
 선정한 리포트의 번호(위 목록의 숫자)를 index 필드에 포함하세요 (1부터 시작).
+아울러 오늘 증권사 리포트들의 전체적인 흐름과 시장 시사점을 2~3줄로 종합한 인사이트도 작성해주세요.
 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 절대 포함하지 마세요.
 {{
   "reports": [
     {{"index": 1, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}},
     {{"index": 2, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}},
-    {{"index": 3, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}}
-  ]
+    {{"index": 3, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}},
+    {{"index": 4, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}},
+    {{"index": 5, "stock": "종목명", "firm": "증권사", "title": "리포트 제목", "point1": "핵심 포인트 1줄", "point2": "핵심 포인트 2줄"}}
+  ],
+  "insight": "오늘 증권사 리포트 전반적 흐름과 시장 시사점 2~3줄"
 }}"""
         text = _gemini_post(api_key, prompt, temperature=0.3)
         m = re.search(r'\{.*\}', text, re.DOTALL)
@@ -1172,11 +1176,42 @@ def fetch_research_summary(reports):
                 if 1 <= idx <= len(reports):
                     rp['url'] = reports[idx - 1].get('url', '')
             print("  리포트 AI 요약 완료")
-            return result
+            return {'reports': result, 'insight': data.get('insight', '')}
         return None
     except Exception as e:
         print(f"  리포트 AI 요약 오류: {e}")
         return None
+
+
+def fetch_kr_news_insight(news_items):
+    """국내 주식 뉴스 AI 인사이트 생성"""
+    import os, json, re
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not api_key or not news_items:
+        return ''
+    try:
+        print("  국내 뉴스 인사이트 생성 중...")
+        news_text = '\n'.join(
+            f"- {item.get('title', '')}"
+            for item in news_items[:10]
+        )
+        prompt = f"""아래는 오늘 국내 주식 관련 뉴스 헤드라인입니다.
+
+{news_text}
+
+위 뉴스들을 종합해 오늘 국내 증시의 주요 이슈와 투자자가 주목해야 할 시사점을 2~3줄로 작성해주세요.
+JSON 형식으로만 응답하세요.
+{{"insight": "뉴스 인사이트 2~3줄"}}"""
+        text = _gemini_post(api_key, prompt, temperature=0.3)
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            data = json.loads(m.group(0))
+            print("  국내 뉴스 인사이트 완료")
+            return data.get('insight', '')
+        return ''
+    except Exception as e:
+        print(f"  국내 뉴스 인사이트 오류: {e}")
+        return ''
 
 
 def fetch_news():
@@ -1877,7 +1912,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -2047,8 +2082,10 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
     # 증권사 리포트 HTML
     if research_summary:
+        rp_list = research_summary.get('reports', []) if isinstance(research_summary, dict) else research_summary
+        rp_insight = research_summary.get('insight', '') if isinstance(research_summary, dict) else ''
         cards = ''
-        for rp in research_summary:
+        for rp in rp_list:
             url = rp.get('url', '')
             link_open  = f'<a href="{url}" target="_blank" style="text-decoration:none;display:block">' if url else '<div>'
             link_close = '</a>' if url else '</div>'
@@ -2063,7 +2100,15 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <div class="report-point">· {rp.get('point2','')}</div>
   </div>
 </div>{link_close}'''
-        research_html = f'<div class="section"><div class="section-label">📋 오늘의 증권사 리포트</div>{cards}</div>'
+        rp_insight_html = f'<div class="story-text" style="margin-top:12px">{rp_insight}</div>' if rp_insight else ''
+        research_html = f'''<div class="section"><div class="story-wrap">
+  <div class="mkt-sec-head">
+    <span class="mkt-sec-icon">📋</span>
+    <span class="mkt-sec-title">오늘의 증권사 리포트</span>
+    <span class="mkt-sec-num">04</span>
+  </div>
+  {cards}{rp_insight_html}
+</div></div>'''
     else:
         research_html = ''
 
@@ -2503,15 +2548,22 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         </div>
       </div>
       {f'<div class="story-text" style="margin-top:12px">{investor_flow_story}</div>' if investor_flow_story else ''}
+      {f'<div style="margin-top:12px">{stock_story_html}</div>' if stock_story_html else ''}
     </div>
   </div>
-  {f'<div class="section">{stock_story_html}</div>' if stock_story_html else ''}
 
   {research_html}
 
   <div class="section">
-    <div class="section-label">국내 주식 뉴스</div>
-    {dom_news}
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📰</span>
+        <span class="mkt-sec-title">국내 주식 뉴스</span>
+        <span class="mkt-sec-num">05</span>
+      </div>
+      {dom_news}
+      {f'<div class="story-text" style="margin-top:12px">{kr_news_insight}</div>' if kr_news_insight else ''}
+    </div>
   </div>
 
 </div>
@@ -3183,24 +3235,26 @@ def main():
 
     # 2단계: AI 분석 (병렬 — Gemini 호출)
     print("AI 분석 중 (병렬)...")
-    with ThreadPoolExecutor(max_workers=6) as ex:
-        f_ai_brief        = ex.submit(fetch_ai_briefing, market, news)
-        f_us_ai_brief     = ex.submit(fetch_us_ai_briefing, market, news)
+    with ThreadPoolExecutor(max_workers=7) as ex:
+        f_ai_brief         = ex.submit(fetch_ai_briefing, market, news)
+        f_us_ai_brief      = ex.submit(fetch_us_ai_briefing, market, news)
         f_research_summary = ex.submit(fetch_research_summary, research_reports)
-        f_stock_story     = ex.submit(fetch_stock_story, stocks)
-        f_investor_flow   = ex.submit(fetch_investor_flow_story, stocks)
-        f_watchlist       = ex.submit(fetch_watchlist_data, WATCHLIST)
+        f_stock_story      = ex.submit(fetch_stock_story, stocks)
+        f_investor_flow    = ex.submit(fetch_investor_flow_story, stocks)
+        f_watchlist        = ex.submit(fetch_watchlist_data, WATCHLIST)
         f_company_overview = ex.submit(fetch_company_overview)
 
-    ai_brief           = f_ai_brief.result()
-    us_ai_brief        = f_us_ai_brief.result()
-    research_summary   = f_research_summary.result()
-    stock_story        = f_stock_story.result()
+    ai_brief            = f_ai_brief.result()
+    us_ai_brief         = f_us_ai_brief.result()
+    research_summary    = f_research_summary.result()
+    stock_story         = f_stock_story.result()
     investor_flow_story = f_investor_flow.result()
-    watchlist          = f_watchlist.result()
-    company_overview   = f_company_overview.result()
+    watchlist           = f_watchlist.result()
+    company_overview    = f_company_overview.result()
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed)
+    kr_news_insight = fetch_kr_news_insight(news.get('domestic', []))
+
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
