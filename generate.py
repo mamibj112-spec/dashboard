@@ -2442,6 +2442,7 @@ color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all
 .risk-num{color:var(--dn);font-weight:700;flex-shrink:0}
 .stock-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--card);border-radius:6px;margin-bottom:4px}
 .stock-name{font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px}
+.etf-name{font-size:11px;font-weight:600;color:var(--t1);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:6px}
 .stock-right{display:flex;align-items:center;gap:5px;font-size:11px;flex-shrink:0}
 .stock-amt{color:var(--t3);font-size:9.5px}
 .breadth-wrap{background:var(--card);border-radius:10px;padding:12px 14px}
@@ -2594,7 +2595,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
 def _etf_row(e, show_amt=False):
-    name = e.get('name', '')[:14]
+    name = e.get('name', '')
     val  = e.get('val', 0)
     pct  = e.get('pct', 0)
     cls  = 'up-txt' if pct >= 0 else 'dn-txt'
@@ -2605,7 +2606,7 @@ def _etf_row(e, show_amt=False):
         amt = e.get('amt', 0)
         amt_str = f"{amt/100000000:.0f}억" if amt >= 100000000 else f"{amt/100000000:.1f}억"
         right = f'<span class="stock-amt">{amt_str}</span>'
-    return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
+    return f'<div class="stock-row"><div class="etf-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
 def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, upcoming_earnings=None, ai_idea=None, etf_insight=None):
@@ -3016,7 +3017,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         sign = '▲' if (e.get('pct') or 0) >= 0 else '▼'
         pct_str = f'{sign}{abs(e.get("pct") or 0):.2f}%'
         val_str = f'${e.get("val") or 0:,.2f}'
-        return f'<div class="stock-row"><div class="stock-name" title="{e.get("desc","")}">{e.get("name","")} <span style="font-size:9px;color:var(--t3)">{e.get("desc","")}</span></div><div class="stock-right"><span class="{cls}">{pct_str}</span><span class="stock-amt">{val_str}</span></div></div>'
+        return f'<div class="stock-row"><div class="etf-name">{e.get("name","")} <span style="font-size:9px;color:var(--t3)">{e.get("desc","")}</span></div><div class="stock-right"><span class="{cls}">{pct_str}</span><span class="stock-amt">{val_str}</span></div></div>'
     us_etf_html = ''.join(_us_etf_row(e) for e in etf.get('us_etfs', [])) or no_data
 
     # 테마별 ETF HTML
