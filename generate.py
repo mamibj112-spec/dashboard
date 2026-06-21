@@ -968,6 +968,8 @@ RSS_FEEDS = {
     ],
     'realestate': [
         ('한국경제', 'https://www.hankyung.com/feed/realestate'),
+        ('머니투데이', 'https://news.mt.co.kr/mtview/rss/realestate.xml'),
+        ('매일경제', 'https://www.mk.co.kr/rss/30000001/'),
     ],
     'hot': [
         ('한국경제', 'https://www.hankyung.com/feed/economy'),
@@ -1213,6 +1215,81 @@ JSON 형식으로만 응답하세요.
         return ''
     except Exception as e:
         print(f"  국내 뉴스 인사이트 오류: {e}")
+        return ''
+
+
+def fetch_re_rates():
+    """한국은행 ECOS sample API로 기준금리·국고채·주담대 금리 수집"""
+    import requests
+    from datetime import datetime, timedelta
+    result = {}
+    try:
+        key = 'sample'
+        today = datetime.now()
+        s = (today - timedelta(days=60)).strftime('%Y%m%d')
+        e = today.strftime('%Y%m%d')
+        sm = (today - timedelta(days=90)).strftime('%Y%m')
+        em = today.strftime('%Y%m')
+        headers = {'User-Agent': 'Mozilla/5.0'}
+
+        def ecos(stat, item, freq='D', start=s, end=e):
+            url = f'https://ecos.bok.or.kr/api/StatisticSearch/{key}/json/kr/1/5/{stat}/{freq}/{start}/{end}/{item}/'
+            r = requests.get(url, headers=headers, timeout=10)
+            rows = r.json().get('StatisticSearch', {}).get('row', [])
+            return rows[-1] if rows else None
+
+        # 기준금리
+        row = ecos('722Y001', '0101000')
+        if row:
+            result['base_rate'] = float(row['DATA_VALUE'])
+            result['base_rate_date'] = row['TIME']
+
+        # 국고채 3년
+        row2 = ecos('817Y002', '010190000')
+        if row2:
+            result['bond_3y'] = float(row2['DATA_VALUE'])
+
+        # 국고채 10년
+        row3 = ecos('817Y002', '010200000')
+        if row3:
+            result['bond_10y'] = float(row3['DATA_VALUE'])
+
+        # 주택담보대출 금리 (월별)
+        row4 = ecos('098Y007', '0000001', freq='M', start=sm, end=em)
+        if row4:
+            result['mortgage_rate'] = float(row4['DATA_VALUE'])
+            result['mortgage_date'] = row4['TIME']
+
+        print(f"  금리 데이터 수집 완료: 기준금리 {result.get('base_rate','?')}%")
+    except Exception as e:
+        print(f"  금리 데이터 오류: {e}")
+    return result
+
+
+def fetch_re_news_insight(news_items):
+    """부동산 뉴스 AI 인사이트 생성"""
+    import os, json, re
+    api_key = os.environ.get('GEMINI_API_KEY', '').strip()
+    if not api_key or not news_items:
+        return ''
+    try:
+        print("  부동산 뉴스 인사이트 생성 중...")
+        news_text = '\n'.join(f"- {item.get('title','')}" for item in news_items[:10])
+        prompt = f"""아래는 오늘 국내 부동산 관련 뉴스 헤드라인입니다.
+
+{news_text}
+
+위 뉴스들을 종합해 오늘 부동산 시장의 주요 이슈와 실수요자·투자자가 주목해야 할 시사점을 2~3줄로 작성해주세요.
+JSON 형식으로만 응답하세요.
+{{"insight": "부동산 뉴스 인사이트 2~3줄"}}"""
+        text = _gemini_post(api_key, prompt, temperature=0.3)
+        m = re.search(r'\{.*\}', text, re.DOTALL)
+        if m:
+            print("  부동산 뉴스 인사이트 완료")
+            return json.loads(m.group(0)).get('insight', '')
+        return ''
+    except Exception as e:
+        print(f"  부동산 뉴스 인사이트 오류: {e}")
         return ''
 
 
@@ -1914,7 +1991,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"><div class="stock-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -2117,6 +2194,24 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     dom_news = news_html(news.get('domestic', []), 'nb-blue', '국내')
     int_news = news_html(news.get('international', []), 'nb-blue', '해외')
     re_news  = news_html(news.get('realestate', []),  'nb-orange', '부동산', 'var(--orange)')
+
+    # 금리 카드 HTML
+    def _rate_card(label, val, unit='%', sub=''):
+        if val is None:
+            return f'<div class="macro-card"><div class="macro-name">{label}</div><div class="macro-val" style="color:var(--t3)">-</div><div class="macro-chg" style="font-size:9px;color:var(--t3)">{sub}</div></div>'
+        color = 'var(--dn)' if val >= 4.0 else 'var(--up)' if val < 3.0 else 'var(--gold)'
+        return f'<div class="macro-card"><div class="macro-name">{label}</div><div class="macro-val" style="color:{color}">{val:.2f}{unit}</div><div class="macro-chg" style="font-size:9px;color:var(--t3)">{sub}</div></div>'
+
+    rr = re_rates or {}
+    base_date = rr.get('base_rate_date', '')
+    mort_date = rr.get('mortgage_date', '').replace('M', '년 ') + '월' if rr.get('mortgage_date') else ''
+    re_rate_html = f'''<div class="macro-grid">
+  {_rate_card('한은 기준금리', rr.get('base_rate'), sub=base_date)}
+  {_rate_card('국고채 3년', rr.get('bond_3y'), sub='시장금리')}
+  {_rate_card('국고채 10년', rr.get('bond_10y'), sub='장기금리')}
+  {_rate_card('주담대 금리', rr.get('mortgage_rate'), sub=mort_date+' 은행평균')}
+</div>
+<div style="font-size:10px;color:var(--t3);margin-top:8px;">출처: 한국은행 ECOS · <a href="https://ecos.bok.or.kr" target="_blank" style="color:var(--t3)">ecos.bok.or.kr</a></div>'''
     hot_news = news_html(news.get('hot', []),          'nb-red',  '이슈')
 
     # 주도주 & 체감
@@ -2750,74 +2845,89 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 <div id="tab-re" class="tab-panel">
 
   <div class="section">
-    <div class="banner orange">
-      <strong>🏠 송파구 단지 시세 트래커</strong><br>
-      거여4단지 · 문정시영 최신 시세 및 리모델링 현황
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📉</span>
+        <span class="mkt-sec-title">금리 &amp; 대출 환경</span>
+        <span class="mkt-sec-num">01</span>
+      </div>
+      {re_rate_html}
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">거여4단지</div>
-    <div class="apt-card">
-      <div class="apt-header">
-        <div>
-          <div class="apt-name">거여4단지</div>
-          <div class="apt-info">거여동 · 5호선 거여역 도보 6분 · 546세대 · 1997년</div>
-        </div>
-        <div class="apt-status status-normal">투기지역</div>
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📰</span>
+        <span class="mkt-sec-title">부동산 뉴스</span>
+        <span class="mkt-sec-num">02</span>
       </div>
-      <table class="apt-table">
-        <thead><tr><th>평형</th><th>실거래 (2025.11)</th><th>KB시세</th></tr></thead>
-        <tbody>
-          <tr><td><strong>17평</strong> 49㎡</td><td>8억4,790만</td><td style="color:var(--t3)">하위 8억5천</td></tr>
-          <tr><td><strong>21평</strong> 59㎡</td><td>10억4,000만</td><td style="color:var(--t3)">상위 9억2천</td></tr>
-          <tr><td><strong>26평</strong> 72㎡</td><td>8억9,000만</td><td style="color:var(--t3)">평균 8억9천</td></tr>
-        </tbody>
-      </table>
-      <div class="invest-point">
-        📍 1년 상승률 +3.81% · 거여역 도보권 · 재건축 인근 단지<br>
-        송파구 평균 대비 저평가 (평당 3,992만 vs 구 평균 6,909만)<br>
-        <span class="warn">⚠ 최신 실거래가는 호갱노노·KB부동산에서 확인</span>
-      </div>
+      {re_news}
+      {f'<div class="story-text" style="margin-top:12px">{re_news_insight}</div>' if re_news_insight else ''}
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">문정시영</div>
-    <div class="apt-card">
-      <div class="apt-header">
-        <div>
-          <div class="apt-name">문정시영</div>
-          <div class="apt-info">문정동 · 개롱역~거여역 사이 · 1,316세대 · 1989년</div>
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">🏠</span>
+        <span class="mkt-sec-title">관심 단지</span>
+        <span class="mkt-sec-num">03</span>
+      </div>
+      <div class="apt-card">
+        <div class="apt-header">
+          <div>
+            <div class="apt-name">거여4단지</div>
+            <div class="apt-info">거여동 · 5호선 거여역 도보 6분 · 546세대 · 1997년</div>
+          </div>
+          <div class="apt-status status-normal">투기지역</div>
         </div>
-        <div class="apt-status status-remodel">리모델링</div>
+        <table class="apt-table">
+          <thead><tr><th>평형</th><th>실거래 (2025.11)</th><th>KB시세</th></tr></thead>
+          <tbody>
+            <tr><td><strong>17평</strong> 49㎡</td><td>8억4,790만</td><td style="color:var(--t3)">하위 8억5천</td></tr>
+            <tr><td><strong>21평</strong> 59㎡</td><td>10억4,000만</td><td style="color:var(--t3)">상위 9억2천</td></tr>
+            <tr><td><strong>26평</strong> 72㎡</td><td>8억9,000만</td><td style="color:var(--t3)">평균 8억9천</td></tr>
+          </tbody>
+        </table>
+        <div class="invest-point">
+          📍 1년 상승률 +3.81% · 거여역 도보권 · 재건축 인근 단지<br>
+          <span class="warn">⚠ 최신 실거래가는 호갱노노·KB부동산에서 확인</span>
+        </div>
       </div>
-      <table class="apt-table">
-        <thead><tr><th>평형</th><th>실거래 (2025 하반기)</th><th>현재 호가</th></tr></thead>
-        <tbody>
-          <tr><td><strong>12평</strong> 25㎡</td><td>4억7,270만</td><td style="color:var(--orange)">6억</td></tr>
-          <tr><td><strong>16평</strong> 35㎡</td><td>5억8,100만</td><td style="color:var(--orange)">7억 중반</td></tr>
-          <tr><td><strong>18평</strong> 39㎡</td><td>7억5,705만</td><td style="color:var(--orange)">9억 초반</td></tr>
-          <tr><td><strong>22평</strong> 46㎡</td><td>9억5,850만</td><td style="color:var(--orange)">10억 초반</td></tr>
-        </tbody>
-      </table>
-      <div class="remodel-steps">
-        <div class="remodel-label">리모델링 진행 — 포스코이앤씨 · 더샵 골든하임</div>
-        <div class="step-row step-done"><div class="step-dot"></div>
-          <div class="step-text">조합설립 · 시공사 선정 · 안전진단 · 교통영향평가 · 도시건축위 사전자문 완료</div></div>
-        <div class="step-row step-current"><div class="step-dot"></div>
-          <div class="step-text">건축심의 + 안전성검토 진행 중 (2026년 중반 결론 예상)</div></div>
-        <div class="step-row step-todo"><div class="step-dot"></div>
-          <div class="step-text">사업계획승인 → 1,316 → 1,440세대 (+124가구)</div></div>
-      </div>
-      <div class="invest-point">
-        📍 강남3구 소형 최저가 · 더샵 브랜드 예정 · 18평 프리미엄↑<br>
-        16·18평 시세 격차 1.5억 확대 · 문정동 전체 개발 기대감<br>
-        <span class="warn">⚠ 최신 실거래가는 호갱노노·직방에서 확인</span>
+      <div class="apt-card" style="margin-top:10px">
+        <div class="apt-header">
+          <div>
+            <div class="apt-name">문정시영</div>
+            <div class="apt-info">문정동 · 개롱역~거여역 사이 · 1,316세대 · 1989년</div>
+          </div>
+          <div class="apt-status status-remodel">리모델링</div>
+        </div>
+        <table class="apt-table">
+          <thead><tr><th>평형</th><th>실거래 (2025 하반기)</th><th>현재 호가</th></tr></thead>
+          <tbody>
+            <tr><td><strong>12평</strong> 25㎡</td><td>4억7,270만</td><td style="color:var(--orange)">6억</td></tr>
+            <tr><td><strong>16평</strong> 35㎡</td><td>5억8,100만</td><td style="color:var(--orange)">7억 중반</td></tr>
+            <tr><td><strong>18평</strong> 39㎡</td><td>7억5,705만</td><td style="color:var(--orange)">9억 초반</td></tr>
+            <tr><td><strong>22평</strong> 46㎡</td><td>9억5,850만</td><td style="color:var(--orange)">10억 초반</td></tr>
+          </tbody>
+        </table>
+        <div class="remodel-steps">
+          <div class="remodel-label">리모델링 진행 — 포스코이앤씨 · 더샵 골든하임</div>
+          <div class="step-row step-done"><div class="step-dot"></div>
+            <div class="step-text">조합설립 · 시공사 선정 · 안전진단 · 교통영향평가 · 도시건축위 사전자문 완료</div></div>
+          <div class="step-row step-current"><div class="step-dot"></div>
+            <div class="step-text">건축심의 + 안전성검토 진행 중 (2026년 중반 결론 예상)</div></div>
+          <div class="step-row step-todo"><div class="step-dot"></div>
+            <div class="step-text">사업계획승인 → 1,316 → 1,440세대 (+124가구)</div></div>
+        </div>
+        <div class="invest-point">
+          📍 강남3구 소형 최저가 · 더샵 브랜드 예정 · 18평 프리미엄↑<br>
+          <span class="warn">⚠ 최신 실거래가는 호갱노노·직방에서 확인</span>
+        </div>
       </div>
     </div>
   </div>
-
 
 </div>
 
@@ -3265,8 +3375,10 @@ def main():
     company_overview    = f_company_overview.result()
 
     kr_news_insight = fetch_kr_news_insight(news.get('domestic', []))
+    re_rates        = fetch_re_rates()
+    re_news_insight = fetch_re_news_insight(news.get('realestate', []))
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
