@@ -113,6 +113,59 @@ US_STOCK_MAP = {
     'nvda': '엔비디아', 'aapl': '애플', 'msft': '마이크로소프트', 'meta': '메타'
 }
 
+# 티커 → 한국어 회사명 (실적 발표 캘린더 표시용)
+US_TICKER_NAMES = {
+    # 빅테크 / Mag7
+    'AAPL':'애플','MSFT':'마이크로소프트','GOOGL':'알파벳','GOOG':'알파벳',
+    'AMZN':'아마존','META':'메타','NVDA':'엔비디아','TSLA':'테슬라',
+    # 반도체
+    'AVGO':'브로드컴','INTC':'인텔','AMD':'AMD','QCOM':'퀄컴','MU':'마이크론',
+    'ARM':'ARM홀딩스','AMAT':'어플라이드머티리얼즈','LRCX':'램리서치',
+    'KLAC':'KLA','MRVL':'마벨테크놀로지','ASML':'ASML','TXN':'텍사스인스트루먼트',
+    'SMCI':'슈퍼마이크로','SNDK':'샌디스크','ON':'온세미컨덕터',
+    # 소프트웨어 / 클라우드
+    'ORCL':'오라클','CRM':'세일즈포스','ADBE':'어도비','CSCO':'시스코',
+    'IBM':'IBM','NOW':'서비스나우','SNOW':'스노우플레이크','PLTR':'팔란티어',
+    'PANW':'팔로알토','CRWD':'크라우드스트라이크','ZS':'지스케일러',
+    'ANET':'아리스타','NET':'클라우드플레어','DDOG':'데이터독',
+    # 인터넷 / 미디어
+    'NFLX':'넷플릭스','DIS':'월트디즈니','UBER':'우버','LYFT':'리프트',
+    'BKNG':'부킹홀딩스','ABNB':'에어비앤비','RBLX':'로블록스',
+    # 금융
+    'JPM':'JP모건','BAC':'뱅크오브아메리카','WFC':'웰스파고',
+    'GS':'골드만삭스','MS':'모건스탠리','C':'씨티그룹',
+    'BLK':'블랙록','V':'비자','MA':'마스터카드','AXP':'아메리칸익스프레스',
+    'BRK-B':'버크셔해서웨이','BRK.B':'버크셔해서웨이',
+    # 헬스케어
+    'JNJ':'존슨앤존슨','UNH':'유나이티드헬스','PFE':'화이자',
+    'MRK':'머크','ABBV':'애브비','LLY':'일라이릴리','AMGN':'암젠',
+    'BMY':'BMS','CVS':'CVS헬스','MDT':'메드트로닉','ISRG':'인튜이티브서지컬',
+    # 소비재
+    'HD':'홈디포','MCD':'맥도날드','NKE':'나이키','SBUX':'스타벅스',
+    'TGT':'타겟','WMT':'월마트','COST':'코스트코','LOW':'로우즈',
+    'TJX':'TJX','AMZN':'아마존','CCL':'카니발크루즈','RCL':'로열캐리비안',
+    'MAR':'메리어트','HLT':'힐튼','NCLH':'노르웨이지안크루즈',
+    # 필수소비재
+    'PG':'P&G','KO':'코카콜라','PEP':'펩시코','PM':'필립모리스',
+    'MO':'알트리아','CL':'콜게이트','GIS':'제너럴밀즈','CPB':'캠벨수프',
+    'MKC':'맥코믹','KHC':'크래프트하인즈','K':'켈로그','HRL':'호멜푸즈',
+    # 에너지
+    'XOM':'엑슨모빌','CVX':'셰브론','COP':'코노코필립스','SLB':'SLB','EOG':'EOG리소스',
+    # 산업재
+    'BA':'보잉','CAT':'캐터필러','GE':'GE에어로스페이스','HON':'허니웰',
+    'LMT':'록히드마틴','RTX':'RTX','NOC':'노스럽그루먼',
+    'UPS':'UPS','FDX':'페덱스','MMM':'3M','DE':'디어앤컴퍼니','ACN':'액센추어',
+    # 통신
+    'T':'AT&T','VZ':'버라이즌','TMUS':'T-모바일',
+    # 부동산
+    'AMT':'아메리칸타워','PLD':'프롤로지스','EQIX':'에쿼닉스',
+    # 자동차
+    'GM':'제너럴모터스','F':'포드','RIVN':'리비안',
+    # 기타
+    'KBH':'KB홈','ASO':'아카데미스포츠','CBRL':'크래커배럴',
+    'CASY':'케이시스','EBF':'엔코인터패스닝스',
+}
+
 # TradingView 차트 연결용 거래소 매핑 (Mag7 + US_STOCK_MAP 종목)
 US_EXCHANGE_MAP = {
     'nvda': 'NASDAQ', 'aapl': 'NASDAQ', 'msft': 'NASDAQ', 'googl': 'NASDAQ',
@@ -1149,20 +1202,40 @@ def fetch_upcoming_earnings(dt):
             [it for it in items if it.get('epsEstimate') is not None],
             key=lambda x: x.get('date', '')
         )
+        # 모르는 종목은 Finnhub profile API로 회사명 조회
+        unknown_symbols = [it.get('symbol','') for it in notable[:20]
+                           if it.get('symbol','').upper() not in US_TICKER_NAMES]
+        name_cache = {}
+        for sym in unknown_symbols[:10]:  # 최대 10개만 추가 조회
+            try:
+                pr = requests.get('https://finnhub.io/api/v1/stock/profile2',
+                                  params={'symbol': sym, 'token': key}, timeout=5)
+                name = pr.json().get('name', '')
+                if name:
+                    name_cache[sym.upper()] = name
+            except Exception:
+                pass
+
         result = []
         for it in notable[:20]:
+            sym = it.get('symbol', '')
             d_str = it.get('date', '')
+            # 회사명 조회
+            company_name = (US_TICKER_NAMES.get(sym.upper())
+                            or name_cache.get(sym.upper())
+                            or '')
             try:
-                from datetime import datetime as _dt2, date as _date2
-                d = _dt2.strptime(d_str, '%Y-%m-%d').date()
-                diff = (d - today).days
+                from datetime import datetime as _dt2
+                d_obj = _dt2.strptime(d_str, '%Y-%m-%d').date()
+                diff = (d_obj - today).days
                 if diff == 0:   label, badge = '오늘', 'nb-red'
                 elif diff == 1: label, badge = '내일', 'nb-gold'
-                else:           label, badge = f'{d.month}/{d.day}({["월","화","수","목","금","토","일"][d.weekday()]})', 'nb-blue'
+                else:           label, badge = f'{d_obj.month}/{d_obj.day}({["월","화","수","목","금","토","일"][d_obj.weekday()]})', 'nb-blue'
             except Exception:
                 label, badge = d_str, 'nb-blue'
             result.append({
-                'symbol':       it.get('symbol', ''),
+                'symbol':       sym,
+                'company':      company_name,
                 'date':         d_str,
                 'label':        label,
                 'badge':        badge,
@@ -2860,11 +2933,16 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
     # 캘린더 - 실적 발표 예정
     if upcoming_earnings:
-        earn_cal_html = ''.join(f'''<div class="cal-row">
+        def _earn_row(e):
+            sym = e['symbol']
+            name = e.get('company', '')
+            name_str = f' <span style="color:var(--t3)">({name})</span>' if name else ''
+            return f'''<div class="cal-row">
   <span class="news-badge {e["badge"]}">{e["label"]}</span>
-  <span class="cal-name" style="font-weight:700">{e["symbol"]}</span>
-  <span style="font-size:10px;color:var(--t3);margin-left:4px;">{e["year"]}Q{e["quarter"]} · EPS 예상 {e["eps_estimate"]}</span>
-</div>''' for e in upcoming_earnings)
+  <span class="cal-name" style="font-weight:700">{sym}{name_str}</span>
+  <span style="font-size:10px;color:var(--t3);margin-left:auto;">{e["year"]}Q{e["quarter"]} · EPS 예상 {e["eps_estimate"]}</span>
+</div>'''
+        earn_cal_html = ''.join(_earn_row(e) for e in upcoming_earnings)
     else:
         earn_cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 실적 발표 없음</div>'
 
