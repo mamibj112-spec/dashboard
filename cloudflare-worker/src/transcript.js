@@ -125,19 +125,35 @@ async function summarizeWithText(transcript, title, apiKey, model) {
   }]);
 }
 
-// 자막 없을 때: Gemini가 YouTube 영상 직접 분석
-async function summarizeVideoDirectly(videoId, title, apiKey, model) {
-  // 영상 직접 분석은 1.5 모델군이 더 안정적
+// 자막 없을 때: Gemini가 YouTube 영상 직접 분석 → 요약 + 스크립트 동시 생성
+async function analyzeVideoDirectly(videoId, title, apiKey, model) {
   const videoModel = model.includes('1.5') ? model : 'gemini-1.5-flash';
-  return callGemini(apiKey, videoModel, [
+  const prompt = `YouTube 영상 "${title}"을 시청하고 아래 두 가지를 한국어로 작성해주세요.
+
+===SUMMARY===
+${SUMMARY_PROMPT(title)}
+
+===TRANSCRIPT===
+영상에서 말한 내용을 최대한 그대로 받아써주세요. 시간 순서대로 자연스러운 문단으로 정리해주세요.`;
+
+  const raw = await callGemini(apiKey, videoModel, [
     {
       fileData: {
         mimeType: 'video/mp4',
         fileUri: `https://www.youtube.com/watch?v=${videoId}`,
       },
     },
-    { text: `YouTube 영상 "${title}"을 시청하고\n${SUMMARY_PROMPT(title)}` },
+    { text: prompt },
   ]);
+
+  // ===SUMMARY=== / ===TRANSCRIPT=== 기준으로 분리
+  const summaryMatch = raw.match(/===SUMMARY===([\s\S]*?)(?:===TRANSCRIPT===|$)/);
+  const transcriptMatch = raw.match(/===TRANSCRIPT===([\s\S]*?)$/);
+
+  return {
+    summary: summaryMatch?.[1]?.trim() || raw,
+    transcript: transcriptMatch?.[1]?.trim() || '',
+  };
 }
 
 export async function handleTranscript(request, env) {
@@ -164,10 +180,12 @@ export async function handleTranscript(request, env) {
       language = result.language;
       summary = await summarizeWithText(transcript, title, apiKey, model);
     } catch {
-      // 자막 없음 → Gemini가 영상 직접 분석
+      // 자막 없음 → Gemini가 영상 직접 보고 요약 + 스크립트 동시 생성
       title = await getTitle(videoId);
-      language = '영상 직접 분석';
-      summary = await summarizeVideoDirectly(videoId, title, apiKey, model);
+      language = '🤖 Gemini 직접 분석';
+      const analyzed = await analyzeVideoDirectly(videoId, title, apiKey, model);
+      summary = analyzed.summary;
+      transcript = analyzed.transcript;
     }
 
     return jsonResponse({ title, transcript, summary, language, videoId, model });
