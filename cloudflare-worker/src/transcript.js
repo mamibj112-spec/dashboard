@@ -12,72 +12,65 @@ function extractVideoId(url) {
   return null;
 }
 
-// HTML에서 captionTracks 배열만 추출 (전체 JSON 파싱보다 훨씬 가볍고 빠름)
-function extractCaptionTracks(html) {
-  const marker = '"captionTracks":';
-  const idx = html.indexOf(marker);
-  if (idx === -1) return null;
+async function getTitle(videoId) {
+  try {
+    const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+    if (!res.ok) return '제목 없음';
+    const data = await res.json();
+    return data.title || '제목 없음';
+  } catch { return '제목 없음'; }
+}
 
-  const str = html.slice(idx + marker.length);
-  if (!str.startsWith('[')) return null;
+// YouTube timedtext API 직접 호출 (watch 페이지 불필요)
+async function fetchTimedText(videoId, lang, kind = '') {
+  const kindParam = kind ? `&kind=${kind}` : '';
+  const url = `https://www.youtube.com/api/timedtext?v=${videoId}&lang=${lang}${kindParam}&fmt=srv3`;
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+  });
+  if (!res.ok || res.status === 204) return null;
+  const text = await res.text();
+  if (!text || text.length < 30) return null;
+  return text;
+}
 
-  let depth = 0, i = 0;
-  for (i = 0; i < str.length; i++) {
-    const c = str[i];
-    if (c === '[' || c === '{') depth++;
-    else if (c === ']' || c === '}') { depth--; if (depth === 0) { i++; break; } }
+function parseTimedText(xml) {
+  const texts = [];
+  const re = /<s[^>]*>([^<]*(?:<[^/][^>]*\/>[^<]*)*)<\/s>|<text[^>]*>([^<]*)<\/text>/g;
+  let m;
+  while ((m = re.exec(xml)) !== null) {
+    const raw = (m[1] || m[2] || '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&#39;/g, "'").replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/\n/g, ' ').trim();
+    if (raw) texts.push(raw);
   }
-
-  try { return JSON.parse(str.slice(0, i)); } catch { return null; }
+  return texts;
 }
 
 async function getTranscript(videoId) {
-  const res = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-      'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8',
-      'Cookie': 'CONSENT=YES+cb; PREF=hl=ko',
-    },
-  });
+  // 시도 순서: 한국어 수동 → 한국어 자동생성 → 영어 수동 → 영어 자동생성
+  const attempts = [
+    { lang: 'ko', kind: '' },
+    { lang: 'ko', kind: 'asr' },
+    { lang: 'en', kind: '' },
+    { lang: 'en', kind: 'asr' },
+  ];
 
-  if (!res.ok) throw new Error(`YouTube 페이지 로드 실패 (${res.status})`);
-  const html = await res.text();
+  let xml = null;
+  let usedLang = '';
 
-  // 제목 추출
-  const titleMatch = html.match(/<title>([^<]+)<\/title>/);
-  const title = (titleMatch?.[1] || '제목 없음').replace(/ - YouTube$/, '');
-
-  const captionTracks = extractCaptionTracks(html);
-  if (!captionTracks?.length) {
-    throw new Error('이 영상에는 자막이 없습니다. (자동 생성 자막 포함)');
+  for (const { lang, kind } of attempts) {
+    xml = await fetchTimedText(videoId, lang, kind);
+    if (xml) { usedLang = lang + (kind ? '(자동)' : ''); break; }
   }
 
-  // 한국어 > 영어 > 첫 번째 트랙
-  const track = captionTracks.find(t => t.languageCode === 'ko')
-    || captionTracks.find(t => t.languageCode === 'en')
-    || captionTracks[0];
-
-  const language = track.name?.simpleText || track.languageCode || '알 수 없음';
-
-  // baseUrl이 HTML 인코딩된 경우 디코딩
-  const baseUrl = track.baseUrl.replace(/\\u0026/g, '&');
-
-  const captionRes = await fetch(`${baseUrl}&fmt=json3`, {
-    headers: { 'User-Agent': 'Mozilla/5.0' },
-  });
-  if (!captionRes.ok) throw new Error(`자막 파일 다운로드 실패 (${captionRes.status})`);
-
-  let captionData;
-  try { captionData = await captionRes.json(); }
-  catch { throw new Error('자막 파일 파싱 실패'); }
-
-  const texts = [];
-  for (const event of (captionData.events || [])) {
-    if (!event.segs) continue;
-    const line = event.segs.map(s => (s.utf8 || '').replace(/\n/g, ' ')).join('').trim();
-    if (line) texts.push(line);
+  if (!xml) {
+    throw new Error('자막을 찾을 수 없습니다. 이 영상에 자막이 없거나 비공개 영상입니다.');
   }
 
+  const texts = parseTimedText(xml);
   if (!texts.length) throw new Error('자막 내용이 비어있습니다.');
 
   const paragraphs = [];
@@ -85,12 +78,11 @@ async function getTranscript(videoId) {
     paragraphs.push(texts.slice(i, i + 8).join(' '));
   }
 
-  return { title, transcript: paragraphs.join('\n\n'), language };
+  const title = await getTitle(videoId);
+  return { title, transcript: paragraphs.join('\n\n'), language: usedLang };
 }
 
-async function summarizeWithGemini(transcript, title, apiKey, model = 'gemini-2.0-flash') {
-  const prompt = `다음은 YouTube 영상 "${title}"의 자막 전문입니다.
-아래 형식으로 한국어로 정리해주세요:
+const SUMMARY_PROMPT = (title) => `아래 형식으로 한국어로 정리해주세요:
 
 **📌 한 줄 요약**
 (핵심 메시지를 한 문장으로)
@@ -101,35 +93,51 @@ async function summarizeWithGemini(transcript, title, apiKey, model = 'gemini-2.
 • (포인트 3~5개)
 
 **💡 결론 / 시사점**
-(실용적인 takeaway)
+(실용적인 takeaway)`;
 
-자막:
-${transcript.slice(0, 10000)}`;
-
+async function callGemini(apiKey, model, parts) {
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ parts }],
         generationConfig: { maxOutputTokens: 1024, temperature: 0.3 },
       }),
     }
   );
-
   if (!res.ok) {
     const errText = await res.text();
     throw new Error(`Gemini API 오류: ${errText.slice(0, 200)}`);
   }
-
   let data;
-  try { data = await res.json(); }
-  catch { throw new Error('Gemini 응답 파싱 실패'); }
-
+  try { data = await res.json(); } catch { throw new Error('Gemini 응답 파싱 실패'); }
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error('Gemini 응답이 비어있습니다');
   return text;
+}
+
+// 자막 텍스트 기반 요약
+async function summarizeWithText(transcript, title, apiKey, model) {
+  return callGemini(apiKey, model, [{
+    text: `다음은 YouTube 영상 "${title}"의 자막 전문입니다.\n${SUMMARY_PROMPT(title)}\n\n자막:\n${transcript.slice(0, 10000)}`
+  }]);
+}
+
+// 자막 없을 때: Gemini가 YouTube 영상 직접 분석
+async function summarizeVideoDirectly(videoId, title, apiKey, model) {
+  // 영상 직접 분석은 1.5 모델군이 더 안정적
+  const videoModel = model.includes('1.5') ? model : 'gemini-1.5-flash';
+  return callGemini(apiKey, videoModel, [
+    {
+      fileData: {
+        mimeType: 'video/mp4',
+        fileUri: `https://www.youtube.com/watch?v=${videoId}`,
+      },
+    },
+    { text: `YouTube 영상 "${title}"을 시청하고\n${SUMMARY_PROMPT(title)}` },
+  ]);
 }
 
 export async function handleTranscript(request, env) {
@@ -147,8 +155,21 @@ export async function handleTranscript(request, env) {
   const model = url.searchParams.get('model') || 'gemini-2.0-flash';
 
   try {
-    const { title, transcript, language } = await getTranscript(videoId);
-    const summary = await summarizeWithGemini(transcript, title, apiKey, model);
+    let title = '제목 없음', transcript = '', language = '', summary = '';
+
+    try {
+      const result = await getTranscript(videoId);
+      title = result.title;
+      transcript = result.transcript;
+      language = result.language;
+      summary = await summarizeWithText(transcript, title, apiKey, model);
+    } catch {
+      // 자막 없음 → Gemini가 영상 직접 분석
+      title = await getTitle(videoId);
+      language = '영상 직접 분석';
+      summary = await summarizeVideoDirectly(videoId, title, apiKey, model);
+    }
+
     return jsonResponse({ title, transcript, summary, language, videoId, model });
   } catch (err) {
     return jsonResponse({ error: err.message || '알 수 없는 오류 발생' }, 500);
