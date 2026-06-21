@@ -12,67 +12,74 @@ function extractVideoId(url) {
   return null;
 }
 
-function extractPlayerResponse(html) {
-  // Split-based extraction (most reliable)
-  const idx = html.indexOf('ytInitialPlayerResponse = ');
-  if (idx !== -1) {
-    let depth = 0, i = 0, started = false;
-    const str = html.slice(idx + 'ytInitialPlayerResponse = '.length);
-    for (i = 0; i < str.length; i++) {
-      if (str[i] === '{') { depth++; started = true; }
-      else if (str[i] === '}') { depth--; }
-      if (started && depth === 0) { i++; break; }
-    }
-    try { return JSON.parse(str.slice(0, i)); } catch {}
+// HTML에서 captionTracks 배열만 추출 (전체 JSON 파싱보다 훨씬 가볍고 빠름)
+function extractCaptionTracks(html) {
+  const marker = '"captionTracks":';
+  const idx = html.indexOf(marker);
+  if (idx === -1) return null;
+
+  const str = html.slice(idx + marker.length);
+  if (!str.startsWith('[')) return null;
+
+  let depth = 0, i = 0;
+  for (i = 0; i < str.length; i++) {
+    const c = str[i];
+    if (c === '[' || c === '{') depth++;
+    else if (c === ']' || c === '}') { depth--; if (depth === 0) { i++; break; } }
   }
-  return null;
+
+  try { return JSON.parse(str.slice(0, i)); } catch { return null; }
 }
 
 async function getTranscript(videoId) {
   const res = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-      'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+      'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8',
       'Cookie': 'CONSENT=YES+cb; PREF=hl=ko',
     },
   });
+
   if (!res.ok) throw new Error(`YouTube 페이지 로드 실패 (${res.status})`);
   const html = await res.text();
 
-  const titleMatch = html.match(/<meta name="title" content="([^"]+)"/)
-    || html.match(/<title>([^<]+)<\/title>/);
-  const title = (titleMatch?.[1] || '제목 없음').replace(' - YouTube', '');
+  // 제목 추출
+  const titleMatch = html.match(/<title>([^<]+)<\/title>/);
+  const title = (titleMatch?.[1] || '제목 없음').replace(/ - YouTube$/, '');
 
-  const playerResponse = extractPlayerResponse(html);
-  if (!playerResponse) {
-    throw new Error('자막 정보를 찾을 수 없습니다. 지역·연령 제한이 있거나 자막이 없는 영상일 수 있습니다.');
-  }
-
-  const captionTracks = playerResponse?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+  const captionTracks = extractCaptionTracks(html);
   if (!captionTracks?.length) {
-    throw new Error('이 영상에는 자막이 없습니다.');
+    throw new Error('이 영상에는 자막이 없습니다. (자동 생성 자막 포함)');
   }
 
+  // 한국어 > 영어 > 첫 번째 트랙
   const track = captionTracks.find(t => t.languageCode === 'ko')
     || captionTracks.find(t => t.languageCode === 'en')
     || captionTracks[0];
 
-  const language = track.name?.simpleText || track.languageCode;
+  const language = track.name?.simpleText || track.languageCode || '알 수 없음';
 
-  const captionRes = await fetch(`${track.baseUrl}&fmt=json3`, {
+  // baseUrl이 HTML 인코딩된 경우 디코딩
+  const baseUrl = track.baseUrl.replace(/\\u0026/g, '&');
+
+  const captionRes = await fetch(`${baseUrl}&fmt=json3`, {
     headers: { 'User-Agent': 'Mozilla/5.0' },
   });
-  if (!captionRes.ok) throw new Error('자막 파일 다운로드 실패');
+  if (!captionRes.ok) throw new Error(`자막 파일 다운로드 실패 (${captionRes.status})`);
 
-  const captionData = await captionRes.json();
+  let captionData;
+  try { captionData = await captionRes.json(); }
+  catch { throw new Error('자막 파일 파싱 실패'); }
+
   const texts = [];
   for (const event of (captionData.events || [])) {
     if (!event.segs) continue;
     const line = event.segs.map(s => (s.utf8 || '').replace(/\n/g, ' ')).join('').trim();
-    if (line && line !== ' ') texts.push(line);
+    if (line) texts.push(line);
   }
 
-  // Group every 8 segments into a paragraph
+  if (!texts.length) throw new Error('자막 내용이 비어있습니다.');
+
   const paragraphs = [];
   for (let i = 0; i < texts.length; i += 8) {
     paragraphs.push(texts.slice(i, i + 8).join(' '));
@@ -116,7 +123,10 @@ ${transcript.slice(0, 10000)}`;
     throw new Error(`Gemini API 오류: ${errText.slice(0, 200)}`);
   }
 
-  const data = await res.json();
+  let data;
+  try { data = await res.json(); }
+  catch { throw new Error('Gemini 응답 파싱 실패'); }
+
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!text) throw new Error('Gemini 응답이 비어있습니다');
   return text;
