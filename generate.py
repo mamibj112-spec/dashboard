@@ -614,10 +614,10 @@ def stocks_html(rows):
         amt_str = f"{amt/100000000:.0f}억" if amt >= 100000000 else f"{amt/100000000:.1f}억"
         mkt_badge = '<span style="font-size:9px;color:var(--t3);margin-left:3px;">Q</span>' if 'KOSDAQ' in mkt else ''
         clickable = code.isdigit() and len(code) == 6
-        name_attrs = f' onclick="openChart(\'KRX:{code}\')" style="cursor:pointer"' if clickable else ''
-        chart_ico = f' <span onclick="openChart(\'KRX:{code}\')" style="cursor:pointer;font-size:9px">📈</span>' if clickable else ''
-        out += f'''<div class="stock-row">
-  <div class="stock-name"{name_attrs}>{name}{mkt_badge}</div>
+        row_attrs = f' onclick="openChart(\'KRX:{code}\')" style="cursor:pointer"' if clickable else ''
+        chart_ico = f' <span onclick="event.stopPropagation();openChart(\'KRX:{code}\')" style="cursor:pointer;font-size:9px">📈</span>' if clickable else ''
+        out += f'''<div class="stock-row"{row_attrs}>
+  <div class="stock-name">{name}{mkt_badge}</div>
   <div class="stock-right">
     {chart_ico}
     <span class="{cls}">{sign}{abs(pct):.1f}%</span>
@@ -3133,8 +3133,19 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     )
 
     # 국내 업종별 등락률 카드 그리드 (KIS 실시간 데이터 우선, 없으면 기본값)
+    _sector_etf_map = {
+        '전기전자': 'KRX:091160',  # KODEX 반도체 (전기전자 대표)
+        '자동차':   'KRX:091230',  # TIGER 반도체 (자동차 ETF 대용)
+        '금융':     'KRX:139270',  # TIGER 은행
+        '바이오':   'KRX:266410',  # KODEX 헬스케어
+        '화학':     'KRX:228820',  # KODEX 화학
+        '철강':     'KRX:104530',  # KODEX 철강
+        '건설':     'KRX:104480',  # KODEX 건설
+        '에너지':   'KRX:217770',  # TIGER 에너지화학
+    }
     dom_sectors_html = ''.join(
-        _asset_card(s['name'], '', s.get('pct', 0) or 0)
+        _asset_card(s['name'], '', s.get('pct', 0) or 0,
+                    chart_symbol=_sector_etf_map.get(s['name']))
         for s in (kr_sectors if kr_sectors else _default_sectors)
     )
 
