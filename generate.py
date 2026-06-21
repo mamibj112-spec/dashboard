@@ -732,6 +732,8 @@ def fetch_us_ai_briefing(market, news):
   "sector_story": "섹터·채권·원자재 등 자산군 간의 자금 흐름과 순환매, 그 이유 (3~4문장)",
   "outlook": "향후 주목해야 할 이벤트나 투자 포인트 (2문장)",
   "stock_story": "매그니피센트7과 주요 종목의 등락 원인, 어떤 종목이 시장을 주도했는지에 대한 서사 (3~4문장)",
+  "tech_insight": "RSI·MACD·VIX 등 기술적 신호를 종합해 현재 시장의 기술적 상태와 투자자가 주목할 점 (2~3문장)",
+  "news_insight": "오늘 해외 주요 뉴스 헤드라인들을 종합한 시장 시사점과 투자자 유의사항 (2~3문장)",
   "earnings_reviews": [
     {{"company": "최근 1~2주 내 실적을 발표했을 법한 미국 상장기업명", "ticker": "티커", "period": "OOOO년 O분기 실적 분석 형식의 회계연도·분기 표기", "summary": "매출·EPS·가이던스 등 핵심 실적 포인트를 한 줄로 (40자 이내)"}},
     {{"company": "두 번째 기업명", "ticker": "티커", "period": "회계연도·분기 표기", "summary": "핵심 실적 포인트 한 줄 (40자 이내)"}},
@@ -2576,7 +2578,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 
   <div class="section">
-    <div class="section-label">00 · 주요 지수 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
+    <div class="section-label">00 · 주요 지수 &amp; 매크로 <span style="font-size:9px;color:var(--t3);font-weight:400;">탭하면 추이 차트</span></div>
     <div class="us-grid">
       <div class="us-card" onclick="showMacroChart('sp500')">
         <div class="us-card-top">
@@ -2633,6 +2635,28 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
           <div class="rsi-head"><span>RSI</span><span>{d(market,'vix').get('rsi',50)}</span></div>
           <div class="rsi-bg"><div class="rsi-fill" style="width:{d(market,'vix').get('rsi',50)}%"></div></div>
         </div>
+      </div>
+    </div>
+    <div class="macro-grid" style="margin-top:8px">
+      <div class="macro-card" onclick="showMacroChart('tnx')">
+        <div class="macro-name">미 10년물</div>
+        <div class="macro-val">{vdisp(market,'tnx')}</div>
+        <div class="macro-chg">{cdisp(market,'tnx')}</div>
+      </div>
+      <div class="macro-card" onclick="showMacroChart('dxy')">
+        <div class="macro-name">달러 인덱스</div>
+        <div class="macro-val">{vdisp(market,'dxy')}</div>
+        <div class="macro-chg">{cdisp(market,'dxy')}</div>
+      </div>
+      <div class="macro-card" onclick="showMacroChart('gold')">
+        <div class="macro-name">금 선물</div>
+        <div class="macro-val">{vdisp(market,'gold')}</div>
+        <div class="macro-chg">{cdisp(market,'gold')}</div>
+      </div>
+      <div class="macro-card" onclick="showMacroChart('btc')">
+        <div class="macro-name">🪙 비트코인</div>
+        <div class="macro-val">{vdisp(market,'btc')}</div>
+        <div class="macro-chg">{cdisp(market,'btc')}</div>
       </div>
     </div>
   </div>
@@ -2695,41 +2719,29 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 
   <div class="section">
-    <div class="section-label">기술적 신호 리포트</div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
-      {us_tech_html}
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📡</span>
+        <span class="mkt-sec-title">기술적 신호 리포트</span>
+        <span class="mkt-sec-num">04</span>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
+        {us_tech_html}
+      </div>
+      {f'<div class="story-text" style="margin-top:12px">{(us_ai_brief or {{}}).get("tech_insight","")}</div>' if (us_ai_brief or {{}}).get('tech_insight') else ''}
     </div>
   </div>
 
   <div class="section">
-    <div class="section-label">데이터 및 매크로</div>
-    <div class="macro-grid">
-      <div class="macro-card" onclick="showMacroChart('tnx')">
-        <div class="macro-name">미 10년물</div>
-        <div class="macro-val">{vdisp(market,'tnx')}</div>
-        <div class="macro-chg">{cdisp(market,'tnx')}</div>
+    <div class="story-wrap">
+      <div class="mkt-sec-head">
+        <span class="mkt-sec-icon">📰</span>
+        <span class="mkt-sec-title">해외 뉴스</span>
+        <span class="mkt-sec-num">05</span>
       </div>
-      <div class="macro-card" onclick="showMacroChart('dxy')">
-        <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val">{vdisp(market,'dxy')}</div>
-        <div class="macro-chg">{cdisp(market,'dxy')}</div>
-      </div>
-      <div class="macro-card" onclick="showMacroChart('gold')">
-        <div class="macro-name">금 선물</div>
-        <div class="macro-val">{vdisp(market,'gold')}</div>
-        <div class="macro-chg">{cdisp(market,'gold')}</div>
-      </div>
-      <div class="macro-card" onclick="showMacroChart('btc')">
-        <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val">{vdisp(market,'btc')}</div>
-        <div class="macro-chg">{cdisp(market,'btc')}</div>
-      </div>
+      {int_news}
+      {f'<div class="story-text" style="margin-top:12px">{(us_ai_brief or {{}}).get("news_insight","")}</div>' if (us_ai_brief or {{}}).get('news_insight') else ''}
     </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">해외 뉴스</div>
-    {int_news}
   </div>
 
 </div>
