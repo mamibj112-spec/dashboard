@@ -1451,7 +1451,7 @@ def fetch_etf_data():
 
         def make(e):
             d = price_map.get(e['ticker'], {})
-            return {'name': e['name'], 'val': d.get('val', 0), 'pct': d.get('pct', 0)}
+            return {'name': e['name'], 'ticker': e['ticker'], 'val': d.get('val', 0), 'pct': d.get('pct', 0)}
 
         result['major']   = [make(e) for e in MAJOR_ETFS]
         result['popular'] = [make(e) for e in POPULAR_ETFS]
@@ -2595,18 +2595,22 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
 def _etf_row(e, show_amt=False):
-    name = e.get('name', '')
-    val  = e.get('val', 0)
-    pct  = e.get('pct', 0)
-    cls  = 'up-txt' if pct >= 0 else 'dn-txt'
-    sign = '▲' if pct >= 0 else '▼'
+    name   = e.get('name', '')
+    ticker = e.get('ticker', '')
+    val    = e.get('val', 0)
+    pct    = e.get('pct', 0)
+    cls    = 'up-txt' if pct >= 0 else 'dn-txt'
+    sign   = '▲' if pct >= 0 else '▼'
     val_str = f"{val:,.0f}" if val > 0 else '-'
     right = f'<span class="stock-amt">{val_str}</span>'
     if show_amt:
         amt = e.get('amt', 0)
         amt_str = f"{amt/100000000:.0f}억" if amt >= 100000000 else f"{amt/100000000:.1f}억"
         right = f'<span class="stock-amt">{amt_str}</span>'
-    return f'<div class="stock-row"><div class="etf-name">{name}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
+    tv_sym = f'KRX:{ticker}' if ticker else ''
+    click  = f' onclick="openChart(\'{tv_sym}\')" style="cursor:pointer"' if tv_sym else ''
+    chart_icon = f' <span onclick="event.stopPropagation();openChart(\'{tv_sym}\')" style="cursor:pointer;font-size:9px">📈</span>' if tv_sym else ''
+    return f'<div class="stock-row"{click}><div class="etf-name">{name}{chart_icon}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
 def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, upcoming_earnings=None, ai_idea=None, etf_insight=None):
@@ -3012,12 +3016,20 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     volume_etf_html  = ''.join(_etf_row(e, show_amt=True) for e in etf.get('volume', [])) or no_data
 
     # 미국 ETF HTML
+    _us_etf_exchange = {
+        'SPY':'AMEX','IWM':'AMEX','GLD':'AMEX','ARKK':'AMEX','XLE':'AMEX',
+        'QQQ':'NASDAQ','TLT':'NASDAQ','SOXX':'NASDAQ',
+    }
     def _us_etf_row(e):
         cls = 'up-txt' if (e.get('pct') or 0) >= 0 else 'dn-txt'
         sign = '▲' if (e.get('pct') or 0) >= 0 else '▼'
         pct_str = f'{sign}{abs(e.get("pct") or 0):.2f}%'
         val_str = f'${e.get("val") or 0:,.2f}'
-        return f'<div class="stock-row"><div class="etf-name">{e.get("name","")} <span style="font-size:9px;color:var(--t3)">{e.get("desc","")}</span></div><div class="stock-right"><span class="{cls}">{pct_str}</span><span class="stock-amt">{val_str}</span></div></div>'
+        sym = e.get('name','')
+        ex  = _us_etf_exchange.get(sym, 'AMEX')
+        tv_sym = f'{ex}:{sym}'
+        chart_icon = f' <span onclick="event.stopPropagation();openChart(\'{tv_sym}\')" style="cursor:pointer;font-size:9px">📈</span>'
+        return f'<div class="stock-row" onclick="openChart(\'{tv_sym}\')" style="cursor:pointer"><div class="etf-name">{sym}{chart_icon} <span style="font-size:9px;color:var(--t3)">{e.get("desc","")}</span></div><div class="stock-right"><span class="{cls}">{pct_str}</span><span class="stock-amt">{val_str}</span></div></div>'
     us_etf_html = ''.join(_us_etf_row(e) for e in etf.get('us_etfs', [])) or no_data
 
     # 테마별 ETF HTML
