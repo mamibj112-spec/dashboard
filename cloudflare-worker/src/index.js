@@ -2,6 +2,7 @@ import { corsHeaders } from './cors.js';
 import { handleTrigger } from './triggerWorkflow.js';
 import { handleFinance } from './financeProxy.js';
 import { handleTranscript } from './transcript.js';
+import { handleNotion } from './notion.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -15,6 +16,9 @@ export default {
     }
     if (url.pathname === '/transcript') {
       return handleTranscript(request, env);
+    }
+    if (url.pathname === '/notion') {
+      return handleNotion(request, env);
     }
 
     return handleTrigger(request, env);

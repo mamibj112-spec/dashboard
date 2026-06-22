@@ -2366,10 +2366,10 @@ a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 .update-btn:disabled{{opacity:.4;cursor:not-allowed}}
 .update-status{{font-size:10px;color:var(--t3);display:block;text-align:right;margin-top:2px;min-height:14px}}
 
-.tab-nav{display:flex;margin:12px 0 0;border-bottom:1px solid var(--border);
+.tab-nav{display:flex;flex-wrap:wrap;margin:12px 0 0;border-bottom:1px solid var(--border);
 position:sticky;top:0;background:var(--bg);z-index:10;padding:0 4px}
-.tab-btn{flex:1;padding:10px 4px;background:none;border:none;border-bottom:2px solid transparent;
-color:var(--t3);font-size:12px;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab-btn{flex:1 1 20%;padding:8px 2px;background:none;border:none;border-bottom:2px solid transparent;
+color:var(--t3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center}
 .tab-btn.active{color:var(--t1);border-bottom-color:var(--blue);font-weight:600}
 .tab-panel{display:none;padding:0 12px}.tab-panel.active{display:block}
 .section{margin-top:16px}
@@ -3328,6 +3328,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <button class="tab-btn" onclick="sw('watch',this)">📊 종목</button>
   <button class="tab-btn" onclick="sw('etf',this)">📦 ETF</button>
   <button class="tab-btn" onclick="sw('ai',this)">💡 AI</button>
+  <button class="tab-btn" onclick="sw('sub',this)">📝 영상분석</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -3854,6 +3855,50 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 </div>
 
+<!-- ===== 영상분석 탭 ===== -->
+<div id="tab-sub" class="tab-panel">
+  <div class="section">
+    <div class="section-label">YouTube 영상분석 · AI 상세 분석</div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <input id="subUrlInput" type="url" placeholder="YouTube URL 붙여넣기..."
+        style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--t1);font-size:13px;outline:none;font-family:inherit;min-width:0"
+        onkeydown="if(event.key==='Enter')fetchTranscript()">
+      <button onclick="fetchTranscript()" id="subBtn"
+        style="background:var(--blue);border:none;border-radius:8px;padding:10px 14px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">
+        분석
+      </button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+      <span style="font-size:11px;color:var(--t3);flex-shrink:0">모델</span>
+      <select id="subModel" style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--t2);font-size:12px;outline:none;font-family:inherit;cursor:pointer">
+        <option value="gemini-2.5-flash">gemini-2.5-flash (기본)</option>
+        <option value="gemini-2.5-pro">gemini-2.5-pro (최고 품질)</option>
+      </select>
+    </div>
+    <div id="subStatus" style="font-size:11px;color:var(--t3);min-height:16px;padding:4px 0 0"></div>
+  </div>
+  <div id="subResult" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 0 2px">
+      <div id="subTitle" style="font-size:14px;font-weight:700;color:var(--t1);line-height:1.4;flex:1;margin-right:8px"></div>
+      <button onclick="sendToNotion()" id="notionBtn"
+        style="background:#191919;border:1px solid #444;border-radius:8px;padding:7px 12px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px">
+        <span style="font-size:13px">N</span> Notion으로 보내기
+      </button>
+    </div>
+    <div id="notionStatus" style="font-size:11px;min-height:14px;padding:2px 0 6px;text-align:right"></div>
+    <div class="section-label" style="margin-top:8px">📊 상세 분석 (5장)</div>
+    <div id="subSummary" class="banner blue" style="font-size:12.5px;margin-top:6px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">
+      <div class="section-label" style="margin:0">📝 스크립트</div>
+      <button onclick="toggleSubTranscript()" id="subToggleBtn"
+        style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--t3);font-size:10px;cursor:pointer;font-family:inherit">
+        접기
+      </button>
+    </div>
+    <div id="subTranscript" style="display:block;background:var(--card);border-radius:10px;padding:14px;margin-top:8px;font-size:12px;color:var(--t2);line-height:1.8;white-space:pre-wrap;max-height:400px;overflow-y:auto;word-break:break-word"></div>
+  </div>
+</div>
+
 <!-- 종목 상세 모달 -->
 <div id="stockOverlay" onclick="closeStockModal()"></div>
 <div id="stockModal"></div>
@@ -3923,7 +3968,8 @@ function closeMacroChart(){{
   document.getElementById('macroModal').classList.remove('open');
   setTimeout(function(){{document.getElementById('macroOverlay').style.display='none';}},280);
 }}
-var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어'}};
+var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어',sub:'📝 영상분석'}};
+var _WORKER='https://dashboard-trigger.mamibj112.workers.dev';
 var WATCHLIST={watchlist_json};
 function _fmt(v,dec,suf){{if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}}
 function _pctColor(v){{
@@ -3938,7 +3984,7 @@ function tvSymbol(s){{
   return ex+':'+t;
 }}
 function openChart(symbol){{
-  if(symbol.startsWith('KRX:')){
+  if(symbol.startsWith('KRX:')){{
     var code=symbol.replace('KRX:','');
     window.open('https://finance.naver.com/item/main.naver?code='+code,'_blank');
   }}else{{
@@ -4150,6 +4196,105 @@ function sw(id, btn) {{
 }}
 if ('serviceWorker' in navigator) {{
   navigator.serviceWorker.register('sw.js').catch(() => {{}});
+}}
+function _esc(s){{return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}}
+function renderAnalysis(text){{
+  if(!text)return'';
+  var html='';
+  var lines=text.split('\\n');
+  for(var i=0;i<lines.length;i++){{
+    var line=lines[i];
+    var trimmed=line.trim();
+    if(!trimmed){{html+='<div style="height:6px"></div>';continue;}}
+    var chMatch=trimmed.match(/^\\[(\\d+장)\\]\\s*(.*)$/);
+    if(chMatch){{
+      html+='<div style="display:flex;align-items:center;gap:8px;margin:16px 0 7px">'
+        +'<span style="background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0">'+_esc(chMatch[1])+'</span>'
+        +'<span style="font-size:13px;font-weight:700;color:var(--t1)">'+_esc(chMatch[2])+'</span>'
+        +'</div>';
+      continue;
+    }}
+    if(trimmed.startsWith('- ')||trimmed.startsWith('• ')){{
+      var content=trimmed.slice(2);
+      html+='<div style="display:flex;gap:8px;padding:3px 0;line-height:1.7;color:var(--t1)">'
+        +'<span style="color:var(--blue);flex-shrink:0;margin-top:1px">•</span>'
+        +'<span>'+_esc(content)+'</span>'
+        +'</div>';
+      continue;
+    }}
+    html+='<div style="line-height:1.8;color:var(--t2);padding:1px 0">'+_esc(trimmed)+'</div>';
+  }}
+  return html;
+}}
+var _subData=null;
+function fetchTranscript(){{
+  var input=document.getElementById('subUrlInput');
+  var btn=document.getElementById('subBtn');
+  var status=document.getElementById('subStatus');
+  var result=document.getElementById('subResult');
+  var url=input.value.trim();
+  var model=document.getElementById('subModel').value;
+  if(!url){{status.textContent='⚠️ URL을 입력해주세요.';return;}}
+  btn.disabled=true;btn.textContent='분석 중...';
+  status.textContent='⏳ 영상 분석 중... (30~60초 소요)';
+  result.style.display='none';
+  document.getElementById('notionStatus').textContent='';
+  _subData=null;
+  fetch(_WORKER+'/transcript?url='+encodeURIComponent(url)+'&model='+encodeURIComponent(model))
+    .then(function(r){{return r.json();}})
+    .then(function(data){{
+      btn.disabled=false;btn.textContent='분석';
+      if(data.error){{status.textContent='❌ '+data.error;return;}}
+      var chars=data.transcript?data.transcript.length:0;
+      status.textContent='✅ '+data.language+' · 약 '+Math.ceil(chars/500)+'분 분량';
+      document.getElementById('subTitle').textContent='🎬 '+data.title;
+      document.getElementById('subSummary').innerHTML=renderAnalysis(data.summary);
+      document.getElementById('subTranscript').textContent=data.transcript;
+      document.getElementById('subTranscript').style.display='block';
+      document.getElementById('subToggleBtn').textContent='접기';
+      _subData={{title:data.title,summary:data.summary,transcript:data.transcript,videoUrl:input.value.trim(),language:data.language}};
+      result.style.display='block';
+    }})
+    .catch(function(){{
+      btn.disabled=false;btn.textContent='분석';
+      status.textContent='❌ 네트워크 오류';
+    }});
+}}
+function toggleSubTranscript(){{
+  var el=document.getElementById('subTranscript');
+  var btn=document.getElementById('subToggleBtn');
+  var hidden=el.style.display==='none';
+  el.style.display=hidden?'block':'none';
+  btn.textContent=hidden?'접기':'펼치기';
+}}
+function sendToNotion(){{
+  if(!_subData)return;
+  var btn=document.getElementById('notionBtn');
+  var ns=document.getElementById('notionStatus');
+  btn.disabled=true;
+  ns.textContent='⏳ Notion에 저장 중...';
+  ns.style.color='var(--t3)';
+  fetch(_WORKER+'/notion',{{
+    method:'POST',
+    headers:{{'Content-Type':'application/json'}},
+    body:JSON.stringify(_subData)
+  }})
+    .then(function(r){{return r.json();}})
+    .then(function(data){{
+      btn.disabled=false;
+      if(data.error){{
+        ns.textContent='❌ '+data.error;
+        ns.style.color='var(--dn)';
+        return;
+      }}
+      ns.innerHTML='✅ Notion 저장 완료 · <a href="'+data.url+'" target="_blank" style="color:var(--blue);text-decoration:none;">페이지 열기 →</a>';
+      ns.style.color='var(--up)';
+    }})
+    .catch(function(){{
+      btn.disabled=false;
+      ns.textContent='❌ 네트워크 오류';
+      ns.style.color='var(--dn)';
+    }});
 }}
 </script>
 </body>
