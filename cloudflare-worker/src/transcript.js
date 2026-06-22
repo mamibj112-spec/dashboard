@@ -82,20 +82,30 @@ async function getTranscript(videoId) {
   return { title, transcript: paragraphs.join('\n\n'), language: usedLang };
 }
 
-const SUMMARY_PROMPT = (title) => `아래 형식으로 한국어로 정리해주세요:
+const SUMMARY_PROMPT = (title) => `다음 5장 형식으로 한국어로 상세 분석을 작성해주세요.
+별표(**), 샵(#), 대시(---) 같은 마크다운 기호는 절대 사용하지 마세요.
+각 장은 반드시 아래처럼 [숫자장] 형태로 시작하고, 불릿은 - 로 작성해주세요.
 
-**📌 한 줄 요약**
-(핵심 메시지를 한 문장으로)
+[1장] 핵심 요약
+영상의 핵심 메시지를 2~3문장으로 요약해주세요.
 
-**🔑 주요 내용**
-• (포인트 1)
-• (포인트 2)
-• (포인트 3~5개)
+[2장] 배경 & 맥락
+이 주제의 배경, 현재 상황, 중요성을 2~4문장으로 서술해주세요.
 
-**💡 결론 / 시사점**
-(실용적인 takeaway)`;
+[3장] 주요 내용 상세
+- 핵심 포인트 1: 구체적 설명
+- 핵심 포인트 2: 구체적 설명
+- 핵심 포인트 3: 구체적 설명
+- 핵심 포인트 4: 구체적 설명
+- 핵심 포인트 5: 구체적 설명
 
-async function callGemini(apiKey, model, parts) {
+[4장] 핵심 인사이트 & 분석
+단순 요약을 넘어선 깊이 있는 분석, 숨겨진 의미, 연관 트렌드를 3~5문장으로 서술해주세요.
+
+[5장] 결론 & 시사점
+실용적인 takeaway와 투자·비즈니스·개인 관점의 활용 방안을 2~4문장으로 서술해주세요.`;
+
+async function callGemini(apiKey, model, parts, maxOutputTokens = 8192) {
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
@@ -103,7 +113,7 @@ async function callGemini(apiKey, model, parts) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts }],
-        generationConfig: { maxOutputTokens: 1024, temperature: 0.3 },
+        generationConfig: { maxOutputTokens, temperature: 0.3 },
       }),
     }
   );
@@ -121,7 +131,7 @@ async function callGemini(apiKey, model, parts) {
 // 자막 텍스트 기반 요약
 async function summarizeWithText(transcript, title, apiKey, model) {
   return callGemini(apiKey, model, [{
-    text: `다음은 YouTube 영상 "${title}"의 자막 전문입니다.\n${SUMMARY_PROMPT(title)}\n\n자막:\n${transcript.slice(0, 10000)}`
+    text: `다음은 YouTube 영상 "${title}"의 자막 전문입니다.\n${SUMMARY_PROMPT(title)}\n\n자막:\n${transcript.slice(0, 30000)}`
   }]);
 }
 
@@ -134,7 +144,7 @@ async function analyzeVideoDirectly(videoId, title, apiKey, model) {
 ${SUMMARY_PROMPT(title)}
 
 ===TRANSCRIPT===
-영상에서 말한 내용을 최대한 그대로 받아써주세요. 시간 순서대로 자연스러운 문단으로 정리해주세요.`;
+영상에서 말한 내용을 최대한 그대로 받아쓰고, 시간 순서대로 자연스러운 문단으로 정리해주세요. 말의 흐름을 살려 읽기 쉽게 구성해주세요.`;
 
   const raw = await callGemini(apiKey, videoModel, [
     {
@@ -144,7 +154,7 @@ ${SUMMARY_PROMPT(title)}
       },
     },
     { text: prompt },
-  ]);
+  ], 32768);
 
   // ===SUMMARY=== / ===TRANSCRIPT=== 기준으로 분리
   const summaryMatch = raw.match(/===SUMMARY===([\s\S]*?)(?:===TRANSCRIPT===|$)/);
