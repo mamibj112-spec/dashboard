@@ -156,13 +156,14 @@ ${SUMMARY_PROMPT(title)}
     { text: prompt },
   ], 32768);
 
-  // ===SUMMARY=== / ===TRANSCRIPT=== 기준으로 분리
-  const summaryMatch = raw.match(/===SUMMARY===([\s\S]*?)(?:===TRANSCRIPT===|$)/);
-  const transcriptMatch = raw.match(/===TRANSCRIPT===([\s\S]*?)$/);
+  // ===TRANSCRIPT=== 기준으로 분리 (===SUMMARY=== 마커 없이 응답해도 처리)
+  const parts = raw.split(/===TRANSCRIPT===/);
+  const summaryRaw = parts[0].replace(/===SUMMARY===/g, '').trim();
+  const transcriptRaw = parts.length >= 2 ? parts.slice(1).join('').trim() : '';
 
   return {
-    summary: summaryMatch?.[1]?.trim() || raw,
-    transcript: transcriptMatch?.[1]?.trim() || '',
+    summary: summaryRaw,
+    transcript: transcriptRaw,
   };
 }
 
