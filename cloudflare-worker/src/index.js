@@ -3,6 +3,7 @@ import { handleTrigger } from './triggerWorkflow.js';
 import { handleFinance } from './financeProxy.js';
 import { handleTranscript } from './transcript.js';
 import { handleNotion } from './notion.js';
+import { handlePatterns } from './patterns.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -19,6 +20,9 @@ export default {
     }
     if (url.pathname === '/notion') {
       return handleNotion(request, env);
+    }
+    if (url.pathname === '/patterns') {
+      return handlePatterns(request);
     }
 
     return handleTrigger(request, env);

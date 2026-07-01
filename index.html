@@ -244,6 +244,16 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .tech-pick-ticker{color:var(--t3);font-size:10.5px}
 .tech-chart-box{height:70vh;min-height:420px;background:var(--card2);border-radius:12px;overflow:hidden}
 .tech-signal-box{height:450px;background:var(--card2);border-radius:12px;overflow:hidden}
+.tech-insight-box{background:var(--card2);border-radius:12px;padding:14px;min-height:20px}
+.tech-patterns-box{background:var(--card2);border-radius:12px;padding:14px;min-height:20px}
+.tp-row{padding:10px 0;border-bottom:1px solid var(--border)}
+.tp-row:last-child{border-bottom:none}
+.tp-label{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:8px}
+.tp-cells{display:flex;gap:8px}
+.tp-cell{flex:1;background:var(--card);border-radius:8px;padding:8px;text-align:center}
+.tp-h{font-size:9.5px;color:var(--t3);text-transform:uppercase}
+.tp-v{font-size:14px;font-weight:700;margin-top:2px}
+.tp-n{font-size:9.5px;color:var(--t3);margin-top:2px}
 .tradingview-widget-container,.tradingview-widget-container__widget{height:100%;width:100%}
 #stockOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;transition:opacity .2s;opacity:0}
 #stockOverlay.open{opacity:1}
@@ -1575,6 +1585,14 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section">
       <div class="section-label">매수 · 매도 시그널</div>
       <div class="tech-signal-box" id="tech-signal"></div>
+    </div>
+    <div class="section">
+      <div class="section-label">종합 인사이트</div>
+      <div class="tech-insight-box" id="techInsight"></div>
+    </div>
+    <div class="section">
+      <div class="section-label">패턴 백테스트 (과거 데이터 기준)</div>
+      <div class="tech-patterns-box" id="techPatterns"></div>
     </div>
   </div>
 </div>

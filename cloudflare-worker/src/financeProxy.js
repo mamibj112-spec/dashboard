@@ -44,7 +44,7 @@ async function fetchChartMeta(yahooSymbol) {
 }
 
 // Yahoo 차트 API (인증 불필요) — 기술적 지표/기간별 수익률 계산용 일별 시세 히스토리(최대 10년)
-async function fetchPriceHistory(yahooSymbol) {
+export async function fetchPriceHistory(yahooSymbol) {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=10y`;
   const res = await fetch(url, { headers: { 'User-Agent': UA } });
   if (!res.ok) return null;
@@ -75,7 +75,7 @@ async function fetchFxRate(pair) {
   return num(data?.quoteSummary?.result?.[0]?.price || {}, 'regularMarketPrice');
 }
 
-function tvToYahooCandidates(tvSymbol) {
+export function tvToYahooCandidates(tvSymbol) {
   const parts = tvSymbol.split(':');
   const exchange = parts[0];
   const ticker = parts[1] || parts[0];
