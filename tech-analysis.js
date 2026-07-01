@@ -92,7 +92,25 @@
         '<div class="tp-v ' + cls + '">' + (f.avgPct >= 0 ? '+' : '') + f.avgPct + '%</div>' +
         '<div class="tp-n">n=' + f.n + ' · 승률' + f.winRatePct + '%' + warn + '</div></div>';
     }).join('');
-    return '<div class="tp-row"><div class="tp-label">' + p.label + '</div><div class="tp-cells">' + cells + '</div></div>';
+    var badge = p.current ? '<span style="background:var(--blue);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px">지금 이 상태</span>' : '';
+    var rowStyle = p.current ? ' style="background:rgba(77,166,255,.06);border-radius:8px;padding:10px 8px;margin:2px 0"' : '';
+    return '<div class="tp-row"' + rowStyle + '><div class="tp-label">' + p.label + badge + '</div><div class="tp-cells">' + cells + '</div></div>';
+  }
+
+  function currentMatchSummary(data) {
+    var matched = data.patterns.filter(function (p) { return p.current; });
+    if (!matched.length) return '';
+    var lines = matched.map(function (p) {
+      var f20 = p.forward['20d'];
+      if (!f20 || !f20.n) return '지금 <b>' + p.label + '</b> 상태입니다. (과거 이후 20일 데이터 없음)';
+      var warn = f20.reliable ? '' : ' — 표본이 적어 참고만';
+      return '지금 <b>' + p.label + '</b> 상태입니다. 과거 이 상태 ' + f20.n + '번 중 이후 20일 평균 ' + (f20.avgPct >= 0 ? '+' : '') + f20.avgPct + '%, 승률 ' + f20.winRatePct + '%였습니다' + warn + '.';
+    });
+    return '<div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;font-size:12.5px;line-height:1.7;color:var(--t2)">' +
+      '<div style="font-weight:700;color:var(--t1);margin-bottom:6px">🔵 지금 상태와 일치하는 과거 패턴</div>' +
+      lines.join('<br>') +
+      '<div style="font-size:10px;color:var(--t3);margin-top:8px">⚠️ 이건 과거 기록이지 미래 예측이 아닙니다. "매수/매도하라"는 신호가 아니라 참고 정보입니다.</div>' +
+      '</div>';
   }
 
   function loadTechPatterns(symbol) {
@@ -111,6 +129,9 @@
           '</div>' +
           rows +
           '<div style="font-size:10px;color:var(--t3);margin-top:10px">⚠️ n(표본 수)이 ' + RELIABLE_MIN_N_LABEL + '보다 적은 패턴은 통계적으로 신뢰하기 어렵습니다. 과거 패턴이 미래에 반복된다는 보장은 없습니다.</div>';
+
+        var insightBox = document.getElementById('techInsight');
+        if (insightBox) insightBox.innerHTML += currentMatchSummary(data);
       })
       .catch(function () {
         box.innerHTML = '<div style="color:var(--t3);font-size:12px;padding:12px 0;">❌ 네트워크 오류</div>';

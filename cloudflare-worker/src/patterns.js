@@ -91,12 +91,17 @@ function buildPatterns(hist) {
   }
 
   const horizons = [5, 10, 20];
+  const last = closes.length - 1;
+  const currentRsi = rsi[last];
+  const currentGap20 = ma20[last] != null ? (closes[last] - ma20[last]) / ma20[last] * 100 : null;
+  const currentMaAlign = (ma20[last] != null && ma60[last] != null) ? (ma20[last] > ma60[last]) : null;
+
   const patterns = [
-    { key: 'rsiOversold', label: 'RSI 과매도(30) 이탈', dates: rsiOversold.map((i) => dates[i]), forward: summarizeReturns(closes, rsiOversold, horizons) },
-    { key: 'rsiOverbought', label: 'RSI 과매수(70) 돌파', dates: rsiOverbought.map((i) => dates[i]), forward: summarizeReturns(closes, rsiOverbought, horizons) },
-    { key: 'goldenCross', label: '골든크로스 (20일선>60일선)', dates: goldenCross.map((i) => dates[i]), forward: summarizeReturns(closes, goldenCross, horizons) },
-    { key: 'deadCross', label: '데드크로스 (20일선<60일선)', dates: deadCross.map((i) => dates[i]), forward: summarizeReturns(closes, deadCross, horizons) },
-    { key: 'pullback10', label: '20일선 대비 -10% 눌림목', dates: pullback10.map((i) => dates[i]), forward: summarizeReturns(closes, pullback10, horizons) },
+    { key: 'rsiOversold', label: 'RSI 과매도(30) 이탈', dates: rsiOversold.map((i) => dates[i]), forward: summarizeReturns(closes, rsiOversold, horizons), current: currentRsi != null && currentRsi < 30 },
+    { key: 'rsiOverbought', label: 'RSI 과매수(70) 돌파', dates: rsiOverbought.map((i) => dates[i]), forward: summarizeReturns(closes, rsiOverbought, horizons), current: currentRsi != null && currentRsi > 70 },
+    { key: 'goldenCross', label: '골든크로스 (20일선>60일선)', dates: goldenCross.map((i) => dates[i]), forward: summarizeReturns(closes, goldenCross, horizons), current: currentMaAlign === true },
+    { key: 'deadCross', label: '데드크로스 (20일선<60일선)', dates: deadCross.map((i) => dates[i]), forward: summarizeReturns(closes, deadCross, horizons), current: currentMaAlign === false },
+    { key: 'pullback10', label: '20일선 대비 -10% 눌림목', dates: pullback10.map((i) => dates[i]), forward: summarizeReturns(closes, pullback10, horizons), current: currentGap20 != null && currentGap20 < -10 },
   ];
 
   const buyHoldPct = closes.length > 1 ? Math.round((closes[closes.length - 1] - closes[0]) / closes[0] * 10000) / 100 : null;
@@ -104,6 +109,7 @@ function buildPatterns(hist) {
   return {
     range: { from: dates[0], to: dates[dates.length - 1], bars: closes.length },
     buyHoldPct,
+    current: { rsi: currentRsi != null ? Math.round(currentRsi) : null, gap20Pct: currentGap20 != null ? Math.round(currentGap20 * 100) / 100 : null },
     patterns,
   };
 }
