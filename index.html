@@ -246,6 +246,11 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .tech-signal-box{height:450px;background:var(--card2);border-radius:12px;overflow:hidden}
 .tech-insight-box{background:var(--card2);border-radius:12px;padding:14px;min-height:20px}
 .tech-patterns-box{background:var(--card2);border-radius:12px;padding:14px;min-height:20px}
+.tech-candles-box{background:var(--card2);border-radius:12px;padding:14px;min-height:20px}
+.tc-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.tc-item:last-child{border-bottom:none}
+.tc-date{color:var(--t3);font-size:10.5px}
+.tc-tag{font-weight:600}
 .tp-row{padding:10px 0;border-bottom:1px solid var(--border)}
 .tp-row:last-child{border-bottom:none}
 .tp-label{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:8px}
@@ -1742,6 +1747,10 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section">
       <div class="section-label">패턴 백테스트 (과거 데이터 기준)</div>
       <div class="tech-patterns-box" id="techPatterns"></div>
+    </div>
+    <div class="section">
+      <div class="section-label">캔들 패턴 (최근 15거래일)</div>
+      <div class="tech-candles-box" id="techCandles"></div>
     </div>
   </div>
 </div>

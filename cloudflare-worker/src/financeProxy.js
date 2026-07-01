@@ -54,16 +54,17 @@ export async function fetchPriceHistory(yahooSymbol) {
 
   const ts = result.timestamp || [];
   const q = result.indicators?.quote?.[0] || {};
-  const closes = [], highs = [], lows = [], dates = [];
+  const closes = [], highs = [], lows = [], opens = [], dates = [];
   for (let i = 0; i < ts.length; i++) {
-    const c = q.close?.[i], h = q.high?.[i], l = q.low?.[i];
-    if (c == null || h == null || l == null) continue;
+    const c = q.close?.[i], h = q.high?.[i], l = q.low?.[i], o = q.open?.[i];
+    if (c == null || h == null || l == null || o == null) continue;
     closes.push(c);
     highs.push(h);
     lows.push(l);
+    opens.push(o);
     dates.push(ts[i]);
   }
-  return { closes, highs, lows, dates };
+  return { closes, highs, lows, opens, dates };
 }
 
 async function fetchFxRate(pair) {

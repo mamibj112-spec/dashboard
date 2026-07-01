@@ -60,6 +60,68 @@ function summarizeReturns(closes, indices, daysList) {
   return byHorizon;
 }
 
+// ── 캔들스틱 패턴 (1~3봉) ──
+const CANDLE_LOOKBACK = 15;
+
+function candleBody(b) { return Math.abs(b.c - b.o); }
+function candleRange(b) { return (b.h - b.l) || 1e-9; }
+function upperWick(b) { return b.h - Math.max(b.o, b.c); }
+function lowerWick(b) { return Math.min(b.o, b.c) - b.l; }
+function isBull(b) { return b.c > b.o; }
+function isBear(b) { return b.c < b.o; }
+
+function classifySingle(b, avgRange) {
+  const tags = [];
+  const bd = candleBody(b), rg = candleRange(b);
+  const uw = upperWick(b), lw = lowerWick(b);
+
+  if (bd / rg < 0.1) tags.push('도지 (Doji)');
+  if (bd / rg < 0.35 && lw > bd * 2 && uw < bd * 0.5) tags.push(isBull(b) ? '망치형 (Hammer)' : '행잉맨 (Hanging Man)');
+  if (bd / rg < 0.35 && uw > bd * 2 && lw < bd * 0.5) tags.push(isBull(b) ? '역망치형 (Inverted Hammer)' : '유성형 (Shooting Star)');
+  if (rg > avgRange * 1.5 && bd / rg > 0.6) tags.push(isBull(b) ? '장대양봉' : '장대음봉');
+  return tags;
+}
+
+function engulfing(prev, curr) {
+  if (isBear(prev) && isBull(curr) && curr.o <= prev.c && curr.c >= prev.o) return '상승장악형 (Bullish Engulfing)';
+  if (isBull(prev) && isBear(curr) && curr.o >= prev.c && curr.c <= prev.o) return '하락장악형 (Bearish Engulfing)';
+  return null;
+}
+
+function threeSoldiersOrCrows(b1, b2, b3) {
+  if (isBull(b1) && isBull(b2) && isBull(b3) && b2.c > b1.c && b3.c > b2.c && b2.o > b1.o && b3.o > b2.o) return '적삼병 (Three White Soldiers)';
+  if (isBear(b1) && isBear(b2) && isBear(b3) && b2.c < b1.c && b3.c < b2.c && b2.o < b1.o && b3.o < b2.o) return '흑삼병 (Three Black Crows)';
+  return null;
+}
+
+function buildCandlePatterns(hist, dates) {
+  const { opens, highs, lows, closes } = hist;
+  if (!opens || opens.length < 20) return { recent: [], multiBar: [] };
+
+  const bars = closes.map((c, i) => ({ date: dates[i], o: opens[i], h: highs[i], l: lows[i], c }));
+  const tail = bars.slice(-CANDLE_LOOKBACK);
+  const avgRangeBase = bars.slice(-20).reduce((a, b) => a + candleRange(b), 0) / Math.min(20, bars.length);
+
+  const recent = tail.map((b) => ({
+    date: b.date,
+    dir: isBull(b) ? '양봉' : (isBear(b) ? '음봉' : '보합'),
+    tags: classifySingle(b, avgRangeBase),
+  })).filter((r) => r.tags.length > 0);
+
+  const multiBar = [];
+  const n = bars.length;
+  for (let i = Math.max(1, n - CANDLE_LOOKBACK); i < n; i++) {
+    const e = engulfing(bars[i - 1], bars[i]);
+    if (e) multiBar.push({ from: bars[i - 1].date, to: bars[i].date, label: e });
+  }
+  for (let i = Math.max(2, n - CANDLE_LOOKBACK); i < n; i++) {
+    const t = threeSoldiersOrCrows(bars[i - 2], bars[i - 1], bars[i]);
+    if (t) multiBar.push({ from: bars[i - 2].date, to: bars[i].date, label: t });
+  }
+
+  return { recent, multiBar };
+}
+
 function buildPatterns(hist) {
   const { closes } = hist;
   const dates = hist.dates.map((ts) => new Date(ts * 1000).toISOString().slice(0, 10));
@@ -105,12 +167,14 @@ function buildPatterns(hist) {
   ];
 
   const buyHoldPct = closes.length > 1 ? Math.round((closes[closes.length - 1] - closes[0]) / closes[0] * 10000) / 100 : null;
+  const candles = buildCandlePatterns(hist, dates);
 
   return {
     range: { from: dates[0], to: dates[dates.length - 1], bars: closes.length },
     buyHoldPct,
     current: { rsi: currentRsi != null ? Math.round(currentRsi) : null, gap20Pct: currentGap20 != null ? Math.round(currentGap20 * 100) / 100 : null },
     patterns,
+    candles,
   };
 }
 

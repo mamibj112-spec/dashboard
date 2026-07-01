@@ -113,6 +113,37 @@
       '</div>';
   }
 
+  var BULLISH_TAGS = ['망치형', '역망치형', '장대양봉', '상승장악형', '적삼병'];
+  function tagColor(tag) {
+    if (BULLISH_TAGS.some(function (t) { return tag.indexOf(t) === 0; })) return 'var(--up)';
+    if (tag.indexOf('도지') === 0) return 'var(--t2)';
+    return 'var(--dn)';
+  }
+
+  function renderCandlePatterns(candles) {
+    var box = document.getElementById('techCandles');
+    if (!box) return;
+
+    var items = [];
+    (candles.multiBar || []).forEach(function (m) {
+      items.push({ date: m.from === m.to ? m.from : (m.from + ' ~ ' + m.to), label: m.label });
+    });
+    (candles.recent || []).forEach(function (r) {
+      r.tags.forEach(function (tag) { items.push({ date: r.date, label: tag }); });
+    });
+
+    if (!items.length) {
+      box.innerHTML = '<div style="color:var(--t3);font-size:12px;padding:8px 0;text-align:center;">최근 15거래일 안에 특이 캔들 패턴이 없습니다.</div>';
+      return;
+    }
+
+    items.sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+    box.innerHTML = items.map(function (it) {
+      return '<div class="tc-item"><span class="tc-date">' + it.date + '</span><span class="tc-tag" style="color:' + tagColor(it.label) + '">' + it.label + '</span></div>';
+    }).join('') +
+      '<div style="font-size:10px;color:var(--t3);margin-top:10px">⚠️ 캔들 모양은 OHLC 값으로 계산한 객관적 분류일 뿐, 이후 방향을 보장하지 않습니다.</div>';
+  }
+
   function loadTechPatterns(symbol) {
     var box = document.getElementById('techPatterns');
     if (!box) return;
@@ -132,6 +163,8 @@
 
         var insightBox = document.getElementById('techInsight');
         if (insightBox) insightBox.innerHTML += currentMatchSummary(data);
+
+        renderCandlePatterns(data.candles || {});
       })
       .catch(function () {
         box.innerHTML = '<div style="color:var(--t3);font-size:12px;padding:12px 0;">❌ 네트워크 오류</div>';
