@@ -140,32 +140,41 @@
     document.getElementById('techView').style.display = 'block';
     document.getElementById('techSymbolLabel').textContent = s.name + ' (' + s.ticker + ')';
 
-    loadWidget('tech-chart', 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js', {
-      autosize: true,
-      symbol: symbol,
-      interval: 'D',
-      timezone: 'Asia/Seoul',
-      theme: 'dark',
-      style: '1',
-      locale: 'kr',
-      backgroundColor: 'rgba(15, 19, 24, 1)',
-      gridColor: 'rgba(255, 255, 255, 0.06)',
-      studies: [
-        { id: 'MASimple@tv-basicstudies', inputs: { length: 5 } },
-        { id: 'MASimple@tv-basicstudies', inputs: { length: 10 } },
-        { id: 'MASimple@tv-basicstudies', inputs: { length: 20 } },
-        { id: 'MASimple@tv-basicstudies', inputs: { length: 60 } },
-        { id: 'MASimple@tv-basicstudies', inputs: { length: 120 } },
-        { id: 'MASimple@tv-basicstudies', inputs: { length: 240 } },
-        { id: 'BB@tv-basicstudies' },
-        'IchimokuCloud@tv-basicstudies',
-        'MACD@tv-basicstudies',
-        'RSI@tv-basicstudies',
-        'Stochastic@tv-basicstudies'
-      ],
-      allow_symbol_change: false,
-      support_host: 'https://www.tradingview.com'
-    });
+    if (symbol.indexOf('KRX:') === 0) {
+      var naverUrl = 'https://finance.naver.com/item/main.naver?code=' + symbol.replace('KRX:', '');
+      document.getElementById('tech-chart').innerHTML =
+        '<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--t3);font-size:12.5px;text-align:center;padding:0 20px">' +
+          '<div>국내 종목은 TradingView 무료 차트가 지원되지 않아요.</div>' +
+          '<button onclick="window.open(\'' + naverUrl + '\',\'_blank\')" style="background:var(--blue);border:none;border-radius:8px;padding:10px 16px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">네이버 금융에서 차트 보기</button>' +
+        '</div>';
+    } else {
+      loadWidget('tech-chart', 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js', {
+        autosize: true,
+        symbol: symbol,
+        interval: 'D',
+        timezone: 'Asia/Seoul',
+        theme: 'dark',
+        style: '1',
+        locale: 'kr',
+        backgroundColor: 'rgba(15, 19, 24, 1)',
+        gridColor: 'rgba(255, 255, 255, 0.06)',
+        studies: [
+          { id: 'MASimple@tv-basicstudies', inputs: { length: 5 } },
+          { id: 'MASimple@tv-basicstudies', inputs: { length: 10 } },
+          { id: 'MASimple@tv-basicstudies', inputs: { length: 20 } },
+          { id: 'MASimple@tv-basicstudies', inputs: { length: 60 } },
+          { id: 'MASimple@tv-basicstudies', inputs: { length: 120 } },
+          { id: 'MASimple@tv-basicstudies', inputs: { length: 240 } },
+          { id: 'BB@tv-basicstudies' },
+          'IchimokuCloud@tv-basicstudies',
+          'MACD@tv-basicstudies',
+          'RSI@tv-basicstudies',
+          'Stochastic@tv-basicstudies'
+        ],
+        allow_symbol_change: false,
+        support_host: 'https://www.tradingview.com'
+      });
+    }
 
     loadWidget('tech-signal', 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js', {
       symbol: symbol,
