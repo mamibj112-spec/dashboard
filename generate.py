@@ -2576,6 +2576,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .wl-price{font-size:16px;font-weight:700}
 .wl-pct{font-size:11px;font-weight:600;text-align:right}
 .wl-card-bot{display:flex;gap:12px;font-size:10.5px;color:var(--t3)}
+.tech-pick{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:12.5px}
+.tech-pick:active{background:var(--card)}
+.tech-pick.tech-pick-active{background:var(--card);border:1px solid var(--blue)}
+.tech-pick-ticker{color:var(--t3);font-size:10.5px}
+.tech-chart-box{height:70vh;min-height:420px;background:var(--card2);border-radius:12px;overflow:hidden}
+.tech-signal-box{height:450px;background:var(--card2);border-radius:12px;overflow:hidden}
+.tradingview-widget-container,.tradingview-widget-container__widget{height:100%;width:100%}
 #stockOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;transition:opacity .2s;opacity:0}
 #stockOverlay.open{opacity:1}
 #stockModal{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px;z-index:301;max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s ease}
@@ -3329,6 +3336,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   <button class="tab-btn" onclick="sw('etf',this)">📦 ETF</button>
   <button class="tab-btn" onclick="sw('ai',this)">💡 AI</button>
   <button class="tab-btn" onclick="sw('sub',this)">📝 영상분석</button>
+  <button class="tab-btn" onclick="sw('tech',this)">📉 기술분석</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -3899,6 +3907,26 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
   </div>
 </div>
 
+<!-- ===== 기술적 분석 탭 ===== -->
+<div id="tab-tech" class="tab-panel">
+  <div class="section">
+    <input type="text" id="techSearch" class="wl-search" placeholder="종목명 또는 티커 검색..." oninput="renderTechList(this.value)">
+  </div>
+  <div class="section">
+    <div id="techList" class="wl-grid"></div>
+  </div>
+  <div id="techView" style="display:none">
+    <div class="section">
+      <div class="section-label" id="techSymbolLabel">-</div>
+      <div class="tech-chart-box" id="tech-chart"></div>
+    </div>
+    <div class="section">
+      <div class="section-label">매수 · 매도 시그널</div>
+      <div class="tech-signal-box" id="tech-signal"></div>
+    </div>
+  </div>
+</div>
+
 <!-- 종목 상세 모달 -->
 <div id="stockOverlay" onclick="closeStockModal()"></div>
 <div id="stockModal"></div>
@@ -3968,7 +3996,7 @@ function closeMacroChart(){{
   document.getElementById('macroModal').classList.remove('open');
   setTimeout(function(){{document.getElementById('macroOverlay').style.display='none';}},280);
 }}
-var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어',sub:'📝 영상분석'}};
+var _tabTitles={{dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어',sub:'📝 영상분석',tech:'📉 기술적 분석'}};
 var _WORKER='https://dashboard-trigger.mamibj112.workers.dev';
 var WATCHLIST={watchlist_json};
 function _fmt(v,dec,suf){{if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}}
@@ -4193,6 +4221,7 @@ function sw(id, btn) {{
   btn.classList.add('active');
   document.querySelector('.header-title').textContent=_tabTitles[id]||'국장 데일리 대시보드';
   if(id==='watch') renderWatchlist('');
+  if(id==='tech') renderTechList('');
 }}
 if ('serviceWorker' in navigator) {{
   navigator.serviceWorker.register('sw.js').catch(() => {{}});
@@ -4297,6 +4326,7 @@ function sendToNotion(){{
     }});
 }}
 </script>
+<script src="tech-analysis.js"></script>
 </body>
 </html>"""
 

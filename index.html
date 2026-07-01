@@ -238,6 +238,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .wl-price{font-size:16px;font-weight:700}
 .wl-pct{font-size:11px;font-weight:600;text-align:right}
 .wl-card-bot{display:flex;gap:12px;font-size:10.5px;color:var(--t3)}
+.tech-pick{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:12.5px}
+.tech-pick:active{background:var(--card)}
+.tech-pick.tech-pick-active{background:var(--card);border:1px solid var(--blue)}
+.tech-pick-ticker{color:var(--t3);font-size:10.5px}
+.tech-chart-box{height:70vh;min-height:420px;background:var(--card2);border-radius:12px;overflow:hidden}
+.tech-signal-box{height:450px;background:var(--card2);border-radius:12px;overflow:hidden}
+.tradingview-widget-container,.tradingview-widget-container__widget{height:100%;width:100%}
 #stockOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;transition:opacity .2s;opacity:0}
 #stockOverlay.open{opacity:1}
 #stockModal{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px;z-index:301;max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s ease}
@@ -285,6 +292,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <button class="tab-btn" onclick="sw('etf',this)">📦 ETF</button>
   <button class="tab-btn" onclick="sw('ai',this)">💡 AI</button>
   <button class="tab-btn" onclick="sw('sub',this)">📝 영상분석</button>
+  <button class="tab-btn" onclick="sw('tech',this)">📉 기술분석</button>
 </nav>
 
 <!-- ===== 국내 탭 ===== -->
@@ -1709,6 +1717,26 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   </div>
 </div>
 
+<!-- ===== 기술적 분석 탭 ===== -->
+<div id="tab-tech" class="tab-panel">
+  <div class="section">
+    <input type="text" id="techSearch" class="wl-search" placeholder="종목명 또는 티커 검색..." oninput="renderTechList(this.value)">
+  </div>
+  <div class="section">
+    <div id="techList" class="wl-grid"></div>
+  </div>
+  <div id="techView" style="display:none">
+    <div class="section">
+      <div class="section-label" id="techSymbolLabel">-</div>
+      <div class="tech-chart-box" id="tech-chart"></div>
+    </div>
+    <div class="section">
+      <div class="section-label">매수 · 매도 시그널</div>
+      <div class="tech-signal-box" id="tech-signal"></div>
+    </div>
+  </div>
+</div>
+
 <!-- 종목 상세 모달 -->
 <div id="stockOverlay" onclick="closeStockModal()"></div>
 <div id="stockModal"></div>
@@ -1778,7 +1806,7 @@ function closeMacroChart(){
   document.getElementById('macroModal').classList.remove('open');
   setTimeout(function(){document.getElementById('macroOverlay').style.display='none';},280);
 }
-var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어',sub:'📝 영상분석'};
+var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어',sub:'📝 영상분석',tech:'📉 기술적 분석'};
 var _WORKER='https://dashboard-trigger.mamibj112.workers.dev';
 var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 2273.73, "change": 223.3401, "change_pct": 10.89, "currency": "USD", "market_cap": "$336.7B", "ev": "$333.2B", "pe": 77.52, "forward_pe": 12.24, "pb": 24.43, "ps": 25.54, "peg": null, "ev_ebitda": 59.16, "eps": 29.33, "shares_out": "$148M", "float_shares": "$146M", "revenue": "$13.2B", "net_income": "$4.5B", "op_margin": 69.98, "profit_margin": 34.19, "gross_margin": 56.04, "roe": 39.3, "roa": 22.82, "roic": null, "rev_growth": 251.0, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 4.78, "quick_ratio": 3.43, "debt_equity": 1.5, "total_debt": "$207M", "total_cash": "$3.7B", "fcf": "$2.3B", "div_yield": null, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 2354.39, "low52": 40.1, "target": 1845.64, "ret_1w": 15.79, "ret_1m": 34.14, "ret_3m": 297.16, "ret_6m": 809.31, "ret_ytd": 726.09, "ret_1y": 4722.33, "ret_3y": null, "ret_5y": null, "rsi": 61, "beta": null, "sma20_gap": 17.19, "sma50_gap": 44.71, "sma200_gap": 231.76, "atr": 218.92, "vol_weekly": 50.94, "vol_monthly": 104.67, "volume": 11230102, "avg_volume": 13980835, "rel_volume": 0.8, "exchange": "NMS", "inst_pct": null, "insider_pct": 1.12, "short_float": 11.5, "sector": "Technology", "industry": "Computer Hardware", "employees": 11000, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the United States, Europe, the Middle East, Africa, Asia, and internationally. The company offers solid state drives for desktop a", "news": [{"title": "MU, SNDK, STX, WDC 주식, 개장 전 하락: 뜨거웠던 메모리 랠리 식는가?", "link": "https://finance.yahoo.com/markets/stocks/articles/mu-sndk-stx-wdc-stocks-083127034.html", "publisher": "Stocktwits", "date": "", "title_orig": "MU, SNDK, STX, WDC Stocks Slide Premarket: Is The Red-Hot Memory Rally Cooling?"}, {"title": "오늘 미국 주식 시장: 에너지 불안과 완화된 인플레이션 속 S&P 500 선물 하락", "link": "https://finance.yahoo.com/markets/stocks/articles/us-stock-market-today-p-082015489.html", "publisher": "Simply Wall St.", "date": "", "title_orig": "US Stock Market Today: S&P 500 Futures Dip As Energy Jitters Meet Softer Inflation"}, {"title": "짐 크레이머, AI 지출 사이클 상위 5개 주식 선정", "link": "https://finance.yahoo.com/markets/stocks/articles/jim-cramer-names-5-top-075746387.html", "publisher": "BeInCrypto", "date": "", "title_orig": "Jim Cramer Names 5 Top AI Spending Cycle Stocks"}, {"title": "샌디스크 (SNDK) 주식, 큰 폭 상승 후 완전한 가치 평가된 듯", "link": "https://finance.yahoo.com/markets/stocks/articles/sandisk-sndk-stock-looks-fully-020905451.html", "publisher": "Simply Wall St.", "date": "", "title_orig": "Sandisk (SNDK) Stock Looks Fully Valued After A Very Large Run"}, {"title": "업데이트: S&P 500, 나스닥 종합지수, 기술주 상승 및 원유 하락 속 6년 만에 가장 강력한 분기 마감", "link": "https://finance.yahoo.com/markets/stocks/articles/p-500-nasdaq-composite-close-205610906.html", "publisher": "MT Newswires", "date": "", "title_orig": "Update: S&P 500, Nasdaq Composite Close Strongest Quarter in Six Years Amid Gains in Technology, Decline in Crude Oil"}]}];
 function _fmt(v,dec,suf){if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}
@@ -2003,6 +2031,7 @@ function sw(id, btn) {
   btn.classList.add('active');
   document.querySelector('.header-title').textContent=_tabTitles[id]||'국장 데일리 대시보드';
   if(id==='watch') renderWatchlist('');
+  if(id==='tech') renderTechList('');
 }
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
@@ -2107,5 +2136,6 @@ function sendToNotion(){
     });
 }
 </script>
+<script src="tech-analysis.js"></script>
 </body>
 </html>
