@@ -1,25 +1,76 @@
-// "기술적 분석" 탭: 관심종목 중 하나를 골라 TradingView 캔들차트 + 매수/매도 시그널만 보여줌
+// "기술적 분석" 탭: 관심종목 또는 직접 입력한 종목의 TradingView 캔들차트 + 매수/매도 시그널을 보여줌
 (function () {
   var selectedTicker = null;
+
+  // 주요 국내 종목명 → 종목코드 (관심종목에 없어도 이름으로 바로 조회 가능하도록)
+  var KR_STOCK_MAP = {
+    '삼성전자': '005930', 'SK하이닉스': '000660', '네이버': '035420', 'NAVER': '035420',
+    '카카오': '035720', 'LG에너지솔루션': '373220', '삼성바이오로직스': '207940',
+    '현대차': '005380', '기아': '000270', 'POSCO홀딩스': '005490', '포스코홀딩스': '005490',
+    '셀트리온': '068270', 'KB금융': '105560', '신한지주': '055550', 'LG화학': '051910',
+    '삼성SDI': '006400', '현대모비스': '012330', '삼성물산': '028260', 'SK이노베이션': '096770',
+    'SK': '034730', '한국전력': '015760', 'HMM': '011200', '두산에너빌리티': '034020',
+    'LG전자': '066570', 'KT&G': '033780', '하나금융지주': '086790', '메리츠금융지주': '138040',
+    '삼성생명': '032830', 'HD현대중공업': '329180', '삼성전기': '009150',
+    '한화에어로스페이스': '012450', '고려아연': '010130', 'SK텔레콤': '017670', 'KT': '030200',
+  };
+
+  function customSearchItems(rawQuery, wlMatches) {
+    var t = rawQuery.toLowerCase().trim();
+    if (!t) return [];
+    var items = [];
+
+    Object.keys(KR_STOCK_MAP).forEach(function (name) {
+      if (name.toLowerCase().indexOf(t) === -1) return;
+      var code = KR_STOCK_MAP[name];
+      if (wlMatches.some(function (s) { return s.ticker === code; })) return;
+      items.push({ symbol: 'KRX:' + code, display: name + ' (' + code + ')', name: name });
+    });
+
+    var trimmed = rawQuery.trim();
+    if (/^\d{6}$/.test(trimmed)) {
+      items.push({ symbol: 'KRX:' + trimmed, display: trimmed + ' 직접 조회', name: trimmed });
+    }
+    if (/^[A-Za-z.]{1,6}$/.test(trimmed)) {
+      var upper = trimmed.toUpperCase();
+      if (!wlMatches.some(function (s) { return s.ticker.toUpperCase() === upper; })) {
+        items.push({ symbol: upper, display: upper + ' 직접 조회', name: upper });
+      }
+    }
+    return items;
+  }
 
   function renderTechList(q) {
     var box = document.getElementById('techList');
     if (!box) return;
     var t = (q || '').toLowerCase();
-    var list = (window.WATCHLIST || []).filter(function (s) {
+    var wlMatches = (window.WATCHLIST || []).filter(function (s) {
       return !t || s.ticker.toLowerCase().includes(t) || s.name.toLowerCase().includes(t);
     });
-    if (!list.length) {
+    var custom = customSearchItems(q || '', wlMatches);
+
+    if (!wlMatches.length && !custom.length) {
       box.innerHTML = '<div style="color:var(--t3);font-size:12px;padding:16px 0;text-align:center;">검색 결과 없음</div>';
       return;
     }
-    box.innerHTML = list.map(function (s) {
+
+    var wlHtml = wlMatches.map(function (s) {
       var active = selectedTicker === s.ticker ? ' tech-pick-active' : '';
       return '<div class="tech-pick' + active + '" onclick="selectTechSymbol(\'' + s.ticker + '\')">' +
         '<span class="tech-pick-name">' + s.name + '</span>' +
         '<span class="tech-pick-ticker">' + s.market + ' · ' + s.ticker + '</span>' +
       '</div>';
     }).join('');
+
+    var customHtml = custom.map(function (c) {
+      var safeName = c.name.replace(/'/g, "\\'");
+      return '<div class="tech-pick" onclick="selectCustomSymbol(\'' + c.symbol + '\',\'' + safeName + '\')">' +
+        '<span class="tech-pick-name">' + c.display + '</span>' +
+        '<span class="tech-pick-ticker">직접 조회</span>' +
+      '</div>';
+    }).join('');
+
+    box.innerHTML = wlHtml + customHtml;
   }
 
   function renderTechInsight(s) {
@@ -184,15 +235,8 @@
     host.querySelector('.tradingview-widget-container').appendChild(s);
   }
 
-  function selectTechSymbol(ticker) {
-    var s = (window.WATCHLIST || []).find(function (x) { return x.ticker === ticker; });
-    if (!s) return;
-    selectedTicker = ticker;
-    renderTechList(document.getElementById('techSearch').value);
-
-    var symbol = window.tvSymbol(s);
+  function loadChartAndSignal(symbol) {
     document.getElementById('techView').style.display = 'block';
-    document.getElementById('techSymbolLabel').textContent = s.name + ' (' + s.ticker + ')';
 
     if (symbol.indexOf('KRX:') === 0) {
       var naverUrl = 'https://finance.naver.com/item/main.naver?code=' + symbol.replace('KRX:', '');
@@ -240,11 +284,58 @@
       interval: '1D',
       showIntervalTabs: true
     });
+  }
 
+  function selectTechSymbol(ticker) {
+    var s = (window.WATCHLIST || []).find(function (x) { return x.ticker === ticker; });
+    if (!s) return;
+    selectedTicker = ticker;
+    renderTechList(document.getElementById('techSearch').value);
+
+    var symbol = window.tvSymbol(s);
+    document.getElementById('techSymbolLabel').textContent = s.name + ' (' + s.ticker + ')';
+
+    loadChartAndSignal(symbol);
     renderTechInsight(s);
+    loadTechPatterns(symbol);
+  }
+
+  function selectCustomSymbol(symbol, name) {
+    selectedTicker = null;
+    renderTechList(document.getElementById('techSearch').value);
+
+    document.getElementById('techSymbolLabel').textContent = name + ' (' + symbol + ')';
+    loadChartAndSignal(symbol);
+
+    var insightBox = document.getElementById('techInsight');
+    if (insightBox) insightBox.innerHTML = '<div style="color:var(--t3);font-size:12px;padding:8px 0;text-align:center;">⏳ 불러오는 중...</div>';
+
+    fetch(window._WORKER + '/finance?symbol=' + encodeURIComponent(symbol))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.error) {
+          if (insightBox) insightBox.innerHTML = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">❌ ' + data.error + '</div>';
+          return;
+        }
+        renderTechInsight({
+          price: data.price,
+          rsi: data.rsi14 != null ? Math.round(data.rsi14) : null,
+          sma20_gap: data.sma20Gap,
+          sma50_gap: data.sma50Gap,
+          sma200_gap: data.sma200Gap,
+          rel_volume: data.relativeVolume,
+          high52: data.fiftyTwoWeekHigh,
+          low52: data.fiftyTwoWeekLow,
+        });
+      })
+      .catch(function () {
+        if (insightBox) insightBox.innerHTML = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">❌ 네트워크 오류</div>';
+      });
+
     loadTechPatterns(symbol);
   }
 
   window.renderTechList = renderTechList;
   window.selectTechSymbol = selectTechSymbol;
+  window.selectCustomSymbol = selectCustomSymbol;
 })();
