@@ -657,19 +657,25 @@ class _GeminiRateLimiter:
                     _time.sleep(self._interval - elapsed)
             self._timestamps.append(_time.time())
 
-_GEMINI_LIMITER = _GeminiRateLimiter(rpm=10)
+# 무료 티어 키를 n8n 등과 나눠 쓰므로 한도(10 RPM)보다 여유 있게 설정
+_GEMINI_LIMITER = _GeminiRateLimiter(rpm=8)
 
 def _gemini_post(api_key, prompt, temperature=0.7, max_tokens=1024):
-    """Gemini API 호출 (Rate Limiter로 429 원천 차단)"""
+    """Gemini API 호출 (Rate Limiter + 429 시 30초 대기 후 최대 2회 재시도)"""
     url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}'
     body = {'contents': [{'parts': [{'text': prompt}]}],
             'generationConfig': {'temperature': temperature, 'maxOutputTokens': max_tokens,
                                  'thinkingConfig': {'thinkingBudget': 0}}}
-    _GEMINI_LIMITER.acquire()
-    resp = requests.post(url, json=body, timeout=60)
-    resp.raise_for_status()
-    parts = resp.json()['candidates'][0]['content']['parts']
-    return next((p['text'] for p in parts if 'text' in p), '').strip()
+    for attempt in range(3):
+        _GEMINI_LIMITER.acquire()
+        resp = requests.post(url, json=body, timeout=60)
+        if resp.status_code == 429 and attempt < 2:
+            print(f"  Gemini 429 발생, 30초 후 재시도 ({attempt + 1}/2)...")
+            _time.sleep(30)
+            continue
+        resp.raise_for_status()
+        parts = resp.json()['candidates'][0]['content']['parts']
+        return next((p['text'] for p in parts if 'text' in p), '').strip()
 
 
 # ── AI 브리핑 ──────────────────────────────────────────────────────────────────
