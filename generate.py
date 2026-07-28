@@ -1194,7 +1194,7 @@ CALENDAR_EVENTS = [
     ('🇺🇸 미국 PCE 물가', '2026-04-30'),
     ('🇺🇸 미국 PCE 물가', '2026-05-29'),
     ('🇺🇸 미국 PCE 물가', '2026-06-26'),
-    ('🇺🇸 미국 PCE 물가', '2026-07-31'),
+    ('🇺🇸 미국 PCE 물가', '2026-07-30'),  # BEA 확인: FOMC 결과 발표일과 동일
     ('🇺🇸 미국 PCE 물가', '2026-08-28'),
     ('🇺🇸 미국 PCE 물가', '2026-09-25'),
     ('🇺🇸 미국 PCE 물가', '2026-10-30'),
@@ -1223,11 +1223,143 @@ CALENDAR_EVENTS = [
     ('🇰🇷 한국 GDP 속보', '2026-04-24'),
     ('🇰🇷 한국 GDP 속보', '2026-07-24'),
     ('🇰🇷 한국 GDP 속보', '2026-10-23'),
+    # ADP 민간고용보고서 (NFP 발표 전 수요일, 실제 발표일 검증: 2026-07-01)
+    ('🇺🇸 ADP 민간고용보고서', '2026-01-07'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-02-04'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-03-04'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-04-01'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-05-06'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-06-03'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-07-01'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-08-05'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-09-02'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-09-30'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-11-04'),
+    ('🇺🇸 ADP 민간고용보고서', '2026-12-02'),
+    # CB 소비자신뢰지수 (매월 마지막 화요일, Conference Board 공식 규칙)
+    ('🇺🇸 CB 소비자신뢰지수', '2026-01-27'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-02-24'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-03-31'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-04-28'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-05-26'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-06-30'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-07-28'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-08-25'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-09-29'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-10-27'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-11-24'),
+    ('🇺🇸 CB 소비자신뢰지수', '2026-12-29'),
+    # 고용비용지수 ECI (분기별, BLS) — 4/30·7/31은 실제 발표일 확인, 1/30·10/30은 분기 패턴 추정치(발표 임박 시 재확인 필요)
+    ('🇺🇸 미국 고용비용지수(ECI)', '2026-01-30'),
+    ('🇺🇸 미국 고용비용지수(ECI)', '2026-04-30'),
+    ('🇺🇸 미국 고용비용지수(ECI)', '2026-07-31'),
+    ('🇺🇸 미국 고용비용지수(ECI)', '2026-10-30'),
+    # 미시간대 소비자심리지수 (예비/확정) — 4~8월은 실제 발표일 확인, 9~12월은 미발표(확인 후 추가 필요)
+    ('🇺🇸 미시간대 소비자심리지수(예비)', '2026-04-10'),
+    ('🇺🇸 미시간대 소비자심리지수(확정)', '2026-04-24'),
+    ('🇺🇸 미시간대 소비자심리지수(예비)', '2026-05-08'),
+    ('🇺🇸 미시간대 소비자심리지수(확정)', '2026-05-22'),
+    ('🇺🇸 미시간대 소비자심리지수(예비)', '2026-06-12'),
+    ('🇺🇸 미시간대 소비자심리지수(확정)', '2026-06-26'),
+    ('🇺🇸 미시간대 소비자심리지수(예비)', '2026-07-17'),
+    ('🇺🇸 미시간대 소비자심리지수(확정)', '2026-07-31'),
+    ('🇺🇸 미시간대 소비자심리지수(예비)', '2026-08-14'),
+    ('🇺🇸 미시간대 소비자심리지수(확정)', '2026-08-28'),
 ]
 
+# 국내 실적발표 자동 추적 대상 대형주 (DART corp_code) — 회사명: corp_code
+KR_EARNINGS_WATCH = [
+    ('삼성전자',        '00126380'),
+    ('SK하이닉스',      '00164779'),
+    ('NAVER',          '00266961'),
+    ('카카오',          '00918444'),
+    ('LG에너지솔루션',   '01515323'),
+    ('현대차',          '00164742'),
+    ('기아',            '01664948'),
+    ('POSCO홀딩스',     '00155319'),
+    ('삼성바이오로직스', '00877059'),
+    ('셀트리온',        '00421045'),
+    ('KB금융',         '00688996'),
+    ('신한지주',        '00382199'),
+    ('LG화학',         '00356361'),
+    ('삼성SDI',        '00126362'),
+    ('한화에어로스페이스', '00126566'),
+    ('삼성물산',        '00126229'),
+    ('현대모비스',       '00164788'),
+]
 
-def fetch_upcoming_earnings(dt):
-    """Finnhub API로 향후 7일 이내 주요 기업 실적 발표 예정 수집"""
+# 실적 발표 시 표에서 강조(하이라이트) 표시할 미국 대형주 티커
+MAJOR_EARNINGS_TICKERS = {
+    'AAPL','MSFT','GOOGL','GOOG','AMZN','META','NVDA','TSLA','AVGO','QCOM',
+    'ARM','NFLX','AMD','INTC','CRM','ORCL','ADBE','CSCO','IBM','MU',
+}
+
+
+def fetch_kr_earnings_schedule(dt, week_start=None, week_end=None):
+    """OpenDART '기업설명회(IR)개최(안내공시)' 공시를 파싱해 국내 대형주 실적발표 예정일 자동 수집"""
+    import os, re, zipfile, io, requests
+    from datetime import timedelta, date as date_cls
+    from concurrent.futures import ThreadPoolExecutor as _TPE
+
+    key = os.environ.get('DART_API_KEY', '').strip()
+    if not key:
+        return []
+
+    today = dt.date()
+    w_start = week_start or today
+    w_end = week_end or (today + timedelta(days=7))
+    search_from = today - timedelta(days=30)
+    search_to = today + timedelta(days=7)
+
+    def _check_company(name, corp_code):
+        try:
+            r = requests.get('https://opendart.fss.or.kr/api/list.json', params={
+                'crtfc_key': key, 'corp_code': corp_code,
+                'bgn_de': search_from.strftime('%Y%m%d'), 'end_de': search_to.strftime('%Y%m%d'),
+                'page_count': 100,
+            }, timeout=10)
+            data = r.json()
+            items = [it for it in data.get('list', []) if '기업설명회' in it.get('report_nm', '')]
+            for it in items:
+                rcept_no = it.get('rcept_no', '')
+                dr = requests.get('https://opendart.fss.or.kr/api/document.xml', params={
+                    'crtfc_key': key, 'rcept_no': rcept_no,
+                }, timeout=10)
+                zf = zipfile.ZipFile(io.BytesIO(dr.content))
+                raw = zf.read(zf.namelist()[0]).decode('utf-8', errors='ignore')
+                text = re.sub(r'<[^>]+>', '|', raw)
+                text = re.sub(r'\|+', '|', text)
+                parts = [p.strip() for p in text.split('|') if p.strip()]
+                purpose = ''
+                event_date = None
+                for i, p in enumerate(parts):
+                    if '개최목적' in p and i + 1 < len(parts):
+                        purpose = parts[i + 1]
+                    m = re.match(r'^(\d{4})-(\d{2})-(\d{2})$', p)
+                    if m and event_date is None:
+                        event_date = date_cls(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+                if event_date and '실적' in purpose and w_start <= event_date <= w_end:
+                    return {'name': name, 'date': event_date}
+        except Exception as e:
+            print(f"  국내 실적일정 조회 오류 ({name}): {e}")
+        return None
+
+    results = []
+    try:
+        with _TPE(max_workers=6) as ex:
+            futs = [ex.submit(_check_company, name, cc) for name, cc in KR_EARNINGS_WATCH]
+            for f in futs:
+                r = f.result()
+                if r:
+                    results.append(r)
+        print(f"  국내 실적일정 자동 수집 완료: {len(results)}건")
+    except Exception as e:
+        print(f"  국내 실적일정 수집 오류: {e}")
+    return results
+
+
+def fetch_upcoming_earnings(dt, week_start=None, week_end=None, limit=20):
+    """Finnhub API로 향후 7일 이내(또는 지정 구간) 주요 기업 실적 발표 예정 수집"""
     import os, requests
     from datetime import timedelta
     key = os.environ.get('FINNHUB_API_KEY', '').strip()
@@ -1235,18 +1367,19 @@ def fetch_upcoming_earnings(dt):
         return []
     try:
         today = dt.date()
-        end = today + timedelta(days=7)
+        q_from = week_start or today
+        q_to = week_end or (today + timedelta(days=7))
         r = requests.get('https://finnhub.io/api/v1/calendar/earnings',
-                         params={'from': str(today), 'to': str(end), 'token': key},
+                         params={'from': str(q_from), 'to': str(q_to), 'token': key},
                          timeout=10)
         items = r.json().get('earningsCalendar', [])
         # EPS 예상치가 있는 기업 (애널리스트 커버리지 = 비교적 주요 기업)
         notable = sorted(
             [it for it in items if it.get('epsEstimate') is not None],
-            key=lambda x: x.get('date', '')
+            key=lambda x: (x.get('symbol','').upper() not in MAJOR_EARNINGS_TICKERS, x.get('date', ''))
         )
         # 모르는 종목은 Finnhub profile API로 회사명 조회
-        unknown_symbols = [it.get('symbol','') for it in notable[:20]
+        unknown_symbols = [it.get('symbol','') for it in notable[:limit]
                            if it.get('symbol','').upper() not in US_TICKER_NAMES]
         name_cache = {}
         for sym in unknown_symbols[:10]:  # 최대 10개만 추가 조회
@@ -1260,7 +1393,7 @@ def fetch_upcoming_earnings(dt):
                 pass
 
         result = []
-        for it in notable[:20]:
+        for it in notable[:limit]:
             sym = it.get('symbol', '')
             d_str = it.get('date', '')
             # 회사명 조회
@@ -1313,6 +1446,64 @@ def get_weekly_calendar(dt):
                 badge_cls = 'nb-blue'
             events.append({'name': name, 'label': label, 'badge': badge_cls, 'date': d})
     return sorted(events, key=lambda x: x['date'])
+
+
+def build_weekly_schedule_table(dt, kr_earnings=None, us_earnings=None):
+    """이번 주(월~금) 매크로 지표 + 국내/미국 실적 발표를 요일별로 묶어 표 데이터 생성"""
+    from datetime import timedelta
+
+    today = dt.date()
+    week_start = today - timedelta(days=dt.weekday())
+    days = [week_start + timedelta(days=i) for i in range(5)]
+    weekday_names = ['월', '화', '수', '목', '금']
+
+    by_day = {d: [] for d in days}
+
+    # ADP NER Pulse (매주 화요일 발표되는 주간 고용변화 보고서, 월간 ADP 보고서와 별개)
+    for d in days:
+        if d.weekday() == 1:
+            by_day[d].append({'text': '🇺🇸 ADP 주간 고용변화 보고서', 'hl': True})
+
+    for name, date_str in CALENDAR_EVENTS:
+        d = datetime.strptime(date_str, '%Y-%m-%d').date()
+        if d in by_day:
+            by_day[d].append({'text': name, 'hl': True})
+
+    for e in (kr_earnings or []):
+        d = e.get('date')
+        if d in by_day:
+            by_day[d].append({'text': f"{e['name']} 실적 발표", 'hl': True})
+
+    us_major, us_minor = {}, {}
+    for e in (us_earnings or []):
+        try:
+            d = datetime.strptime(e.get('date', ''), '%Y-%m-%d').date()
+        except Exception:
+            continue
+        if d not in by_day:
+            continue
+        sym = e.get('symbol', '')
+        bucket = us_major if sym.upper() in MAJOR_EARNINGS_TICKERS else us_minor
+        bucket.setdefault(d, []).append(sym)
+
+    for d in days:
+        if us_major.get(d):
+            by_day[d].append({'text': f"{', '.join(us_major[d])} 실적 발표(장 후)", 'hl': True})
+        if us_minor.get(d):
+            syms = us_minor[d]
+            shown = ', '.join(syms[:4])
+            extra = f' 외 {len(syms) - 4}건' if len(syms) > 4 else ''
+            by_day[d].append({'text': f"{shown}{extra} 실적 발표", 'hl': False})
+
+    result = []
+    for i, d in enumerate(days):
+        result.append({
+            'date': d,
+            'label': f'{d.month}/{d.day} {weekday_names[i]}',
+            'is_today': d == today,
+            'items': by_day[d],
+        })
+    return result
 
 
 # ── 뉴스 ──────────────────────────────────────────────────────────────────────
@@ -2455,8 +2646,15 @@ color:var(--t3);font-size:11px;font-family:inherit;cursor:pointer;transition:all
 .breadth-bar{height:8px;background:rgba(255,64,96,.3);border-radius:4px;overflow:hidden;margin-bottom:8px}
 .breadth-up{height:100%;background:var(--up);border-radius:4px}
 .breadth-label{font-size:12px;display:flex;align-items:center}
-.cal-row{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card);border-radius:8px;margin-bottom:5px}
-.cal-name{font-size:12.5px;font-weight:600;color:var(--t1)}
+.wk-cal-table{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.wk-cal-row{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.wk-cal-row:last-child{border-bottom:none}
+.wk-cal-date{flex:0 0 64px;font-size:12.5px;font-weight:700;color:var(--t2)}
+.wk-cal-date.today{color:var(--gold)}
+.wk-cal-items{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.wk-cal-item{font-size:12px;color:var(--t2);line-height:1.5}
+.wk-cal-item.hl{color:var(--t1);font-weight:600;background:rgba(255,201,64,.12);border-radius:6px;padding:2px 6px;margin:-2px -6px}
+.wk-cal-item.empty{color:var(--t3)}
 .ai-brief-wrap{background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(77,166,255,.08));border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:14px}
 .ai-brief-title{font-size:10px;color:var(--purple);font-weight:700;letter-spacing:.5px;margin-bottom:8px}
 .ai-lines{margin-bottom:8px}
@@ -2641,7 +2839,7 @@ def _etf_row(e, show_amt=False):
     return f'<div class="stock-row"{click}><div class="etf-name">{name}{chart_icon}</div><div class="stock-right"><span class="{cls}">{sign}{abs(pct):.2f}%</span>{right}</div></div>'
 
 
-def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, upcoming_earnings=None, ai_idea=None, etf_insight=None):
+def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hist=None, research_summary=None, stock_story=None, investor_flow_story=None, us_ai_brief=None, watchlist=None, kr_sectors=None, etf_data=None, cnn_fear_greed=None, kr_news_insight=None, re_rates=None, re_news_insight=None, apt_trade=None, subscription=None, tracked_apt=None, weekly_schedule=None, ai_idea=None, etf_insight=None):
     """최종 HTML 생성"""
     kdate = korean_date(dt)
     gen_time = dt.strftime("%H:%M 생성")
@@ -3068,30 +3266,18 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     if not theme_etf_html:
         theme_etf_html = no_data
 
-    # 캘린더 - 경기 지표
-    cal_events = get_weekly_calendar(dt)
-    if cal_events:
-        cal_html = ''.join(f'''<div class="cal-row">
-  <span class="news-badge {e["badge"]}">{e["label"]}</span>
-  <span class="cal-name">{e["name"]}</span>
-</div>''' for e in cal_events)
-    else:
-        cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 지표 일정 없음</div>'
-
-    # 캘린더 - 실적 발표 예정
-    if upcoming_earnings:
-        def _earn_row(e):
-            sym = e['symbol']
-            name = e.get('company', '')
-            name_str = f' <span style="color:var(--t3)">({name})</span>' if name else ''
-            return f'''<div class="cal-row">
-  <span class="news-badge {e["badge"]}">{e["label"]}</span>
-  <span class="cal-name" style="font-weight:700">{sym}{name_str}</span>
-  <span style="font-size:10px;color:var(--t3);margin-left:auto;">{e["year"]}Q{e["quarter"]} · EPS 예상 {e["eps_estimate"]}</span>
+    # 주간 일정 표 (요일별 매크로 지표 + 국내/미국 실적)
+    def _day_row(day):
+        items_html = ''.join(
+            f'<div class="wk-cal-item{" hl" if it["hl"] else ""}">{it["text"]}</div>'
+            for it in day['items']
+        ) or '<div class="wk-cal-item empty">일정 없음</div>'
+        today_cls = ' today' if day['is_today'] else ''
+        return f'''<div class="wk-cal-row">
+  <div class="wk-cal-date{today_cls}">{day["label"]}</div>
+  <div class="wk-cal-items">{items_html}</div>
 </div>'''
-        earn_cal_html = ''.join(_earn_row(e) for e in upcoming_earnings)
-    else:
-        earn_cal_html = '<div style="color:var(--t3);font-size:12px;padding:8px 0;">이번 주 주요 실적 발표 없음</div>'
+    weekly_schedule_html = ''.join(_day_row(d) for d in (weekly_schedule or []))
 
 
     # 미국 공포/탐욕 지수 (CNN 실제 지수 우선, 실패 시 자체 추정치로 대체)
@@ -3765,33 +3951,16 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
   <div class="section">
     <div class="banner blue">
-      <strong>📅 이번 주 주요 일정</strong><br>
+      <strong>📅 주간 증시 주요 일정</strong><br>
       FOMC · CPI · PCE · GDP · ISM PMI · 고용 · 금통위 · 실적 발표
     </div>
   </div>
 
   <div class="section">
-    <div class="story-wrap">
-      <div class="mkt-sec-head">
-        <span class="mkt-sec-icon">📊</span>
-        <span class="mkt-sec-title">경기 지표 발표</span>
-        <span class="mkt-sec-num">01</span>
-      </div>
-      {cal_html}
-      <div style="font-size:10px;color:var(--t3);margin-top:10px;">공모주 일정은 <a href="https://dart.fss.or.kr" target="_blank">DART</a> · <a href="https://ipo.38.co.kr" target="_blank">38커뮤니케이션</a> 확인</div>
+    <div class="wk-cal-table">
+      {weekly_schedule_html}
     </div>
-  </div>
-
-  <div class="section">
-    <div class="story-wrap">
-      <div class="mkt-sec-head">
-        <span class="mkt-sec-icon">📋</span>
-        <span class="mkt-sec-title">실적 발표 예정</span>
-        <span class="mkt-sec-num">02</span>
-      </div>
-      {earn_cal_html}
-      <div style="font-size:10px;color:var(--t3);margin-top:8px;">출처: Finnhub · EPS 예상치 보유 기업 기준</div>
-    </div>
+    <div style="font-size:10px;color:var(--t3);margin-top:10px;">거시지표: FOMC·BLS·Conference Board·BEA 공식 일정 · 국내 실적: DART 기업설명회(IR) 공시 · 해외 실적: Finnhub · 공모주 일정은 <a href="https://dart.fss.or.kr" target="_blank">DART</a> · <a href="https://ipo.38.co.kr" target="_blank">38커뮤니케이션</a> 확인</div>
   </div>
 
 </div>
@@ -4392,6 +4561,7 @@ def create_icons():
 
 def main():
     from concurrent.futures import ThreadPoolExecutor
+    from datetime import timedelta
 
     dt = now_kst()
     print(f"대시보드 생성 중: {korean_date(dt)}")
@@ -4445,12 +4615,18 @@ def main():
     apt_trade         = fetch_apt_trade_trend()
     subscription      = fetch_subscription_schedule()
     tracked_apt       = fetch_tracked_apt_trades()
-    upcoming_earnings = fetch_upcoming_earnings(dt)
+
+    week_start = dt.date() - timedelta(days=dt.weekday())
+    week_end   = week_start + timedelta(days=4)
+    kr_earnings_sched = fetch_kr_earnings_schedule(dt, week_start, week_end)
+    week_us_earnings  = fetch_upcoming_earnings(dt, week_start, week_end, limit=60)
+    weekly_schedule   = build_weekly_schedule_table(dt, kr_earnings_sched, week_us_earnings)
+
     ai_idea           = fetch_ai_investment_idea(market, news, stocks, dt)
     etf_insight       = fetch_etf_ai_insight(etf_data)
     re_news_insight   = fetch_re_news_insight(news.get('realestate', []))
 
-    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt, upcoming_earnings=upcoming_earnings, ai_idea=ai_idea, etf_insight=etf_insight)
+    html = generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=usdkrw_week, macro_hist=macro_hist, research_summary=research_summary, stock_story=stock_story, investor_flow_story=investor_flow_story, us_ai_brief=us_ai_brief, watchlist=watchlist, kr_sectors=kr_sectors, etf_data=etf_data, cnn_fear_greed=cnn_fear_greed, kr_news_insight=kr_news_insight, re_rates=re_rates, re_news_insight=re_news_insight, apt_trade=apt_trade, subscription=subscription, tracked_apt=tracked_apt, weekly_schedule=weekly_schedule, ai_idea=ai_idea, etf_insight=etf_insight)
 
     out = Path(__file__).parent / 'index.html'
     out.write_text(html, encoding='utf-8')
