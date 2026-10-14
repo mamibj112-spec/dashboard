@@ -295,7 +295,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="header-day">장 마감 기준</div>
   </div>
   <div class="header-right">
-    09:25 생성<br>
+    21:57 생성<br>
     <div style="display:flex;gap:4px;margin-top:5px;justify-content:flex-end;">
       <button class="update-btn" id="refreshBtn" onclick="doReload()">↻ 새로고침</button>
       <button class="update-btn" id="updBtn" onclick="triggerUpdate()">지금 업데이트</button>
@@ -326,14 +326,14 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="us-fg-right">
     <div class="us-fg-label" style="color:#60a5fa">미국 공포/탐욕 지수</div>
     <div class="us-fg-score" style="color:#60a5fa">45 <span style="font-size:16px">공포</span></div>
-    <div class="us-fg-desc" style="color:#60a5fa">VIX 15.3 &nbsp;·&nbsp; S&amp;P RSI 62 &nbsp;·&nbsp; 나스닥 모멘텀 -0.31%</div>
+    <div class="us-fg-desc" style="color:#60a5fa">VIX 15.8 &nbsp;·&nbsp; S&amp;P RSI 62 &nbsp;·&nbsp; 나스닥 모멘텀 -0.31%</div>
   </div>
 </div>
-    <div class="banner up">
-      <strong>📈 오늘 시황</strong><br>
-      <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong><span class="up-txt">6,148.73</span></strong> &nbsp;<span class="up-txt">▲ 113.38 (1.88%)</span></span>
-      <span style="display:block;margin-bottom:6px;">코스닥 &nbsp;<strong><span class="dn-txt">836.72</span></strong> &nbsp;<span class="dn-txt">▼ 0.31 (0.04%)</span></span>
-      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 1.9% 상승 · 코스닥 상대 약세</span>
+    <div class="banner blue">
+      <strong>➖ 오늘 시황</strong><br>
+      <span style="display:block;margin-bottom:4px;">코스피 &nbsp;<strong><span class="dn-txt">6,008.81</span></strong> &nbsp;<span class="dn-txt">▼ 26.54 (0.44%)</span></span>
+      <span style="display:block;margin-bottom:6px;">코스닥 &nbsp;<strong><span class="dn-txt">823.88</span></strong> &nbsp;<span class="dn-txt">▼ 13.15 (1.57%)</span></span>
+      <span style="font-size:11.5px;opacity:.9;line-height:1.6">코스피 보합권 · 코스닥 상대 약세</span>
     </div>
   </div>
 
@@ -343,13 +343,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="index-grid">
       <div class="idx-card" onclick="showMacroChart('kospi')" style="cursor:pointer">
         <div class="idx-name">코스피 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
-        <div class="idx-val"><span class="up-txt">6,148.73</span></div>
-        <div class="idx-chg"><span class="up-txt">▲ 113.38 (1.88%)</span></div>
+        <div class="idx-val"><span class="dn-txt">6,008.81</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 26.54 (0.44%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('kosdaq')" style="cursor:pointer">
         <div class="idx-name">코스닥 <span style="font-size:9px;color:var(--t3);">추이 ›</span></div>
-        <div class="idx-val"><span class="dn-txt">836.72</span></div>
-        <div class="idx-chg"><span class="dn-txt">▼ 0.31 (0.04%)</span></div>
+        <div class="idx-val"><span class="dn-txt">823.88</span></div>
+        <div class="idx-chg"><span class="dn-txt">▼ 13.15 (1.57%)</span></div>
       </div>
     </div>
     <div class="asset-group-label">🇺🇸 미국 주요 지수</div>
@@ -366,8 +366,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="idx-card" onclick="showMacroChart('vix')" style="cursor:pointer">
         <div class="idx-name">VIX <span style="font-size:9px;color:var(--t3);">공포지수</span></div>
-        <div class="idx-val">15.27</div>
-        <div class="idx-chg"><span class="up-txt">▲ 0.06 (0.39%)</span></div>
+        <div class="idx-val">15.78</div>
+        <div class="idx-chg"><span class="up-txt">▲ 0.51 (3.34%)</span></div>
       </div>
       <div class="idx-card" onclick="showMacroChart('dow')" style="cursor:pointer">
         <div class="idx-name">다우존스</div>
@@ -379,33 +379,33 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="macro-grid">
       <div class="macro-card" onclick="showMacroChart('usdkrw')">
         <div class="macro-name">USD/KRW</div>
-        <div class="macro-val"><span class="dn-txt">1,338.1원</span></div>
-        <div class="macro-chg"><span class="dn-txt">▲ 4.0 (0.30%)</span></div>
+        <div class="macro-val"><span class="dn-txt">1,339.1원</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 4.9 (0.37%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('brent')">
         <div class="macro-name">브렌트유</div>
-        <div class="macro-val"><span class="dn-txt">$106.4</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $0.27 (0.25%)</span></div>
+        <div class="macro-val"><span class="up-txt">$105.8</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $0.14 (0.13%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('wti')">
         <div class="macro-name">WTI</div>
-        <div class="macro-val"><span class="up-txt">$94.8</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ $1.08 (1.15%)</span></div>
+        <div class="macro-val"><span class="up-txt">$95.7</span></div>
+        <div class="macro-chg"><span class="up-txt">▲ $1.52 (1.61%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="dn-txt">$4,185</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $5.90 (0.14%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$4,117</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $60.00 (1.44%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="up-txt">102.17</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.42 (0.40%)</span></div>
+        <div class="macro-val"><span class="dn-txt">102.67</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.49 (0.48%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$83,353</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 1590.23 (1.94%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$82,753</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ 342.30 (0.41%)</span></div>
       </div>
     </div>
   </div>
@@ -417,42 +417,30 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <span class="mkt-sec-title">시장 요약</span>
       <span class="mkt-sec-num">01</span>
     </div>
-    <div class="hashtag-row"><span class="hashtag-pill">#코스피강세</span><span class="hashtag-pill">#강관주급등</span><span class="hashtag-pill">#반도체랠리</span><span class="hashtag-pill">#환율상승압력</span><span class="hashtag-pill">#미국개미광풍</span></div>
+    <div class="hashtag-row"><span class="hashtag-pill">#외국인대탈출</span><span class="hashtag-pill">#코스피하락</span><span class="hashtag-pill">#고금리영향</span><span class="hashtag-pill">#미국기업실적</span><span class="hashtag-pill">#유가상승압박</span></div>
     <div class="highlight-list"><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">코스피 6100선 회복</div>
-    <div class="highlight-desc">삼전닉스 동반 강세로 시장 지수 견인</div>
+    <div class="highlight-title">외국인 대탈출 지속</div>
+    <div class="highlight-desc">올해 200조 넘게 팔아치워 브라질로 이동</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">강관주 급등</div>
-    <div class="highlight-desc">美 LNG 투자 언급에 대한제강 25%↑</div>
+    <div class="highlight-title">미 금리 급등 부담</div>
+    <div class="highlight-desc">미 10년물 금리 5.31%로 상승, 시장 압박</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">미국 개미 광풍 재현</div>
-    <div class="highlight-desc">하루 7000억 달러 옵션 거래 폭증</div>
-  </div>
-</div><div class="highlight-item">
-  <div class="highlight-dot">·</div>
-  <div>
-    <div class="highlight-title">호르무즈 위험 고조</div>
-    <div class="highlight-desc">유조선 운임 사상 최고치 경신</div>
-  </div>
-</div><div class="highlight-item">
-  <div class="highlight-dot">·</div>
-  <div>
-    <div class="highlight-title">연준 금리 인상 완화론</div>
-    <div class="highlight-desc">윌리엄스 2027년 인상 필요 없을 수도</div>
+    <div class="highlight-title">美 기업 실적 혼조</div>
+    <div class="highlight-desc">모건 스탠리 호조, 뱅크오브아메리카 부진</div>
   </div>
 </div></div>
-    <div class="story-text">오늘 한국 주식시장은 코스피가 1.88% 급등하며 6100선을 회복했지만, 코스닥은 소폭 하락하며 엇갈린 모습을 보였습니다. 이는 삼성전자와 SK하이닉스 등 대형 반도체주의 동반 강세가 코스피 상승을 주도했기 때문이며, 반면 미 증시는 나스닥과 S&P500 모두 하락세를 보였음에도 불구하고 한국 증시는 개별 호재와 대형주 강세에 힘입어 독립적인 움직임을 나타냈습니다. 또한, 원/달러 환율은 상승하며 외국인 투자 심리에 부담을 줄 수 있는 요인으로 작용했습니다.</div>
+    <div class="story-text">오늘 국내 증시는 미 10년물 금리 급등과 외국인 투자자들의 대규모 이탈이 복합적으로 작용하며 하락했습니다. 특히 외국인이 200조원 넘게 국내 주식을 팔아치우면서 코스피와 코스닥 모두 부진한 흐름을 보였고, 이는 고금리 환경 속에서 안전자산 선호 심리가 강화되고 있음을 시사합니다.</div>
     <div class="story-block" style="margin-top:10px">
       <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
-      <div class="story-text">내일은 미국 개미 투자자들의 옵션 거래 광풍이 미 증시에 미칠 영향과 연준 위원의 금리 인상 완화 발언이 글로벌 증시에 어떤 파급 효과를 가져올지 주목해야 합니다. 또한, 호르무즈 해협의 지정학적 리스크가 유가 및 해운주에 미치는 영향도 지속적으로 관찰해야 할 투자 포인트입니다.</div>
+      <div class="story-text">향후 투자자들은 미 연준의 추가 금리 인상 가능성과 이에 따른 달러 강세 압력, 그리고 외국인 수급 동향에 주목해야 합니다. 또한, 미국 기업들의 실적 발표가 이어지는 만큼 개별 기업의 펀더멘털과 글로벌 경기 회복 시그널을 면밀히 관찰하는 것이 중요합니다.</div>
     </div>
   </div>
 </div>
@@ -468,37 +456,37 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="asset-grid"><div class="asset-card" onclick="openChart('KRX:091160')" style="cursor:pointer">
   <div class="asset-ticker">전기전자 📈</div>
   
-  <div class="asset-pct up">+2.52%</div>
+  <div class="asset-pct dn">-0.41%</div>
 </div><div class="asset-card" onclick="openChart('KRX:091230')" style="cursor:pointer">
   <div class="asset-ticker">자동차 📈</div>
   
-  <div class="asset-pct up">+1.36%</div>
+  <div class="asset-pct up">+0.65%</div>
 </div><div class="asset-card" onclick="openChart('KRX:139270')" style="cursor:pointer">
   <div class="asset-ticker">금융 📈</div>
   
-  <div class="asset-pct up">+0.29%</div>
+  <div class="asset-pct dn">-2.06%</div>
 </div><div class="asset-card" onclick="openChart('KRX:266410')" style="cursor:pointer">
   <div class="asset-ticker">바이오 📈</div>
   
-  <div class="asset-pct up">+0.06%</div>
+  <div class="asset-pct dn">-1.40%</div>
 </div><div class="asset-card" onclick="openChart('KRX:228820')" style="cursor:pointer">
   <div class="asset-ticker">화학 📈</div>
   
-  <div class="asset-pct up">+1.54%</div>
+  <div class="asset-pct up">+2.00%</div>
 </div><div class="asset-card" onclick="openChart('KRX:104530')" style="cursor:pointer">
   <div class="asset-ticker">철강 📈</div>
   
-  <div class="asset-pct up">+1.61%</div>
+  <div class="asset-pct up">+1.14%</div>
 </div><div class="asset-card" onclick="openChart('KRX:104480')" style="cursor:pointer">
   <div class="asset-ticker">건설 📈</div>
   
-  <div class="asset-pct up">+1.79%</div>
+  <div class="asset-pct dn">-0.08%</div>
 </div><div class="asset-card" onclick="openChart('KRX:217770')" style="cursor:pointer">
   <div class="asset-ticker">에너지 📈</div>
   
   <div class="asset-pct up">+0.10%</div>
 </div></div>
-      <div class="story-text" style="margin-top:12px">업종별로는 대한제강의 25% 급등을 필두로 강관주들이 일제히 강세를 보였습니다. 이는 미국 알래스카 LNG 투자 언급이라는 특정 호재가 관련 업종의 투자심리를 자극한 결과입니다. 반면, 호르무즈 해협의 지정학적 리스크 고조로 유조선 운임이 사상 최고치를 기록했음에도 불구하고, 에너지 관련주는 브렌트유 하락과 WTI 상승이 엇갈리며 전반적인 강세를 보이지는 못했습니다. 또한, 코스피 대형주 중심의 상승으로 인해 중소형주가 많은 코스닥은 상대적으로 부진했습니다.</div>
+      <div class="story-text" style="margin-top:12px">외국인 매도세의 영향으로 대형주 중심의 코스피가 하락했으며, 특히 금융 섹터에서는 신한지주가 롯데손보 인수 우려로 급락하는 등 개별 기업 이슈가 두드러졌습니다. 반면, 롯데에너지머티리얼즈가 그룹 시총 1위에 오르며 특정 성장주에 대한 관심은 여전히 유효했으나, 전반적인 시장 심리는 위축된 하루였습니다.</div>
     </div>
   </div>
 
@@ -512,51 +500,51 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="asset-group-label">📊 시장 체감 온도</div>
       <div class="breadth-wrap">
   <div class="breadth-bar">
-    <div class="breadth-up" style="width:0.0%"></div>
+    <div class="breadth-up" style="width:50.8%"></div>
   </div>
   <div class="breadth-label">
-    <span class="up-txt">▲ 0개 상승</span>
+    <span class="up-txt">▲ 1348개 상승</span>
     <span style="color:var(--t3);margin:0 6px;">|</span>
-    <span class="dn-txt">▼ 0개 하락</span>
-    <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 0개</span>
+    <span class="dn-txt">▼ 1186개 하락</span>
+    <span style="color:var(--t3);font-size:10px;margin-left:6px;">전체 2651개</span>
   </div>
 </div>
       <div class="stock-story-wrap" style="margin-top:12px">
         <div class="stock-list-col">
           <div class="ss-sub-label">📈 거래대금</div>
           <div class="stock-row">
+  <div class="stock-name">메리츠 인버스 일본</div>
+  <div class="stock-right">
+    
+    <span class="up-txt">▲0.2%</span>
+    <span class="stock-amt">0.2억</span>
+  </div>
+</div><div class="stock-row">
+  <div class="stock-name">메리츠 인버스 2X</div>
+  <div class="stock-right">
+    
+    <span class="up-txt">▲4.0%</span>
+    <span class="stock-amt">3억</span>
+  </div>
+</div><div class="stock-row">
   <div class="stock-name">DAISHIN 오피</div>
   <div class="stock-right">
     
-    <span class="up-txt">▲1.0%</span>
-    <span class="stock-amt">0.9억</span>
-  </div>
-</div><div class="stock-row" onclick="openChart('KRX:289250')" style="cursor:pointer">
-  <div class="stock-name">TIGER MSCI</div>
-  <div class="stock-right">
-     <span onclick="event.stopPropagation();openChart('KRX:289250')" style="cursor:pointer;font-size:9px">📈</span>
-    <span class="up-txt">▲2.3%</span>
+    <span class="up-txt">▲0.2%</span>
     <span class="stock-amt">1억</span>
   </div>
 </div><div class="stock-row">
-  <div class="stock-name">하나 인버스 2X </div>
+  <div class="stock-name">미래에셋 인버스 천</div>
   <div class="stock-right">
     
-    <span class="dn-txt">▼8.0%</span>
-    <span class="stock-amt">0.0억</span>
+    <span class="dn-txt">▼3.9%</span>
+    <span class="stock-amt">0.7억</span>
   </div>
-</div><div class="stock-row" onclick="openChart('KRX:292500')" style="cursor:pointer">
-  <div class="stock-name">SOL KRX300</div>
+</div><div class="stock-row">
+  <div class="stock-name">메리츠 WTI원유 </div>
   <div class="stock-right">
-     <span onclick="event.stopPropagation();openChart('KRX:292500')" style="cursor:pointer;font-size:9px">📈</span>
-    <span class="up-txt">▲2.2%</span>
-    <span class="stock-amt">2억</span>
-  </div>
-</div><div class="stock-row" onclick="openChart('KRX:304760')" style="cursor:pointer">
-  <div class="stock-name">HANARO KRX</div>
-  <div class="stock-right">
-     <span onclick="event.stopPropagation();openChart('KRX:304760')" style="cursor:pointer;font-size:9px">📈</span>
-    <span class="up-txt">▲2.5%</span>
+    
+    <span class="up-txt">▲1.9%</span>
     <span class="stock-amt">1억</span>
   </div>
 </div>
@@ -565,42 +553,77 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="stock-name">삼성전자</div>
   <div class="stock-right">
      <span onclick="event.stopPropagation();openChart('KRX:005930')" style="cursor:pointer;font-size:9px">📈</span>
-    <span class="up-txt">▲3.2%</span>
+    <span class="up-txt">▲1.1%</span>
     <span class="stock-amt">0.0억</span>
   </div>
 </div><div class="stock-row" onclick="openChart('KRX:011200')" style="cursor:pointer">
   <div class="stock-name">HMM</div>
   <div class="stock-right">
      <span onclick="event.stopPropagation();openChart('KRX:011200')" style="cursor:pointer;font-size:9px">📈</span>
-    <span class="up-txt">▲5.9%</span>
+    <span class="up-txt">▲5.7%</span>
     <span class="stock-amt">0.0억</span>
   </div>
-</div><div class="stock-row" onclick="openChart('KRX:017670')" style="cursor:pointer">
-  <div class="stock-name">SK텔레콤</div>
+</div><div class="stock-row" onclick="openChart('KRX:006400')" style="cursor:pointer">
+  <div class="stock-name">삼성SDI</div>
   <div class="stock-right">
-     <span onclick="event.stopPropagation();openChart('KRX:017670')" style="cursor:pointer;font-size:9px">📈</span>
-    <span class="up-txt">▲4.4%</span>
+     <span onclick="event.stopPropagation();openChart('KRX:006400')" style="cursor:pointer;font-size:9px">📈</span>
+    <span class="up-txt">▲6.4%</span>
     <span class="stock-amt">0.0억</span>
   </div>
-</div><div class="stock-row" onclick="openChart('KRX:068270')" style="cursor:pointer">
-  <div class="stock-name">셀트리온</div>
+</div><div class="stock-row" onclick="openChart('KRX:222800')" style="cursor:pointer">
+  <div class="stock-name">심텍</div>
   <div class="stock-right">
-     <span onclick="event.stopPropagation();openChart('KRX:068270')" style="cursor:pointer;font-size:9px">📈</span>
+     <span onclick="event.stopPropagation();openChart('KRX:222800')" style="cursor:pointer;font-size:9px">📈</span>
+    <span class="dn-txt">▼7.0%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row" onclick="openChart('KRX:005490')" style="cursor:pointer">
+  <div class="stock-name">POSCO홀딩스</div>
+  <div class="stock-right">
+     <span onclick="event.stopPropagation();openChart('KRX:005490')" style="cursor:pointer;font-size:9px">📈</span>
     <span class="up-txt">▲3.0%</span>
-    <span class="stock-amt">0.0억</span>
-  </div>
-</div><div class="stock-row" onclick="openChart('KRX:035420')" style="cursor:pointer">
-  <div class="stock-name">NAVER</div>
-  <div class="stock-right">
-     <span onclick="event.stopPropagation();openChart('KRX:035420')" style="cursor:pointer;font-size:9px">📈</span>
-    <span class="up-txt">▲2.1%</span>
     <span class="stock-amt">0.0억</span>
   </div>
 </div>
         </div>
         <div class="stock-story-col">
           <div class="ss-sub-label">🏢 기관 순매수</div>
-          <div style="color:var(--t3);font-size:12px;padding:8px 0;">데이터 없음</div>
+          <div class="stock-row" onclick="openChart('KRX:000660')" style="cursor:pointer">
+  <div class="stock-name">SK하이닉스</div>
+  <div class="stock-right">
+     <span onclick="event.stopPropagation();openChart('KRX:000660')" style="cursor:pointer;font-size:9px">📈</span>
+    <span class="dn-txt">▼1.2%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row" onclick="openChart('KRX:005930')" style="cursor:pointer">
+  <div class="stock-name">삼성전자</div>
+  <div class="stock-right">
+     <span onclick="event.stopPropagation();openChart('KRX:005930')" style="cursor:pointer;font-size:9px">📈</span>
+    <span class="up-txt">▲1.1%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row" onclick="openChart('KRX:006400')" style="cursor:pointer">
+  <div class="stock-name">삼성SDI</div>
+  <div class="stock-right">
+     <span onclick="event.stopPropagation();openChart('KRX:006400')" style="cursor:pointer;font-size:9px">📈</span>
+    <span class="up-txt">▲6.4%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row" onclick="openChart('KRX:096770')" style="cursor:pointer">
+  <div class="stock-name">SK이노베이션</div>
+  <div class="stock-right">
+     <span onclick="event.stopPropagation();openChart('KRX:096770')" style="cursor:pointer;font-size:9px">📈</span>
+    <span class="up-txt">▲4.5%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div><div class="stock-row" onclick="openChart('KRX:373220')" style="cursor:pointer">
+  <div class="stock-name">LG에너지솔루션</div>
+  <div class="stock-right">
+     <span onclick="event.stopPropagation();openChart('KRX:373220')" style="cursor:pointer;font-size:9px">📈</span>
+    <span class="up-txt">▲2.4%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
+</div>
           <div class="ss-sub-label" style="margin-top:10px">🏆 52주 신고가</div>
           <div class="stock-row" onclick="openChart('KRX:000300')" style="cursor:pointer">
   <div class="stock-name">DH오토넥스</div>
@@ -623,13 +646,6 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <span class="up-txt">▲0.0%</span>
     <span class="stock-amt">0.0억</span>
   </div>
-</div><div class="stock-row">
-  <div class="stock-name">SOL 중단기회사채</div>
-  <div class="stock-right">
-    
-    <span class="up-txt">▲0.0%</span>
-    <span class="stock-amt">2억</span>
-  </div>
 </div><div class="stock-row" onclick="openChart('KRX:001840')" style="cursor:pointer">
   <div class="stock-name">이화공영</div>
   <div class="stock-right">
@@ -637,20 +653,27 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <span class="up-txt">▲0.0%</span>
     <span class="stock-amt">0.0억</span>
   </div>
+</div><div class="stock-row" onclick="openChart('KRX:002410')" style="cursor:pointer">
+  <div class="stock-name">범양건영</div>
+  <div class="stock-right">
+     <span onclick="event.stopPropagation();openChart('KRX:002410')" style="cursor:pointer;font-size:9px">📈</span>
+    <span class="up-txt">▲0.0%</span>
+    <span class="stock-amt">0.0억</span>
+  </div>
 </div>
         </div>
       </div>
-      <div class="story-text" style="margin-top:12px">오늘 시장 체감 온도는 보합으로 나타났지만, 외국인 투자자들은 삼성전자, HMM, SK텔레콤 등 대형주와 성장주를 중심으로 적극적인 순매수를 보였습니다. 이는 특정 섹터나 종목에 대한 긍정적인 전망이 반영된 것으로 보이며, 시장 전반의 활력보다는 선별적인 매수세가 두드러진 하루였습니다. 📈 기관 순매수 데이터는 부재하여 기관의 구체적인 동향 파악은 어렵지만, 외국인의 움직임이 시장에 미치는 영향이 컸던 것으로 해석됩니다. 🧐</div>
+      <div class="story-text" style="margin-top:12px">오늘 시장은 상승 종목 수가 하락 종목 수를 소폭 웃돌며 긍정적인 분위기를 보였습니다. 📈 외국인과 기관 모두 삼성전자와 삼성SDI를 동반 순매수하며 대형주 및 2차전지 섹터에 대한 관심을 드러냈습니다. 특히 기관은 SK하이닉스, LG에너지솔루션 등 반도체와 2차전지 대형주를 집중 매수하며 해당 섹터의 강세를 이끌었습니다. 🔋 52주 신고가 근접 종목들이 모두 등락률 0%를 기록한 점은 일부 테마주들이 숨 고르기에 들어갔음을 시사합니다.</div>
       <div style="margin-top:12px"><div class="ss-wrap">
-  <div class="ss-tone">ETF 중심의 지수 추종 장세</div>
+  <div class="ss-tone">개별 종목 주도 테마주 장세</div>
   <div class="ss-block">
     <div class="ss-label">🔥 주도 테마</div>
-    <div class="ss-theme">ESG 및 지수 추종 ETF 강세 📈</div>
-    <div class="ss-text">오늘 시장 데이터는 특정 섹터의 강세보다는 지수 추종 및 ESG 관련 ETF의 상승을 보여줍니다. 이는 시장 전반의 안정적인 흐름을 반영하거나, 특정 이슈보다는 장기적인 투자 관점의 자금 유입을 시사할 수 있습니다.</div>
+    <div class="ss-theme">개별 종목 강세 🚀 (유니켐, 씨엑스아이 등)</div>
+    <div class="ss-text">오늘 시장은 특정 테마보다는 개별 종목들의 강력한 상승세가 두드러졌습니다. 각 종목의 개별적인 호재나 수급에 의해 급등한 것으로 보입니다.</div>
   </div>
   <div class="ss-block">
     <div class="ss-label">💰 큰 돈의 흐름</div>
-    <div class="ss-text">거래대금 상위 종목들을 보면, SOL KRX300과 HANARO KRX300 등 주요 지수 추종 ETF에 자금이 집중되었음을 알 수 있습니다. 이는 시장 전체의 흐름을 따르는 투자 심리가 강했음을 보여주며, 개별 종목보다는 시장 전반에 대한 관심이 높았다고 해석할 수 있습니다. 하나 인버스 2X 천연가스 선물 ETN(H)의 급락은 천연가스 선물 가격의 하락에 베팅한 인버스 상품의 특성상 주목할 만합니다.</div>
+    <div class="ss-text">거래대금 상위에서는 ETN 상품들이 주로 포착되며, 특히 인버스 일본 국채, 인버스 은 선물, WTI 원유 선물 등 다양한 원자재 및 파생 상품으로 자금이 분산되었습니다. 이는 특정 섹터로의 집중보다는 시장 전반의 변동성에 베팅하는 움직임으로 해석됩니다.</div>
   </div>
 </div></div>
     </div>
@@ -667,48 +690,48 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101404756" target="_blank">대한제강, 美 알래스카 LNG 투자 언급에 25% 급등…강관주 강세</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101422211" target="_blank">올해 200조 넘게 판 외국인…브라질로 갔다</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101403456" target="_blank">코스피, 상승 출발해 6100선 회복…삼전닉스 동반 강세</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101421531" target="_blank">롯데에너지머티리얼즈, 그룹 시총 1위 올랐다</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140188i" target="_blank">투자원금 1000만원 초고수…급락한 삼성전자 담았다</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202610141350i" target="_blank">끝없는 코스피 탈출 행렬…200조원 팔아치운 외국인 어디로</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610139110i" target="_blank">흔들리는 국장…서학개미 선호하는 '미국 주식' 따져보니</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202610141870i" target="_blank">'승자의 저주' 걱정에…롯데손보 삼킨 신한지주 급락</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101402436" target="_blank">"신세계, 실적 전망치 하향 조정 불가피…목표가↓"-흥국</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202610126881i" target="_blank">적자라더니 롯데그룹 시총 1위로…석달새 70% 뛴 이유</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101401276" target="_blank">"너무 빠진 것 아니냐"…증권가 전망에 주가 20% '와르르' [종목+]</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101405581" target="_blank">반도체 소부장·전력 인프라·로봇株…'천스닥' 기대 이어간다</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">국내</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610139178i" target="_blank">"은행 예금보다 낫네"…배당 쏠쏠한 13조 수주 건설사</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101405591" target="_blank">변동장에도 꾸준한 수익…파킹형 ETF 잡아라</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div>
-      <div class="story-text" style="margin-top:12px">오늘 국내 증시는 대한제강의 급등과 삼성전자, SK하이닉스의 강세로 코스피가 6100선을 회복하며 긍정적인 흐름을 보였습니다. 다만, 신세계와 같은 일부 종목은 실적 전망 하향으로 주가가 급락하는 등 개별 종목별 희비가 엇갈렸으며, 투자자들은 배당 매력이 높은 건설주나 미국 주식으로도 관심을 돌리는 모습입니다.</div>
+      <div class="story-text" style="margin-top:12px">오늘 국내 증시는 외국인 매도세와 특정 그룹주의 급등락이 두드러졌습니다. 외국인은 200조원 이상을 팔아치우며 코스피 탈출 행렬을 이어갔고, 롯데에너지머티리얼즈는 그룹 시총 1위에 오르는 등 개별 종목의 강세가 나타났습니다. 투자자들은 반도체 소부장, 전력 인프라, 로봇 등 성장 테마와 변동장 속 안정적인 파킹형 ETF에 주목할 필요가 있습니다.</div>
     </div>
   </div>
 
@@ -723,7 +746,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="us-fg-right">
     <div class="us-fg-label" style="color:#60a5fa">미국 공포/탐욕 지수</div>
     <div class="us-fg-score" style="color:#60a5fa">45 <span style="font-size:16px">공포</span></div>
-    <div class="us-fg-desc" style="color:#60a5fa">VIX 15.3 &nbsp;·&nbsp; S&amp;P RSI 62 &nbsp;·&nbsp; 나스닥 모멘텀 -0.31%</div>
+    <div class="us-fg-desc" style="color:#60a5fa">VIX 15.8 &nbsp;·&nbsp; S&amp;P RSI 62 &nbsp;·&nbsp; 나스닥 모멘텀 -0.31%</div>
   </div>
 </div>
   </div>
@@ -779,35 +802,35 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
           <span style="font-size:14px">😰</span>
         </div>
         <div class="us-val-row">
-          <span class="us-val">15.27</span>
-          <span class="us-pct-box dn">+0.39%</span>
+          <span class="us-val">15.78</span>
+          <span class="us-pct-box dn">+3.34%</span>
         </div>
         <div class="rsi-wrap">
-          <div class="rsi-head"><span>RSI</span><span>42</span></div>
-          <div class="rsi-bg"><div class="rsi-fill" style="width:42%"></div></div>
+          <div class="rsi-head"><span>RSI</span><span>46</span></div>
+          <div class="rsi-bg"><div class="rsi-fill" style="width:46%"></div></div>
         </div>
       </div>
     </div>
     <div class="macro-grid" style="margin-top:8px">
       <div class="macro-card" onclick="showMacroChart('tnx')">
         <div class="macro-name">미 10년물</div>
-        <div class="macro-val"><span class="up-txt">5.22%</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.02%p</span></div>
+        <div class="macro-val"><span class="dn-txt">5.31%</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.09%p</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('dxy')">
         <div class="macro-name">달러 인덱스</div>
-        <div class="macro-val"><span class="up-txt">102.17</span></div>
-        <div class="macro-chg"><span class="up-txt">▼ 0.42 (0.40%)</span></div>
+        <div class="macro-val"><span class="dn-txt">102.67</span></div>
+        <div class="macro-chg"><span class="dn-txt">▲ 0.49 (0.48%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('gold')">
         <div class="macro-name">금 선물</div>
-        <div class="macro-val"><span class="dn-txt">$4,185</span></div>
-        <div class="macro-chg"><span class="dn-txt">▼ $5.90 (0.14%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$4,117</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ $60.00 (1.44%)</span></div>
       </div>
       <div class="macro-card" onclick="showMacroChart('btc')">
         <div class="macro-name">🪙 비트코인</div>
-        <div class="macro-val"><span class="up-txt">$83,353</span></div>
-        <div class="macro-chg"><span class="up-txt">▲ 1590.23 (1.94%)</span></div>
+        <div class="macro-val"><span class="dn-txt">$82,753</span></div>
+        <div class="macro-chg"><span class="dn-txt">▼ 342.30 (0.41%)</span></div>
       </div>
     </div>
   </div>
@@ -819,42 +842,42 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <span class="mkt-sec-title">시장 요약</span>
         <span class="mkt-sec-num">01</span>
       </div>
-      <div class="hashtag-row"><span class="hashtag-pill">#기술주하락</span><span class="hashtag-pill">#에너지강세</span><span class="hashtag-pill">#VIX상승</span><span class="hashtag-pill">#안전선호</span><span class="hashtag-pill">#메타급등</span></div>
+      <div class="hashtag-row"><span class="hashtag-pill">#금리인상우려</span><span class="hashtag-pill">#에너지강세</span><span class="hashtag-pill">#빅테크혼조</span><span class="hashtag-pill">#VIX상승</span><span class="hashtag-pill">#중국수출호조</span></div>
       <div class="highlight-list"><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">기술주 전반적 약세</div>
-    <div class="highlight-desc">AI 관련주 및 반도체 섹터 하락 주도</div>
+    <div class="highlight-title">주요 지수 하락</div>
+    <div class="highlight-desc">S&P500, 나스닥, 다우존스 모두 소폭 하락</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">에너지/필수소비재 강세</div>
-    <div class="highlight-desc">시장 불확실성 속 방어주 및 원자재 강세</div>
+    <div class="highlight-title">VIX 지수 상승</div>
+    <div class="highlight-desc">공포지수 상승, 시장 불확실성 증대 시사</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">메타, 애플, MS 상승</div>
-    <div class="highlight-desc">매그니피센트 7 내 엇갈린 흐름</div>
+    <div class="highlight-title">에너지 섹터 강세</div>
+    <div class="highlight-desc">원유 가격 상승에 힘입어 에너지 섹터 급등</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">VIX 공포지수 상승</div>
-    <div class="highlight-desc">시장 변동성 확대 및 투자심리 위축</div>
+    <div class="highlight-title">매그니피센트7 혼조</div>
+    <div class="highlight-desc">메타 강세, 아마존·테슬라 약세로 혼조세</div>
   </div>
 </div><div class="highlight-item">
   <div class="highlight-dot">·</div>
   <div>
-    <div class="highlight-title">윌리엄스 연준 발언</div>
-    <div class="highlight-desc">2027년 금리 인상 불필요 가능성 언급</div>
+    <div class="highlight-title">은행주 약세</div>
+    <div class="highlight-desc">뱅크오브아메리카 실적 부진 및 벌금으로 하락</div>
   </div>
 </div></div>
-      <div class="story-text">오늘 미국 주식시장은 주요 지수가 하락세를 보이며 전반적으로 약세를 나타냈습니다. 특히 S&P500, 나스닥, 다우존스 모두 소폭 하락했으며, VIX 공포지수가 상승하며 시장의 불확실성이 커졌음을 시사했습니다. 이는 주로 기술 섹터의 부진과 일부 대형 기술주들의 하락세에 기인한 것으로 보입니다. 투자자들은 다가올 경제 지표와 연준의 통화 정책 방향에 촉각을 곤두세우고 있습니다.</div>
+      <div class="story-text">미국 증시는 연준의 금리 인상 가능성에 대한 불확실성과 은행권의 실적 부진으로 인해 주요 지수들이 소폭 하락하며 약세를 보였습니다. 특히 VIX 공포지수가 상승하며 투자자들의 불안 심리가 반영되었고, 이는 전반적인 시장의 조심스러운 분위기를 형성했습니다. 다우존스, S&P500, 나스닥 모두 하락세를 면치 못하며 시장 전반에 걸쳐 관망세가 짙었습니다.</div>
       <div class="story-block" style="margin-top:10px">
       <div class="story-label" style="color: var(--blue);">🔭 향후 전망</div>
-      <div class="story-text">향후 투자자들은 연준의 통화 정책 스탠스와 기업 실적 발표에 주목해야 합니다. 특히 기술 섹터의 추가적인 조정 가능성과 함께 방어주 및 원자재 관련 섹터의 지속적인 강세 여부를 주시해야 할 것입니다.</div>
+      <div class="story-text">향후 연준의 금리 정책 스탠스와 중국의 경제 지표 발표가 시장의 방향성을 결정하는 중요한 변수가 될 것입니다. 투자자들은 실적 발표 시즌에 접어든 기업들의 실적과 가이던스에 주목하며 개별 종목 장세에 대비해야 할 것으로 보입니다.</div>
     </div>
     </div>
   </div>
@@ -870,77 +893,77 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="asset-grid"><div class="asset-card">
   <div class="asset-ticker">XLK</div>
   <div class="asset-sub">IT/기술</div>
-  <div class="asset-pct dn">-1.22%</div>
+  <div class="asset-pct dn">-0.04%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLC</div>
   <div class="asset-sub">통신서비스</div>
-  <div class="asset-pct up">+0.97%</div>
+  <div class="asset-pct up">+0.74%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLE</div>
   <div class="asset-sub">에너지</div>
-  <div class="asset-pct up">+1.43%</div>
+  <div class="asset-pct up">+1.80%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLV</div>
   <div class="asset-sub">헬스케어</div>
-  <div class="asset-pct up">+0.69%</div>
+  <div class="asset-pct dn">-1.35%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLP</div>
   <div class="asset-sub">필수소비재</div>
-  <div class="asset-pct up">+1.17%</div>
+  <div class="asset-pct dn">-0.26%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLY</div>
   <div class="asset-sub">경기소비재</div>
-  <div class="asset-pct dn">-0.51%</div>
+  <div class="asset-pct up">+0.08%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLF</div>
   <div class="asset-sub">금융</div>
-  <div class="asset-pct up">+0.58%</div>
+  <div class="asset-pct dn">-0.42%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLI</div>
   <div class="asset-sub">산업재</div>
-  <div class="asset-pct dn">-0.06%</div>
+  <div class="asset-pct dn">-0.28%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLB</div>
   <div class="asset-sub">소재</div>
-  <div class="asset-pct up">+0.02%</div>
+  <div class="asset-pct up">+0.57%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLRE</div>
   <div class="asset-sub">부동산</div>
-  <div class="asset-pct up">+0.75%</div>
+  <div class="asset-pct dn">-0.21%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">XLU</div>
   <div class="asset-sub">유틸리티</div>
-  <div class="asset-pct up">+0.53%</div>
+  <div class="asset-pct up">+0.58%</div>
 </div></div>
       <div class="asset-group-label">💵 채권</div>
       <div class="asset-grid cols-3"><div class="asset-card">
   <div class="asset-ticker">TLT</div>
   <div class="asset-sub">장기채</div>
-  <div class="asset-pct up">+0.09%</div>
+  <div class="asset-pct up">+0.41%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">IEF</div>
   <div class="asset-sub">중기채</div>
-  <div class="asset-pct up">+0.03%</div>
+  <div class="asset-pct up">+0.12%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">SHY</div>
   <div class="asset-sub">단기채</div>
-  <div class="asset-pct dn">-0.04%</div>
+  <div class="asset-pct up">+0.02%</div>
 </div></div>
       <div class="asset-group-label">🪙 원자재</div>
       <div class="asset-grid cols-3"><div class="asset-card">
   <div class="asset-ticker">GLD</div>
   <div class="asset-sub">금</div>
-  <div class="asset-pct dn">-0.63%</div>
+  <div class="asset-pct dn">-0.13%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">USO</div>
   <div class="asset-sub">원유</div>
-  <div class="asset-pct up">+1.91%</div>
+  <div class="asset-pct up">+1.36%</div>
 </div><div class="asset-card">
   <div class="asset-ticker">SLV</div>
   <div class="asset-sub">은</div>
-  <div class="asset-pct dn">-0.78%</div>
+  <div class="asset-pct dn">-1.58%</div>
 </div></div>
-      <div class="story-text" style="margin-top:12px">시장 약세 속에서도 섹터별로는 뚜렷한 차별화가 나타났습니다. IT/기술 섹터가 크게 하락한 반면, 에너지, 필수소비재, 헬스케어 등 방어적인 섹터와 원자재 관련 섹터가 강세를 보였습니다. 이는 투자자들이 불확실한 시장 환경에서 안전자산을 선호하는 경향을 나타낸 것으로 풀이됩니다. 채권 시장에서는 장기채와 중기채가 소폭 상승하며 안전자산으로서의 매력을 다시 한번 보여주었습니다.</div>
+      <div class="story-text" style="margin-top:12px">금리 인상 우려가 지속되는 가운데, 에너지 섹터는 원유 가격 상승에 힘입어 강한 상승세를 보이며 시장 하락 압력 속에서도 돋보였습니다. 반면, 헬스케어와 금융 섹터는 실적 부진 및 규제 이슈로 인해 하락세를 기록하며 자금 이탈이 관측되었습니다. 채권 시장은 전반적으로 강세를 보이며 안전자산 선호 심리를 나타냈으나, 원자재 시장은 금과 은이 약세를 보인 반면 원유는 강세를 보이며 차별화된 움직임을 보였습니다.</div>
     </div>
   </div>
 
@@ -955,15 +978,15 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="asset-grid"><div class="asset-card" onclick="openChart('NASDAQ:NVDA')" style="cursor:pointer">
   <div class="asset-ticker">NVDA 📈</div>
   <div class="asset-sub">엔비디아</div>
-  <div class="asset-pct dn">-1.29%</div>
+  <div class="asset-pct up">+0.97%</div>
 </div><div class="asset-card" onclick="openChart('NASDAQ:AAPL')" style="cursor:pointer">
   <div class="asset-ticker">AAPL 📈</div>
   <div class="asset-sub">애플</div>
-  <div class="asset-pct up">+1.29%</div>
+  <div class="asset-pct up">+0.09%</div>
 </div><div class="asset-card" onclick="openChart('NASDAQ:MSFT')" style="cursor:pointer">
   <div class="asset-ticker">MSFT 📈</div>
   <div class="asset-sub">마이크로소프트</div>
-  <div class="asset-pct up">+1.14%</div>
+  <div class="asset-pct up">+0.43%</div>
 </div><div class="asset-card" onclick="openChart('NASDAQ:GOOGL')" style="cursor:pointer">
   <div class="asset-ticker">GOOGL 📈</div>
   <div class="asset-sub">알파벳</div>
@@ -971,15 +994,15 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div><div class="asset-card" onclick="openChart('NASDAQ:AMZN')" style="cursor:pointer">
   <div class="asset-ticker">AMZN 📈</div>
   <div class="asset-sub">아마존</div>
-  <div class="asset-pct dn">-1.11%</div>
+  <div class="asset-pct dn">-0.37%</div>
 </div><div class="asset-card" onclick="openChart('NASDAQ:META')" style="cursor:pointer">
   <div class="asset-ticker">META 📈</div>
   <div class="asset-sub">메타</div>
-  <div class="asset-pct up">+3.38%</div>
+  <div class="asset-pct up">+2.63%</div>
 </div><div class="asset-card" onclick="openChart('NASDAQ:TSLA')" style="cursor:pointer">
   <div class="asset-ticker">TSLA 📈</div>
   <div class="asset-sub">테슬라</div>
-  <div class="asset-pct dn">-1.22%</div>
+  <div class="asset-pct dn">-0.74%</div>
 </div></div>
       <div class="mover-grid">
         <div class="mover-card up-side">
@@ -987,31 +1010,31 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
           <div class="mover-row" onclick="openChart('NASDAQ:META')" style="cursor:pointer">
   <div class="ticker-badge">ME</div>
   <div class="mover-ticker">META 📈</div>
-  <div class="mover-pct up">+3.38%</div>
-</div><div class="mover-row" onclick="openChart('NYSE:WMT')" style="cursor:pointer">
-  <div class="ticker-badge">WM</div>
-  <div class="mover-ticker">WMT 📈</div>
-  <div class="mover-pct up">+1.55%</div>
-</div><div class="mover-row" onclick="openChart('NASDAQ:AAPL')" style="cursor:pointer">
-  <div class="ticker-badge">AA</div>
-  <div class="mover-ticker">AAPL 📈</div>
-  <div class="mover-pct up">+1.29%</div>
+  <div class="mover-pct up">+2.63%</div>
+</div><div class="mover-row" onclick="openChart('NASDAQ:INTC')" style="cursor:pointer">
+  <div class="ticker-badge">IN</div>
+  <div class="mover-ticker">INTC 📈</div>
+  <div class="mover-pct up">+1.44%</div>
+</div><div class="mover-row" onclick="openChart('NASDAQ:NVDA')" style="cursor:pointer">
+  <div class="ticker-badge">NV</div>
+  <div class="mover-ticker">NVDA 📈</div>
+  <div class="mover-pct up">+0.97%</div>
 </div>
         </div>
         <div class="mover-card dn-side">
           <div class="mover-head dn">📉 급락 Top 3</div>
-          <div class="mover-row" onclick="openChart('NASDAQ:ARM')" style="cursor:pointer">
-  <div class="ticker-badge">AR</div>
-  <div class="mover-ticker">ARM 📈</div>
-  <div class="mover-pct dn">-4.15%</div>
+          <div class="mover-row" onclick="openChart('NYSE:ANET')" style="cursor:pointer">
+  <div class="ticker-badge">AN</div>
+  <div class="mover-ticker">ANET 📈</div>
+  <div class="mover-pct dn">-3.02%</div>
 </div><div class="mover-row" onclick="openChart('NASDAQ:PANW')" style="cursor:pointer">
   <div class="ticker-badge">PA</div>
   <div class="mover-ticker">PANW 📈</div>
-  <div class="mover-pct dn">-3.57%</div>
-</div><div class="mover-row" onclick="openChart('NASDAQ:INTC')" style="cursor:pointer">
-  <div class="ticker-badge">IN</div>
-  <div class="mover-ticker">INTC 📈</div>
-  <div class="mover-pct dn">-3.20%</div>
+  <div class="mover-pct dn">-1.68%</div>
+</div><div class="mover-row" onclick="openChart('NASDAQ:TSLA')" style="cursor:pointer">
+  <div class="ticker-badge">TS</div>
+  <div class="mover-ticker">TSLA 📈</div>
+  <div class="mover-pct dn">-0.74%</div>
 </div>
         </div>
       </div>
@@ -1020,35 +1043,35 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="ticker-badge">MU</div>
   <div class="earn-body">
     <div class="earn-head">마이크론 테크놀로지(MU) <span class="earn-period">2026년 Q4 실적 분석</span></div>
-    <div class="earn-summary">EPS 33.42로 예상 상회, 반도체 업황 긍정적 신호</div>
+    <div class="earn-summary">EPS 33.42로 예상치 32.5625를 상회하며 견조한 실적 발표</div>
   </div>
 </div><div class="earn-item">
-  <div class="ticker-badge">NK</div>
-  <div class="earn-body">
-    <div class="earn-head">나이키(NKE) <span class="earn-period">2027년 Q1 실적 분석</span></div>
-    <div class="earn-summary">EPS 0.48로 예상 상회, 견조한 실적 발표</div>
-  </div>
-</div><div class="earn-item is-extra">
   <div class="ticker-badge">AC</div>
   <div class="earn-body">
     <div class="earn-head">액센츄어(ACN) <span class="earn-period">2026년 Q4 실적 분석</span></div>
-    <div class="earn-summary">EPS 3.29로 예상 상회, 컨설팅 수요 지속 확인</div>
+    <div class="earn-summary">EPS 3.29로 예상치 3.2141을 상회하며 긍정적인 실적</div>
   </div>
 </div><div class="earn-item is-extra">
-  <div class="ticker-badge">LW</div>
+  <div class="ticker-badge">NK</div>
   <div class="earn-body">
-    <div class="earn-head">램 웨스턴(LW) <span class="earn-period">2027년 Q1 실적 분석</span></div>
-    <div class="earn-summary">EPS 0.75로 예상 상회, 식품 산업 견고함 입증</div>
+    <div class="earn-head">나이키(NKE) <span class="earn-period">2027년 Q1 실적 분석</span></div>
+    <div class="earn-summary">EPS 0.48로 예상치 0.4364를 상회하며 양호한 실적</div>
   </div>
 </div><div class="earn-item is-extra">
   <div class="ticker-badge">FD</div>
   <div class="earn-body">
-    <div class="earn-head">팩트셋 리서치 시스템(FDS) <span class="earn-period">2026년 Q4 실적 분석</span></div>
-    <div class="earn-summary">EPS 4.52로 예상 상회, 금융 데이터 서비스 강세</div>
+    <div class="earn-head">팩트셋 리서치 시스템즈(FDS) <span class="earn-period">2026년 Q4 실적 분석</span></div>
+    <div class="earn-summary">EPS 4.52로 예상치 4.3779를 상회하며 견고한 성장세</div>
+  </div>
+</div><div class="earn-item is-extra">
+  <div class="ticker-badge">CA</div>
+  <div class="earn-body">
+    <div class="earn-head">콘아그라 브랜즈(CAG) <span class="earn-period">2027년 Q1 실적 분석</span></div>
+    <div class="earn-summary">EPS 0.41로 예상치 0.2863을 크게 상회하며 깜짝 실적</div>
   </div>
 </div></div>
       <div class="earn-more-btn" data-more-label="▼ 3개 더 보기" data-less-label="▲ 접기" onclick="toggleEarnMore(this)">▼ 3개 더 보기</div>
-      <div class="story-text">매그니피센트 7 종목들은 엇갈린 흐름을 보였습니다. 메타가 3.38% 급등하며 시장의 주목을 받았고, 애플과 마이크로소프트도 소폭 상승했습니다. 반면 엔비디아, 아마존, 테슬라는 하락세를 면치 못하며 기술주 전반의 약세를 반영했습니다. 특히 ARM, 팔로알토, 인텔 등 AI 및 반도체 관련 기술주들이 큰 폭으로 하락하며 시장의 하방 압력을 가중시켰습니다. 이는 특정 대형 기술주의 강세에도 불구하고 광범위한 기술 섹터의 조정이 진행되고 있음을 보여줍니다.</div>
+      <div class="story-text">매그니피센트 7 종목들은 전반적으로 혼조세를 보였습니다. 메타는 2.63% 급등하며 시장을 주도한 반면, 아마존과 테슬라는 각각 0.37%, 0.74% 하락하며 약세를 보였습니다. 애플, 마이크로소프트, 알파벳, 엔비디아는 소폭 상승하며 견조한 흐름을 유지했지만, 시장 전반의 하락 압력을 상쇄하기에는 역부족이었습니다. 뱅크오브아메리카는 실적 부진과 규제 벌금으로 큰 폭으로 하락하며 금융 섹터의 약세를 이끌었습니다.</div>
     </div>
   </div>
 
@@ -1090,11 +1113,11 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <span class="tech-sig" style="background:rgba(163,163,163,.12);color:#a3a3a3">수렴</span>
 </div>
 <div class="tech-row">
-  <div class="tech-name">볼린저밴드 (VIX 15.3)</div>
+  <div class="tech-name">볼린저밴드 (VIX 15.8)</div>
   <span class="tech-sig" style="background:rgba(163,163,163,.12);color:#a3a3a3">밴드 내 정상</span>
 </div>
       </div>
-      <div class="story-text" style="margin-top:12px">VIX 공포지수의 상승은 시장의 변동성이 확대되고 투자자들의 불안감이 높아지고 있음을 나타냅니다. 주요 지수들이 하락세에 있고 기술 섹터의 약세가 두드러지는 상황에서, 투자자들은 기술적 지표들을 활용하여 추가적인 하락 가능성과 지지선 확보 여부를 면밀히 관찰할 필요가 있습니다. 단기적인 변동성에 대비하는 전략이 유효해 보입니다.</div>
+      <div class="story-text" style="margin-top:12px">VIX 공포지수의 상승은 시장의 단기적인 변동성 확대를 시사하며, 투자자들의 불안 심리가 고조되고 있음을 보여줍니다. 주요 지수들이 하락세에 접어들면서 단기적인 기술적 반등 가능성도 열려있으나, 전반적인 추세 전환을 위해서는 추가적인 긍정적 모멘텀이 필요해 보입니다. 투자자들은 변동성에 대비하며 신중한 접근이 요구됩니다.</div>
     </div>
   </div>
 
@@ -1107,13 +1130,37 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/10/14/goldman-says-investors-seek-profitable-chinese-business-growth-abroad.html" target="_blank">골드만삭스, 투자자들은 '수익성 있는' 중국 기업의 해외 성장을 찾고 있다고 밝혀</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/10/14/stocks-moving-premarket-bank-of-america-blackrock-asml.html" target="_blank">개장 전 가장 큰 움직임을 보이는 주식: 뱅크오브아메리카, 블랙록, HPE 외</a></div>
+  <div class="news-orig">Stocks making the biggest moves premarket: Bank of America, BlackRock, HPE & mor…</div>
+  <div class="news-summary">These are the stocks posting the largest moves premarket.</div>
+  <div class="news-meta">CNBC Markets · 10월 14일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/10/14/morgan-stanley-ms-q3-2026-earnings.html" target="_blank">모건 스탠리, 주식 거래 수익이 예상치를 9억 9백만 달러 초과하며 예상치 상회</a></div>
+  <div class="news-orig">Morgan Stanley tops estimates as equities trading revenue beats expectations by …</div>
+  <div class="news-summary">Morgan Stanley is expected to benefit from robust investment banking and equitie…</div>
+  <div class="news-meta">CNBC Markets · 10월 14일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/10/14/bank-of-america-bac-q3-2026-earnings.html" target="_blank">뱅크오브아메리카 주가, 3분기 매출 부진 및 규제 벌금으로 7% 하락</a></div>
+  <div class="news-orig">Bank of America shares drop 7% after third-quarter revenue miss and regulatory p…</div>
+  <div class="news-summary">Bank of America shares fell Wednesday after the company posted weaker-than-expec…</div>
+  <div class="news-meta">CNBC Markets · 10월 14일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/10/14/chinas-exports-likely-grew-by-double-digits-in-september.html" target="_blank">9월 중국 수출입, 예상치 크게 상회</a></div>
+  <div class="news-orig">China's exports and imports surge past expectations in September</div>
+  <div class="news-summary">The country's customs agency released September trade data on Wednesday.</div>
+  <div class="news-meta">CNBC Markets · 10월 14일</div>
+</div><div class="news-item">
+  <span class="news-badge nb-blue">해외</span>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/10/14/goldman-says-investors-seek-profitable-chinese-business-growth-abroad.html" target="_blank">골드만삭스, 투자자들이 '수익성 있는' 중국 해외 사업 성장을 찾고 있다고 언급</a></div>
   <div class="news-orig">Goldman says investors are looking for 'profitable' Chinese business growth over…</div>
   <div class="news-summary">Sluggish consumer demand in China has pushed many companies, such as electric ca…</div>
   <div class="news-meta">CNBC Markets · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/10/13/john-williams-fed-rate-hikes-2027.html" target="_blank">윌리엄스, 연준이 2027년에 금리를 인상할 필요가 없을 수도 있다고 말해… 트레이더들과는 다른 견해</a></div>
+  <div class="news-title"><a href="https://www.cnbc.com/2026/10/13/john-williams-fed-rate-hikes-2027.html" target="_blank">윌리엄스, 연준이 2027년에 금리를 인상할 필요가 없을 수도 있다고 발언하며 트레이더들과 상반된 견해</a></div>
   <div class="news-orig">Williams says Fed may not have to hike rates in 2027, at odds with traders</div>
   <div class="news-summary">New York Fed President John Williams sees one more rate hike in 2026 but no addi…</div>
   <div class="news-meta">CNBC Markets · 10월 14일</div>
@@ -1123,32 +1170,8 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="news-orig">Stocks making the biggest moves premarket: JPMorgan Chase, Micron, UnitedHealth …</div>
   <div class="news-summary">These are the stocks posting the largest moves before the bell.</div>
   <div class="news-meta">CNBC Markets · 10월 13일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/10/13/visa-china-green-light-bank-card-business-.html" target="_blank">비자, 중국과 40년간 협력 끝에 베이징으로부터 은행 카드 사업 승인 받아</a></div>
-  <div class="news-orig">Visa gets Beijing's green light for bank card business after 40 years of working…</div>
-  <div class="news-summary">The incremental approval comes as the U.S. and Chinese presidents are due to mee…</div>
-  <div class="news-meta">CNBC Markets · 10월 13일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/10/13/singapore-war-geopolitics-dbs-bank-ceo.html" target="_blank">'지루한 것이 나쁜 것은 아니다': 동남아시아 최대 은행 CEO, 글로벌 혼란 속 싱가포르를 피난처로 제시</a></div>
-  <div class="news-orig">'Boring is not bad': CEO of Southeast Asia's largest bank pitches Singapore as a…</div>
-  <div class="news-summary">Singapore is a bastion of safety amid global turmoil, according to the CEO of DB…</div>
-  <div class="news-meta">CNBC Markets · 10월 13일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/10/12/the-bull-market-just-turned-four-after-climbing-a-wall-of-worry.html" target="_blank">강세장이 월요일로 4주년을 맞았다. 투자자들은 5주년을 맞는 것이 어려울 수 있다고 말한다</a></div>
-  <div class="news-orig">The bull market turned 4 years old on Monday. Investors say reaching a fifth bir…</div>
-  <div class="news-summary">The S&amp;P 500 has climbed almost 120% since its closing low on Oct. 12, 2022.</div>
-  <div class="news-meta">CNBC Markets · 10월 13일</div>
-</div><div class="news-item">
-  <span class="news-badge nb-blue">해외</span>
-  <div class="news-title"><a href="https://www.cnbc.com/2026/10/12/beth-hammack-fed-inflation-policy.html" target="_blank">연준의 해먹, '인플레이션 심리'가 자리 잡는 것을 피하기 위해 더 높은 금리가 필요할 수 있다고 말해</a></div>
-  <div class="news-orig">Higher rates could be needed to avoid 'inflationary mindset' taking hold, says F…</div>
-  <div class="news-summary">The Cleveland Fed president said that tighter monetary policy would be needed to…</div>
-  <div class="news-meta">CNBC Markets · 10월 13일</div>
 </div>
-      <div class="story-text" style="margin-top:12px">윌리엄스 연준 총재의 2027년 금리 인상 불필요 발언은 향후 통화정책에 대한 불확실성을 더했습니다. 비자의 중국 은행 카드 사업 승인은 특정 기업에게는 긍정적 소식이지만, 전반적인 시장 심리에 미치는 영향은 제한적이었습니다. 강세장이 4주년을 맞았음에도 불구하고 투자자들이 5주년을 맞기 어려울 수 있다는 경고는 시장의 피로감과 향후 전망에 대한 신중론을 반영합니다.</div>
+      <div class="story-text" style="margin-top:12px">모건 스탠리의 주식 거래 수익 예상치 상회 소식은 긍정적이었으나, 뱅크오브아메리카의 실적 부진은 금융 섹터 전반에 대한 우려를 키웠습니다. 윌리엄스 연준 총재의 2027년 금리 인상 불필요 발언은 시장의 금리 인상 우려를 다소 완화시킬 수 있으나, 아직 시장의 전반적인 분위기를 바꾸기에는 부족했습니다. 9월 중국 수출입 데이터의 예상치 상회는 글로벌 경기 회복에 대한 기대를 높이는 긍정적인 신호로 작용했습니다.</div>
     </div>
   </div>
 
@@ -1212,48 +1235,48 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       </div>
       <div class="news-item" style="border-left-color:var(--orange);">
   <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101403886" target="_blank">"국평 부담돼 못 넣어요"…서울 청약 10명 중 8명 '소형' 선택</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101420931" target="_blank">"어게인 2020" 벌써부터 꿈틀…세종 집값 이번에도 오르나</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item" style="border-left-color:var(--orange);">
   <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140351i" target="_blank">로니에프앤, 중개사 업무혁신 플랫폼 '라운지플러스' 출시</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101422151" target="_blank">"갭투자는 막았지만"…'토허제 1년' 허리 휘는 세입자들</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item" style="border-left-color:var(--orange);">
   <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101402856" target="_blank">"광명·동탄·분당 사람 몰리더니"…경기도 국평 5000만원 '껑충'</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101422121" target="_blank">토허제 내년까지 연장될 가능성 커</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item" style="border-left-color:var(--orange);">
   <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101395211" target="_blank">학교 짓겠다며 '52억' 주고 산 땅인데…22년 뒤 벌어진 일</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101422131" target="_blank">'닥공' 외치면서…조합원 지위 양도 제한·이주비 대출 규제</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item" style="border-left-color:var(--orange);">
   <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101380846" target="_blank">삼성전자 나비효과에 집값 '들썩'…9개월 만에 '2억' 뛴 동네 [주간이집]</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101420901" target="_blank">지하철과 연결 '역세권 상가'…GL스퀘어·나인반포 등 관심</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item" style="border-left-color:var(--orange);">
   <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101394771" target="_blank">"5억대에 새 집 줍줍할 기회"…'애물단지' 아파트의 반전</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101420891" target="_blank">새만금 단독택지, 분양률 절반도 안돼</a></div>
   
   
-  <div class="news-meta">한국경제 · 10월 13일</div>
+  <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item" style="border-left-color:var(--orange);">
   <span class="news-badge nb-orange">부동산</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/2026101394721" target="_blank">지방 공공택지의 '눈물'…5만 가구 공급 올스톱</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101420921" target="_blank">수도권서 오피스 짓는 만큼 주택 공급도 늘린다</a></div>
   
   
-  <div class="news-meta">한국경제 · 10월 13일</div>
+  <div class="news-meta">한국경제 · 10월 14일</div>
 </div>
-      
+      <div class="story-text" style="margin-top:12px">세종시와 같은 일부 지역은 다시금 집값 상승 기대감이 커지고 있으나, 토지거래허가구역 지정 연장 가능성 등으로 갭투자는 제한적입니다. 역세권 상가 등 특정 상업시설은 주목받는 반면, 새만금 단독택지처럼 지역별 양극화가 심화되고 있으며, 수도권 주택 공급 확대 정책은 실수요자에게 긍정적인 신호입니다.</div>
     </div>
   </div>
 
@@ -1316,43 +1339,43 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     <div class="section-label">핫이슈 뉴스</div>
     <div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140321i" target="_blank">호르무즈 2주간 선박 24척 피격…유조선 운임 사상 최고</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101424707" target="_blank">"3만9000원? 여기선 2000원"…다이소 또 '난리' 뭐길래</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140298i" target="_blank">강남·홍대에 '저승사자' 떴다…'소주 가마' 끄는 행렬의 정체</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/2026101421721" target="_blank">오픈런은커녕 찬밥 신세…'국민성장펀드'에 무슨 일이</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140251g" target="_blank">"수량 알아서 척척"…국밥집 사장 살린 AI 자동 발주</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202610142408i" target="_blank">"메모리 공급부족 곧 끝나?"…JP모건 "2028년까지도 부족"</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140247i" target="_blank">美 개미, 하루 7000억달러 옵션거래…2021년 '밈 주식 광풍' 재현</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202610141869i" target="_blank">신발·화장품도 속속 입점…왜 배달앱으로 몰리나 [권용훈의 트렌드워치]</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140260i" target="_blank">아시아 기업부채 21.4%가 좀비기업에…IMF 금융위험 경고</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202610141990i" target="_blank">ASML "30% 증산해도 부족"…2030년까지 AI칩 장비 주문</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140254i" target="_blank">"파스타에 치즈 대신 된장?"…풀무원의 건강한 '가을 실험'</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202610141284H" target="_blank">"밤새워야 겨우 들어간다"…품절 대란에 중고거래 10배 폭등 [덕질경제학]</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
 </div><div class="news-item">
   <span class="news-badge nb-red">이슈</span>
-  <div class="news-title"><a href="https://www.hankyung.com/article/202610140220g" target="_blank">"가격표 수천 개 3초면 끝"…품절까지 스스로 띄우는 스마트 가격표</a></div>
+  <div class="news-title"><a href="https://www.hankyung.com/article/202610142354i" target="_blank">에스원, 자사주 4500억 매입·소각…기존 자사주도 없앤다</a></div>
   
   
   <div class="news-meta">한국경제 · 10월 14일</div>
@@ -1384,10 +1407,10 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
   <div class="wk-cal-items"><div class="wk-cal-item hl">🇺🇸 미국 CPI 발표</div><div class="wk-cal-item">ALOY, BAC, BLK, CBSH 외 7건 실적 발표</div></div>
 </div><div class="wk-cal-row">
   <div class="wk-cal-date">10/15 목</div>
-  <div class="wk-cal-items"><div class="wk-cal-item">AA, ATLO, BALY, BANF 외 31건 실적 발표</div></div>
+  <div class="wk-cal-items"><div class="wk-cal-item">AA, ATLO, BALY, BANF 외 30건 실적 발표</div></div>
 </div><div class="wk-cal-row">
   <div class="wk-cal-date">10/16 금</div>
-  <div class="wk-cal-items"><div class="wk-cal-item hl">🇰🇷 한국은행 금통위</div><div class="wk-cal-item">CFG, EEFT, GBFH 실적 발표</div></div>
+  <div class="wk-cal-items"><div class="wk-cal-item hl">🇰🇷 한국은행 금통위</div><div class="wk-cal-item">CFG, EEFT, GBFH, MTB 실적 발표</div></div>
 </div>
     </div>
     <div style="font-size:10px;color:var(--t3);margin-top:10px;">거시지표: FOMC·BLS·Conference Board·BEA 공식 일정 · 국내 실적: DART 기업설명회(IR) 공시 · 해외 실적: Finnhub · 공모주 일정은 <a href="https://dart.fss.or.kr" target="_blank">DART</a> · <a href="https://ipo.38.co.kr" target="_blank">38커뮤니케이션</a> 확인</div>
@@ -1416,7 +1439,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <span class="mkt-sec-title">국내 주요 ETF</span>
         <span class="mkt-sec-num">01</span>
       </div>
-      <div class="stock-row" onclick="openChart('KRX:069500')" style="cursor:pointer"><div class="etf-name">KODEX 200 <span onclick="event.stopPropagation();openChart('KRX:069500')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲1.90%</span><span class="stock-amt">97,060</span></div></div><div class="stock-row" onclick="openChart('KRX:122630')" style="cursor:pointer"><div class="etf-name">KODEX 레버리지 <span onclick="event.stopPropagation();openChart('KRX:122630')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲3.56%</span><span class="stock-amt">84,885</span></div></div><div class="stock-row" onclick="openChart('KRX:114800')" style="cursor:pointer"><div class="etf-name">KODEX 인버스 <span onclick="event.stopPropagation();openChart('KRX:114800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼1.84%</span><span class="stock-amt">1,122</span></div></div><div class="stock-row" onclick="openChart('KRX:229200')" style="cursor:pointer"><div class="etf-name">KODEX 코스닥150 <span onclick="event.stopPropagation();openChart('KRX:229200')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.95%</span><span class="stock-amt">14,090</span></div></div><div class="stock-row" onclick="openChart('KRX:360750')" style="cursor:pointer"><div class="etf-name">TIGER 미국S&P500 <span onclick="event.stopPropagation();openChart('KRX:360750')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.33%</span><span class="stock-amt">25,945</span></div></div><div class="stock-row" onclick="openChart('KRX:379800')" style="cursor:pointer"><div class="etf-name">KODEX 미국나스닥100TR <span onclick="event.stopPropagation();openChart('KRX:379800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.27%</span><span class="stock-amt">23,585</span></div></div><div class="stock-row" onclick="openChart('KRX:132030')" style="cursor:pointer"><div class="etf-name">KODEX 골드선물(H) <span onclick="event.stopPropagation();openChart('KRX:132030')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.64%</span><span class="stock-amt">23,280</span></div></div><div class="stock-row" onclick="openChart('KRX:305080')" style="cursor:pointer"><div class="etf-name">TIGER 미국채10년선물 <span onclick="event.stopPropagation();openChart('KRX:305080')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.52%</span><span class="stock-amt">11,570</span></div></div>
+      <div class="stock-row" onclick="openChart('KRX:069500')" style="cursor:pointer"><div class="etf-name">KODEX 200 <span onclick="event.stopPropagation();openChart('KRX:069500')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.47%</span><span class="stock-amt">94,805</span></div></div><div class="stock-row" onclick="openChart('KRX:122630')" style="cursor:pointer"><div class="etf-name">KODEX 레버리지 <span onclick="event.stopPropagation();openChart('KRX:122630')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼1.06%</span><span class="stock-amt">81,100</span></div></div><div class="stock-row" onclick="openChart('KRX:114800')" style="cursor:pointer"><div class="etf-name">KODEX 인버스 <span onclick="event.stopPropagation();openChart('KRX:114800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.52%</span><span class="stock-amt">1,149</span></div></div><div class="stock-row" onclick="openChart('KRX:229200')" style="cursor:pointer"><div class="etf-name">KODEX 코스닥150 <span onclick="event.stopPropagation();openChart('KRX:229200')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼2.14%</span><span class="stock-amt">13,920</span></div></div><div class="stock-row" onclick="openChart('KRX:360750')" style="cursor:pointer"><div class="etf-name">TIGER 미국S&P500 <span onclick="event.stopPropagation();openChart('KRX:360750')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.23%</span><span class="stock-amt">25,970</span></div></div><div class="stock-row" onclick="openChart('KRX:379800')" style="cursor:pointer"><div class="etf-name">KODEX 미국나스닥100TR <span onclick="event.stopPropagation();openChart('KRX:379800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.19%</span><span class="stock-amt">23,605</span></div></div><div class="stock-row" onclick="openChart('KRX:132030')" style="cursor:pointer"><div class="etf-name">KODEX 골드선물(H) <span onclick="event.stopPropagation();openChart('KRX:132030')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.81%</span><span class="stock-amt">23,240</span></div></div><div class="stock-row" onclick="openChart('KRX:305080')" style="cursor:pointer"><div class="etf-name">TIGER 미국채10년선물 <span onclick="event.stopPropagation();openChart('KRX:305080')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.39%</span><span class="stock-amt">11,585</span></div></div>
     </div>
   </div>
 
@@ -1427,7 +1450,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <span class="mkt-sec-title">미국 ETF</span>
         <span class="mkt-sec-num">02</span>
       </div>
-      <div class="stock-row" onclick="openChart('AMEX:SPY')" style="cursor:pointer"><div class="etf-name">SPY <span onclick="event.stopPropagation();openChart('AMEX:SPY')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">S&P 500</span></div><div class="stock-right"><span class="up-txt">▲0.09%</span><span class="stock-amt">$778.01</span></div></div><div class="stock-row" onclick="openChart('NASDAQ:QQQ')" style="cursor:pointer"><div class="etf-name">QQQ <span onclick="event.stopPropagation();openChart('NASDAQ:QQQ')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">나스닥 100</span></div><div class="stock-right"><span class="dn-txt">▼0.33%</span><span class="stock-amt">$743.57</span></div></div><div class="stock-row" onclick="openChart('AMEX:IWM')" style="cursor:pointer"><div class="etf-name">IWM <span onclick="event.stopPropagation();openChart('AMEX:IWM')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">러셀 2000</span></div><div class="stock-right"><span class="dn-txt">▼0.32%</span><span class="stock-amt">$276.70</span></div></div><div class="stock-row" onclick="openChart('NASDAQ:SOXX')" style="cursor:pointer"><div class="etf-name">SOXX <span onclick="event.stopPropagation();openChart('NASDAQ:SOXX')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">반도체</span></div><div class="stock-right"><span class="dn-txt">▼0.17%</span><span class="stock-amt">$543.90</span></div></div><div class="stock-row" onclick="openChart('AMEX:GLD')" style="cursor:pointer"><div class="etf-name">GLD <span onclick="event.stopPropagation();openChart('AMEX:GLD')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">금</span></div><div class="stock-right"><span class="dn-txt">▼0.22%</span><span class="stock-amt">$381.67</span></div></div><div class="stock-row" onclick="openChart('NASDAQ:TLT')" style="cursor:pointer"><div class="etf-name">TLT <span onclick="event.stopPropagation();openChart('NASDAQ:TLT')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">미국 장기채</span></div><div class="stock-right"><span class="up-txt">▲0.41%</span><span class="stock-amt">$78.37</span></div></div><div class="stock-row" onclick="openChart('AMEX:ARKK')" style="cursor:pointer"><div class="etf-name">ARKK <span onclick="event.stopPropagation();openChart('AMEX:ARKK')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">ARK 혁신</span></div><div class="stock-right"><span class="dn-txt">▼0.55%</span><span class="stock-amt">$87.17</span></div></div><div class="stock-row" onclick="openChart('AMEX:XLE')" style="cursor:pointer"><div class="etf-name">XLE <span onclick="event.stopPropagation();openChart('AMEX:XLE')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">에너지 섹터</span></div><div class="stock-right"><span class="up-txt">▲1.80%</span><span class="stock-amt">$67.20</span></div></div>
+      <div class="stock-row" onclick="openChart('AMEX:SPY')" style="cursor:pointer"><div class="etf-name">SPY <span onclick="event.stopPropagation();openChart('AMEX:SPY')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">S&P 500</span></div><div class="stock-right"><span class="up-txt">▲0.06%</span><span class="stock-amt">$778.01</span></div></div><div class="stock-row" onclick="openChart('NASDAQ:QQQ')" style="cursor:pointer"><div class="etf-name">QQQ <span onclick="event.stopPropagation();openChart('NASDAQ:QQQ')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">나스닥 100</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">$743.57</span></div></div><div class="stock-row" onclick="openChart('AMEX:IWM')" style="cursor:pointer"><div class="etf-name">IWM <span onclick="event.stopPropagation();openChart('AMEX:IWM')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">러셀 2000</span></div><div class="stock-right"><span class="dn-txt">▼0.01%</span><span class="stock-amt">$276.70</span></div></div><div class="stock-row" onclick="openChart('NASDAQ:SOXX')" style="cursor:pointer"><div class="etf-name">SOXX <span onclick="event.stopPropagation();openChart('NASDAQ:SOXX')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">반도체</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">$543.90</span></div></div><div class="stock-row" onclick="openChart('AMEX:GLD')" style="cursor:pointer"><div class="etf-name">GLD <span onclick="event.stopPropagation();openChart('AMEX:GLD')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">금</span></div><div class="stock-right"><span class="up-txt">▲0.23%</span><span class="stock-amt">$381.67</span></div></div><div class="stock-row" onclick="openChart('NASDAQ:TLT')" style="cursor:pointer"><div class="etf-name">TLT <span onclick="event.stopPropagation();openChart('NASDAQ:TLT')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">미국 장기채</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">$78.37</span></div></div><div class="stock-row" onclick="openChart('AMEX:ARKK')" style="cursor:pointer"><div class="etf-name">ARKK <span onclick="event.stopPropagation();openChart('AMEX:ARKK')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">ARK 혁신</span></div><div class="stock-right"><span class="dn-txt">▼0.13%</span><span class="stock-amt">$87.17</span></div></div><div class="stock-row" onclick="openChart('AMEX:XLE')" style="cursor:pointer"><div class="etf-name">XLE <span onclick="event.stopPropagation();openChart('AMEX:XLE')" style="cursor:pointer;font-size:9px">📈</span> <span style="font-size:9px;color:var(--t3)">에너지 섹터</span></div><div class="stock-right"><span class="up-txt">▲0.06%</span><span class="stock-amt">$67.20</span></div></div>
     </div>
   </div>
 
@@ -1439,7 +1462,7 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
         <span class="mkt-sec-num">03</span>
       </div>
       <div class="stock-story-wrap" style="flex-wrap:wrap;gap:14px;">
-        <div class="stock-list-col"><div class="ss-sub-label">🔬 반도체</div><div class="stock-row" onclick="openChart('KRX:091160')" style="cursor:pointer"><div class="etf-name">KODEX 반도체 <span onclick="event.stopPropagation();openChart('KRX:091160')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.93%</span><span class="stock-amt">132,105</span></div></div><div class="stock-row" onclick="openChart('KRX:091230')" style="cursor:pointer"><div class="etf-name">TIGER 반도체 <span onclick="event.stopPropagation();openChart('KRX:091230')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.96%</span><span class="stock-amt">139,650</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🔋 2차전지</div><div class="stock-row" onclick="openChart('KRX:305720')" style="cursor:pointer"><div class="etf-name">KODEX 2차전지산업 <span onclick="event.stopPropagation();openChart('KRX:305720')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲2.34%</span><span class="stock-amt">15,735</span></div></div><div class="stock-row" onclick="openChart('KRX:305540')" style="cursor:pointer"><div class="etf-name">TIGER 2차전지테마 <span onclick="event.stopPropagation();openChart('KRX:305540')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲2.67%</span><span class="stock-amt">19,960</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🤖 AI·로봇</div><div class="stock-row" onclick="openChart('KRX:427270')" style="cursor:pointer"><div class="etf-name">KODEX AI&로보틱스 <span onclick="event.stopPropagation();openChart('KRX:427270')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div><div class="stock-row" onclick="openChart('KRX:483150')" style="cursor:pointer"><div class="etf-name">TIGER AI반도체 <span onclick="event.stopPropagation();openChart('KRX:483150')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🛡️ 방산</div><div class="stock-row" onclick="openChart('KRX:515570')" style="cursor:pointer"><div class="etf-name">TIGER 방산 <span onclick="event.stopPropagation();openChart('KRX:515570')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div><div class="stock-row" onclick="openChart('KRX:438900')" style="cursor:pointer"><div class="etf-name">HANARO 방산항공 <span onclick="event.stopPropagation();openChart('KRX:438900')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.42%</span><span class="stock-amt">10,765</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">💊 헬스케어</div><div class="stock-row" onclick="openChart('KRX:266410')" style="cursor:pointer"><div class="etf-name">KODEX 헬스케어 <span onclick="event.stopPropagation();openChart('KRX:266410')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.22%</span><span class="stock-amt">8,930</span></div></div><div class="stock-row" onclick="openChart('KRX:143540')" style="cursor:pointer"><div class="etf-name">TIGER 헬스케어 <span onclick="event.stopPropagation();openChart('KRX:143540')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.19%</span><span class="stock-amt">1,047</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">💰 배당</div><div class="stock-row" onclick="openChart('KRX:289040')" style="cursor:pointer"><div class="etf-name">TIGER 배당성장 <span onclick="event.stopPropagation();openChart('KRX:289040')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">29,625</span></div></div><div class="stock-row" onclick="openChart('KRX:283580')" style="cursor:pointer"><div class="etf-name">KODEX 배당성장 <span onclick="event.stopPropagation();openChart('KRX:283580')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.65%</span><span class="stock-amt">13,820</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🏢 리츠</div><div class="stock-row" onclick="openChart('KRX:329650')" style="cursor:pointer"><div class="etf-name">TIGER 리츠부동산 <span onclick="event.stopPropagation();openChart('KRX:329650')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.36%</span><span class="stock-amt">14,020</span></div></div><div class="stock-row" onclick="openChart('KRX:348970')" style="cursor:pointer"><div class="etf-name">KODEX 리츠 <span onclick="event.stopPropagation();openChart('KRX:348970')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🪙 원자재</div><div class="stock-row" onclick="openChart('KRX:132030')" style="cursor:pointer"><div class="etf-name">KODEX 골드선물(H) <span onclick="event.stopPropagation();openChart('KRX:132030')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.64%</span><span class="stock-amt">23,280</span></div></div><div class="stock-row" onclick="openChart('KRX:271560')" style="cursor:pointer"><div class="etf-name">TIGER 원자재 <span onclick="event.stopPropagation();openChart('KRX:271560')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.09%</span><span class="stock-amt">106,400</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🇺🇸 미국</div><div class="stock-row" onclick="openChart('KRX:360750')" style="cursor:pointer"><div class="etf-name">TIGER 미국S&P500 <span onclick="event.stopPropagation();openChart('KRX:360750')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.33%</span><span class="stock-amt">25,945</span></div></div><div class="stock-row" onclick="openChart('KRX:379800')" style="cursor:pointer"><div class="etf-name">KODEX 미국나스닥100TR <span onclick="event.stopPropagation();openChart('KRX:379800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.27%</span><span class="stock-amt">23,585</span></div></div></div>
+        <div class="stock-list-col"><div class="ss-sub-label">🔬 반도체</div><div class="stock-row" onclick="openChart('KRX:091160')" style="cursor:pointer"><div class="etf-name">KODEX 반도체 <span onclick="event.stopPropagation();openChart('KRX:091160')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼4.37%</span><span class="stock-amt">127,520</span></div></div><div class="stock-row" onclick="openChart('KRX:091230')" style="cursor:pointer"><div class="etf-name">TIGER 반도체 <span onclick="event.stopPropagation();openChart('KRX:091230')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼4.27%</span><span class="stock-amt">134,990</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🔋 2차전지</div><div class="stock-row" onclick="openChart('KRX:305720')" style="cursor:pointer"><div class="etf-name">KODEX 2차전지산업 <span onclick="event.stopPropagation();openChart('KRX:305720')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲2.89%</span><span class="stock-amt">15,820</span></div></div><div class="stock-row" onclick="openChart('KRX:305540')" style="cursor:pointer"><div class="etf-name">TIGER 2차전지테마 <span onclick="event.stopPropagation();openChart('KRX:305540')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲3.94%</span><span class="stock-amt">20,205</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🤖 AI·로봇</div><div class="stock-row" onclick="openChart('KRX:427270')" style="cursor:pointer"><div class="etf-name">KODEX AI&로보틱스 <span onclick="event.stopPropagation();openChart('KRX:427270')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div><div class="stock-row" onclick="openChart('KRX:483150')" style="cursor:pointer"><div class="etf-name">TIGER AI반도체 <span onclick="event.stopPropagation();openChart('KRX:483150')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🛡️ 방산</div><div class="stock-row" onclick="openChart('KRX:515570')" style="cursor:pointer"><div class="etf-name">TIGER 방산 <span onclick="event.stopPropagation();openChart('KRX:515570')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div><div class="stock-row" onclick="openChart('KRX:438900')" style="cursor:pointer"><div class="etf-name">HANARO 방산항공 <span onclick="event.stopPropagation();openChart('KRX:438900')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.51%</span><span class="stock-amt">10,665</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">💊 헬스케어</div><div class="stock-row" onclick="openChart('KRX:266410')" style="cursor:pointer"><div class="etf-name">KODEX 헬스케어 <span onclick="event.stopPropagation();openChart('KRX:266410')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.17%</span><span class="stock-amt">8,965</span></div></div><div class="stock-row" onclick="openChart('KRX:143540')" style="cursor:pointer"><div class="etf-name">TIGER 헬스케어 <span onclick="event.stopPropagation();openChart('KRX:143540')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼2.96%</span><span class="stock-amt">1,018</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">💰 배당</div><div class="stock-row" onclick="openChart('KRX:289040')" style="cursor:pointer"><div class="etf-name">TIGER 배당성장 <span onclick="event.stopPropagation();openChart('KRX:289040')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">29,625</span></div></div><div class="stock-row" onclick="openChart('KRX:283580')" style="cursor:pointer"><div class="etf-name">KODEX 배당성장 <span onclick="event.stopPropagation();openChart('KRX:283580')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼1.65%</span><span class="stock-amt">13,680</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🏢 리츠</div><div class="stock-row" onclick="openChart('KRX:329650')" style="cursor:pointer"><div class="etf-name">TIGER 리츠부동산 <span onclick="event.stopPropagation();openChart('KRX:329650')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.43%</span><span class="stock-amt">14,010</span></div></div><div class="stock-row" onclick="openChart('KRX:348970')" style="cursor:pointer"><div class="etf-name">KODEX 리츠 <span onclick="event.stopPropagation();openChart('KRX:348970')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.00%</span><span class="stock-amt">-</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🪙 원자재</div><div class="stock-row" onclick="openChart('KRX:132030')" style="cursor:pointer"><div class="etf-name">KODEX 골드선물(H) <span onclick="event.stopPropagation();openChart('KRX:132030')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.81%</span><span class="stock-amt">23,240</span></div></div><div class="stock-row" onclick="openChart('KRX:271560')" style="cursor:pointer"><div class="etf-name">TIGER 원자재 <span onclick="event.stopPropagation();openChart('KRX:271560')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼1.03%</span><span class="stock-amt">105,400</span></div></div></div><div class="stock-list-col"><div class="ss-sub-label">🇺🇸 미국</div><div class="stock-row" onclick="openChart('KRX:360750')" style="cursor:pointer"><div class="etf-name">TIGER 미국S&P500 <span onclick="event.stopPropagation();openChart('KRX:360750')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.23%</span><span class="stock-amt">25,970</span></div></div><div class="stock-row" onclick="openChart('KRX:379800')" style="cursor:pointer"><div class="etf-name">KODEX 미국나스닥100TR <span onclick="event.stopPropagation();openChart('KRX:379800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.19%</span><span class="stock-amt">23,605</span></div></div></div>
       </div>
     </div>
   </div>
@@ -1454,14 +1477,14 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
       <div class="stock-story-wrap">
         <div class="stock-list-col">
           <div class="ss-sub-label">💰 거래대금 상위</div>
-          <div class="stock-row"><div class="etf-name">TIGER MSCI KOREA ESG유니버설</div><div class="stock-right"><span class="up-txt">▲2.27%</span><span class="stock-amt">1억</span></div></div><div class="stock-row"><div class="etf-name">SOL KRX300</div><div class="stock-right"><span class="up-txt">▲2.23%</span><span class="stock-amt">2억</span></div></div><div class="stock-row"><div class="etf-name">HANARO KRX300</div><div class="stock-right"><span class="up-txt">▲2.48%</span><span class="stock-amt">1억</span></div></div><div class="stock-row"><div class="etf-name">KODEX 밸류Plus</div><div class="stock-right"><span class="up-txt">▲1.28%</span><span class="stock-amt">0.2억</span></div></div><div class="stock-row"><div class="etf-name">KB 인버스 은 선물 ETN</div><div class="stock-right"><span class="up-txt">▲2.13%</span><span class="stock-amt">0.0억</span></div></div>
+          <div class="stock-row"><div class="etf-name">TIGER MSCI KOREA ESG유니버설</div><div class="stock-right"><span class="up-txt">▲0.03%</span><span class="stock-amt">3억</span></div></div><div class="stock-row"><div class="etf-name">HANARO KRX300</div><div class="stock-right"><span class="up-txt">▲0.40%</span><span class="stock-amt">3억</span></div></div><div class="stock-row"><div class="etf-name">HANARO 32-10 국고채액티브</div><div class="stock-right"><span class="dn-txt">▼0.33%</span><span class="stock-amt">1억</span></div></div><div class="stock-row"><div class="etf-name">SOL KRX300</div><div class="stock-right"><span class="up-txt">▲1.60%</span><span class="stock-amt">2억</span></div></div><div class="stock-row"><div class="etf-name">KB 코스닥 150 TR ETN</div><div class="stock-right"><span class="up-txt">▲2.62%</span><span class="stock-amt">0.0억</span></div></div>
         </div>
         <div class="stock-story-col">
           <div class="ss-sub-label">⭐ 인기 ETF</div>
-          <div class="stock-row" onclick="openChart('KRX:069500')" style="cursor:pointer"><div class="etf-name">KODEX 200 <span onclick="event.stopPropagation();openChart('KRX:069500')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲1.90%</span><span class="stock-amt">97,060</span></div></div><div class="stock-row" onclick="openChart('KRX:122630')" style="cursor:pointer"><div class="etf-name">KODEX 레버리지 <span onclick="event.stopPropagation();openChart('KRX:122630')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲3.56%</span><span class="stock-amt">84,885</span></div></div><div class="stock-row" onclick="openChart('KRX:114800')" style="cursor:pointer"><div class="etf-name">KODEX 인버스 <span onclick="event.stopPropagation();openChart('KRX:114800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼1.84%</span><span class="stock-amt">1,122</span></div></div><div class="stock-row" onclick="openChart('KRX:360750')" style="cursor:pointer"><div class="etf-name">TIGER 미국S&P500 <span onclick="event.stopPropagation();openChart('KRX:360750')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.33%</span><span class="stock-amt">25,945</span></div></div><div class="stock-row" onclick="openChart('KRX:305720')" style="cursor:pointer"><div class="etf-name">KODEX 2차전지산업 <span onclick="event.stopPropagation();openChart('KRX:305720')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲2.34%</span><span class="stock-amt">15,735</span></div></div><div class="stock-row" onclick="openChart('KRX:091160')" style="cursor:pointer"><div class="etf-name">KODEX 반도체 <span onclick="event.stopPropagation();openChart('KRX:091160')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.93%</span><span class="stock-amt">132,105</span></div></div><div class="stock-row" onclick="openChart('KRX:132030')" style="cursor:pointer"><div class="etf-name">KODEX 골드선물(H) <span onclick="event.stopPropagation();openChart('KRX:132030')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.64%</span><span class="stock-amt">23,280</span></div></div><div class="stock-row" onclick="openChart('KRX:379800')" style="cursor:pointer"><div class="etf-name">KODEX 미국나스닥100TR <span onclick="event.stopPropagation();openChart('KRX:379800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.27%</span><span class="stock-amt">23,585</span></div></div>
+          <div class="stock-row" onclick="openChart('KRX:069500')" style="cursor:pointer"><div class="etf-name">KODEX 200 <span onclick="event.stopPropagation();openChart('KRX:069500')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.47%</span><span class="stock-amt">94,805</span></div></div><div class="stock-row" onclick="openChart('KRX:122630')" style="cursor:pointer"><div class="etf-name">KODEX 레버리지 <span onclick="event.stopPropagation();openChart('KRX:122630')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼1.06%</span><span class="stock-amt">81,100</span></div></div><div class="stock-row" onclick="openChart('KRX:114800')" style="cursor:pointer"><div class="etf-name">KODEX 인버스 <span onclick="event.stopPropagation();openChart('KRX:114800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲0.52%</span><span class="stock-amt">1,149</span></div></div><div class="stock-row" onclick="openChart('KRX:360750')" style="cursor:pointer"><div class="etf-name">TIGER 미국S&P500 <span onclick="event.stopPropagation();openChart('KRX:360750')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.23%</span><span class="stock-amt">25,970</span></div></div><div class="stock-row" onclick="openChart('KRX:305720')" style="cursor:pointer"><div class="etf-name">KODEX 2차전지산업 <span onclick="event.stopPropagation();openChart('KRX:305720')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="up-txt">▲2.89%</span><span class="stock-amt">15,820</span></div></div><div class="stock-row" onclick="openChart('KRX:091160')" style="cursor:pointer"><div class="etf-name">KODEX 반도체 <span onclick="event.stopPropagation();openChart('KRX:091160')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼4.37%</span><span class="stock-amt">127,520</span></div></div><div class="stock-row" onclick="openChart('KRX:132030')" style="cursor:pointer"><div class="etf-name">KODEX 골드선물(H) <span onclick="event.stopPropagation();openChart('KRX:132030')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.81%</span><span class="stock-amt">23,240</span></div></div><div class="stock-row" onclick="openChart('KRX:379800')" style="cursor:pointer"><div class="etf-name">KODEX 미국나스닥100TR <span onclick="event.stopPropagation();openChart('KRX:379800')" style="cursor:pointer;font-size:9px">📈</span></div><div class="stock-right"><span class="dn-txt">▼0.19%</span><span class="stock-amt">23,605</span></div></div>
         </div>
       </div>
-      
+      <div class="story-text" style="margin-top:12px">오늘 ETF 시장에서는 국내 반도체 관련 ETF가 크게 하락한 반면, 2차전지 관련 ETF는 강세를 보이며 뚜렷한 대비를 이뤘습니다. 미국 시장은 전반적으로 보합세를 유지하는 가운데, 국내 테마형 ETF들은 섹터별로 등락이 엇갈리는 모습을 보였습니다.</div>
     </div>
   </div>
 
@@ -1476,7 +1499,63 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
     </div>
   </div>
   <div class="section">
-    <div style="color:var(--t3);font-size:12px;padding:20px 0;text-align:center;">AI 분석 준비 중</div>
+    <div class="idea-headline">외국인 이탈 심화, CPI 경계 🚨</div>
+<div class="idea-theme">
+  <div class="idea-theme-title">🔭 이번 주 시장 테마</div>
+  <div style="font-size:12.5px;color:var(--t1);line-height:1.7">이번 주 국내 시장은 외국인 자금 이탈 심화와 원/달러 환율 상승 압력으로 인해 전반적으로 방어적인 흐름을 보일 것으로 예상됩니다. 특히, 미국 CPI 발표와 한국은행 금통위 등 주요 이벤트를 앞두고 있어 변동성 확대에 대비하며 보수적인 접근이 필요합니다. 실적 개선 및 성장 동력을 가진 개별 종목 위주로 선별적인 접근이 유효합니다.</div>
+</div>
+<div class="section-label" style="margin-top:16px">📈 주목 섹터</div>
+<div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">에너지/배터리 소재 (2차전지)</span>
+    <span class="idea-badge up">주목</span>
+  </div>
+  <div class="idea-body">롯데에너지머티리얼즈의 그룹 시총 1위 등극은 2차전지 소재 산업의 견고한 성장성을 보여줍니다. 외국인 이탈 속에서도 성장 스토리가 명확한 섹터는 자금 유입 가능성이 있습니다.</div>
+  <div class="idea-meta">
+    <span><span class="idea-meta-label">촉매</span>전기차 시장 성장 및 배터리 소재 수요 증가</span>
+    <span><span class="idea-meta-label">리스크</span>원자재 가격 변동성 및 글로벌 경기 둔화</span>
+  </div>
+</div><div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">방산/항공우주</span>
+    <span class="idea-badge up">주목</span>
+  </div>
+  <div class="idea-body">글로벌 지정학적 리스크 지속과 각국의 국방비 증가는 방산 산업의 구조적인 성장을 지지합니다. 환율 상승은 수출 기업에 긍정적인 영향을 미칠 수 있습니다.</div>
+  <div class="idea-meta">
+    <span><span class="idea-meta-label">촉매</span>지정학적 리스크 지속 및 수출 확대</span>
+    <span><span class="idea-meta-label">리스크</span>정부 정책 변화 및 국제 정세 불안정</span>
+  </div>
+</div>
+<div class="section-label" style="margin-top:16px">⚠️ 주의 섹터</div>
+<div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">금융주 (특히 지주사)</span>
+    <span class="idea-badge dn">주의</span>
+  </div>
+  <div class="idea-body">신한지주의 롯데손보 인수 후 급락 사례처럼, M&A 관련 '승자의 저주' 우려가 부각되며 단기적인 투자 심리가 위축될 수 있습니다.</div>
+</div><div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">경기 민감 소비재</span>
+    <span class="idea-badge dn">주의</span>
+  </div>
+  <div class="idea-body">높은 환율과 인플레이션 압력, 글로벌 경기 둔화 우려로 인해 소비 심리가 위축될 가능성이 높아 단기적인 회복 기대가 어렵습니다.</div>
+</div>
+<div class="section-label" style="margin-top:16px">🚨 핵심 리스크</div>
+<div class="apt-card"><div class="risk-row"><span class="risk-num">1</span><span>미국 CPI 발표 결과에 따른 시장 변동성 확대: 예상치 상회 시 금리 인상 압력 가중 및 증시 하방 압력</span></div><div class="risk-row"><span class="risk-num">2</span><span>외국인 국내 시장 이탈 심화: 원/달러 환율 상승 및 국내 증시 수급 불안정 심화</span></div><div class="risk-row"><span class="risk-num">3</span><span>한국은행 금통위 금리 결정: 매파적 발언 또는 금리 인상 시 투자 심리 위축 가능성</span></div></div>
+<div class="section-label" style="margin-top:16px">📅 이벤트 트레이딩 아이디어</div>
+<div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">미국 CPI 발표</span>
+    <span class="idea-badge warn">오늘</span>
+  </div>
+  <div class="idea-body">발표 전 관망세 유지, 발표 후 인플레이션 둔화 신호 시 기술주 및 성장주 단기 반등 기회 모색.</div>
+</div><div class="idea-card">
+  <div class="idea-card-head">
+    <span class="idea-sector">한국은행 금통위</span>
+    <span class="idea-badge warn">10/16(금)</span>
+  </div>
+  <div class="idea-body">금리 동결 및 비둘기파적 스탠스 시 국내 채권시장 안정 및 증시 일부 안도 랠리 기대, 매파적 시나리오 대비 보수적 접근.</div>
+</div>
     <div style="font-size:10px;color:var(--t3);margin-top:16px;padding:8px;background:var(--card);border-radius:8px;">
       ⚠️ 본 내용은 AI 생성 정보로 투자 조언이 아닙니다. 실제 투자 결정은 본인 판단 하에 하세요.
     </div>
@@ -1573,13 +1652,13 @@ transition:transform .28s cubic-bezier(.4,0,.2,1)}
 </div>
 
 <div class="footer-note">
-  2026년 10월 14일 수요일 · 09:25 생성<br>
+  2026년 10월 14일 수요일 · 21:57 생성<br>
   부동산 시세는 호갱노노·KB부동산에서 직접 확인 권장
 </div>
 
 <script>
 var MACRO_META={"kospi": {"name": "코스피", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "", "dec": 2}, "kosdaq": {"name": "코스닥", "color": "#3b82f6", "rgb": "59,130,246", "pre": "", "suf": "", "dec": 2}, "sp500": {"name": "S&P 500", "color": "#00e896", "rgb": "0,232,150", "pre": "", "suf": "", "dec": 2}, "nasdaq": {"name": "나스닥 100", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "", "dec": 2}, "dow": {"name": "다우존스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "vix": {"name": "VIX", "color": "#ffc940", "rgb": "255,201,64", "pre": "", "suf": "", "dec": 2}, "usdkrw": {"name": "USD/KRW", "color": "#ef4444", "rgb": "239,68,68", "pre": "", "suf": "원", "dec": 0}, "brent": {"name": "브렌트유", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "wti": {"name": "WTI", "color": "#f97316", "rgb": "249,115,22", "pre": "$", "suf": "", "dec": 1}, "tnx": {"name": "미 10년물", "color": "#4da6ff", "rgb": "77,166,255", "pre": "", "suf": "%", "dec": 2}, "gold": {"name": "금 선물", "color": "#ffc940", "rgb": "255,201,64", "pre": "$", "suf": "", "dec": 0}, "dxy": {"name": "달러 인덱스", "color": "#a78bfa", "rgb": "167,139,250", "pre": "", "suf": "", "dec": 2}, "btc": {"name": "비트코인", "color": "#f59e0b", "rgb": "245,158,11", "pre": "$", "suf": "", "dec": 0}};
-var MACRO_HIST={"kospi": [{"time": "2026-09-18", "open": 6885.7, "high": 6914.08, "low": 6830.95, "close": 6894.23}, {"time": "2026-09-21", "open": 6938.34, "high": 7027.58, "low": 6938.34, "close": 7007.72}, {"time": "2026-09-22", "open": 7161.61, "high": 7171.44, "low": 6986.27, "close": 7017.91}, {"time": "2026-09-23", "open": 7153.99, "high": 7153.99, "low": 7014.98, "close": 7080.92}, {"time": "2026-09-28", "open": 7057.86, "high": 7065.9, "low": 6889.68, "close": 6889.74}, {"time": "2026-09-29", "open": 6844.41, "high": 6898.36, "low": 6782.99, "close": 6870.81}, {"time": "2026-09-30", "open": 6943.47, "high": 6965.64, "low": 6818.39, "close": 6838.04}, {"time": "2026-10-01", "open": 6814.49, "high": 6971.36, "low": 6765.06, "close": 6971.35}, {"time": "2026-10-02", "open": 6938.27, "high": 7011.04, "low": 6927.88, "close": 7003.74}, {"time": "2026-10-06", "open": 7044.67, "high": 7044.67, "low": 6897.38, "close": 6941.39}, {"time": "2026-10-07", "open": 6864.25, "high": 6977.77, "low": 6803.81, "close": 6803.9}, {"time": "2026-10-08", "open": 6808.68, "high": 6810.83, "low": 6625.93, "close": 6625.93}, {"time": "2026-10-12", "open": 6578.17, "high": 6589.69, "low": 6368.49, "close": 6384.24}, {"time": "2026-10-14", "open": 6062.08, "high": 6091.85, "low": 6062.08, "close": 6090.24}], "kosdaq": [{"time": "2026-09-18", "open": 832.72, "high": 833.57, "low": 824.73, "close": 827.12}, {"time": "2026-09-21", "open": 830.71, "high": 838.32, "low": 822.41, "close": 836.27}, {"time": "2026-09-22", "open": 846.14, "high": 847.1, "low": 831.13, "close": 834.38}, {"time": "2026-09-23", "open": 841.73, "high": 847.35, "low": 835.46, "close": 844.48}, {"time": "2026-09-28", "open": 845.48, "high": 861.15, "low": 841.23, "close": 846.58}, {"time": "2026-09-29", "open": 843.87, "high": 849.82, "low": 833.62, "close": 849.8}, {"time": "2026-09-30", "open": 854.78, "high": 862.5, "low": 852.1, "close": 855.91}, {"time": "2026-10-01", "open": 853.96, "high": 894.29, "low": 851.92, "close": 894.29}, {"time": "2026-10-02", "open": 893.22, "high": 903.88, "low": 885.65, "close": 893.29}, {"time": "2026-10-06", "open": 902.16, "high": 919.92, "low": 901.46, "close": 919.92}, {"time": "2026-10-07", "open": 917.45, "high": 921.73, "low": 898.25, "close": 898.43}, {"time": "2026-10-08", "open": 898.19, "high": 903.12, "low": 883.85, "close": 892.27}, {"time": "2026-10-12", "open": 885.53, "high": 891.79, "low": 849.07, "close": 849.19}, {"time": "2026-10-14", "open": 835.9, "high": 838.65, "low": 832.1, "close": 832.1}], "sp500": [{"time": "2026-09-24", "open": 7666.99, "high": 7719.01, "low": 7662.57, "close": 7704.13}, {"time": "2026-09-25", "open": 7709.86, "high": 7752.07, "low": 7693.08, "close": 7743.41}, {"time": "2026-09-28", "open": 7721.7, "high": 7724.15, "low": 7666.6, "close": 7683.69}, {"time": "2026-09-29", "open": 7699.6, "high": 7699.6, "low": 7653.55, "close": 7670.84}, {"time": "2026-09-30", "open": 7688.99, "high": 7722.88, "low": 7651.54, "close": 7651.54}, {"time": "2026-10-01", "open": 7666.47, "high": 7684.75, "low": 7616.78, "close": 7666.45}, {"time": "2026-10-02", "open": 7726.24, "high": 7754.67, "low": 7700.51, "close": 7722.72}, {"time": "2026-10-05", "open": 7730.86, "high": 7794.35, "low": 7727.59, "close": 7773.95}, {"time": "2026-10-06", "open": 7805.96, "high": 7844.52, "low": 7805.96, "close": 7818.93}, {"time": "2026-10-07", "open": 7792.98, "high": 7807.02, "low": 7763.34, "close": 7801.77}, {"time": "2026-10-08", "open": 7778.45, "high": 7797.79, "low": 7731.26, "close": 7765.36}, {"time": "2026-10-09", "open": 7786.36, "high": 7820.57, "low": 7779.34, "close": 7811.54}, {"time": "2026-10-12", "open": 7813.04, "high": 7821.67, "low": 7796.94, "close": 7807.24}, {"time": "2026-10-13", "open": 7795.27, "high": 7814.15, "low": 7786.11, "close": 7805.45}], "nasdaq": [{"time": "2026-09-24", "open": 30225.19, "high": 30529.35, "low": 30204.16, "close": 30478.86}, {"time": "2026-09-25", "open": 30517.46, "high": 30667.56, "low": 30413.59, "close": 30608.13}, {"time": "2026-09-28", "open": 30426.63, "high": 30480.4, "low": 30081.06, "close": 30276.81}, {"time": "2026-09-29", "open": 30412.29, "high": 30429.97, "low": 30235.66, "close": 30339.33}, {"time": "2026-09-30", "open": 30421.68, "high": 30630.45, "low": 30408.5, "close": 30408.5}, {"time": "2026-10-01", "open": 30533.6, "high": 30616.24, "low": 30274.65, "close": 30501.56}, {"time": "2026-10-02", "open": 30869.14, "high": 31017.53, "low": 30737.07, "close": 30807.93}, {"time": "2026-10-05", "open": 30812.76, "high": 31117.36, "low": 30798.42, "close": 31076.44}, {"time": "2026-10-06", "open": 31255.4, "high": 31361.37, "low": 31208.2, "close": 31224.47}, {"time": "2026-10-07", "open": 30976.25, "high": 31170.12, "low": 30904.46, "close": 31160.08}, {"time": "2026-10-08", "open": 30985.23, "high": 31125.13, "low": 30556.4, "close": 30725.81}, {"time": "2026-10-09", "open": 30900.06, "high": 30946.74, "low": 30770.05, "close": 30883.15}, {"time": "2026-10-12", "open": 30796.04, "high": 30813.96, "low": 30618.64, "close": 30664.7}, {"time": "2026-10-13", "open": 30404.2, "high": 30595.8, "low": 30372.3, "close": 30569.48}], "dow": [{"time": "2026-09-24", "open": 51415.75, "high": 51485.97, "low": 51124.02, "close": 51349.98}, {"time": "2026-09-25", "open": 51359.7, "high": 51874.94, "low": 51339.24, "close": 51828.62}, {"time": "2026-09-28", "open": 51648.48, "high": 51780.5, "low": 51409.65, "close": 51481.51}, {"time": "2026-09-29", "open": 51416.96, "high": 51505.19, "low": 51129.18, "close": 51349.92}, {"time": "2026-09-30", "open": 51424.84, "high": 51473.93, "low": 50906.05, "close": 50906.05}, {"time": "2026-10-01", "open": 51008.36, "high": 51179.78, "low": 50546.54, "close": 50926.56}, {"time": "2026-10-02", "open": 51241.18, "high": 51382.88, "low": 50950.61, "close": 51176.96}, {"time": "2026-10-05", "open": 51199.25, "high": 51404.86, "low": 50862.85, "close": 51267.9}, {"time": "2026-10-06", "open": 51444.1, "high": 51672.25, "low": 51422.9, "close": 51521.28}, {"time": "2026-10-07", "open": 51406.44, "high": 51406.44, "low": 50917.42, "close": 51179.87}, {"time": "2026-10-08", "open": 51105.04, "high": 51245.28, "low": 50939.0, "close": 51231.64}, {"time": "2026-10-09", "open": 51258.95, "high": 51765.11, "low": 51258.95, "close": 51654.95}, {"time": "2026-10-12", "open": 51765.35, "high": 51928.1, "low": 51718.6, "close": 51850.55}, {"time": "2026-10-13", "open": 52092.99, "high": 52317.32, "low": 51587.67, "close": 51670.1}], "vix": [{"time": "2026-09-24", "open": 15.83, "high": 16.57, "low": 15.34, "close": 15.67}, {"time": "2026-09-25", "open": 15.61, "high": 15.94, "low": 14.68, "close": 14.87}, {"time": "2026-09-28", "open": 16.16, "high": 16.62, "low": 15.68, "close": 16.07}, {"time": "2026-09-29", "open": 16.17, "high": 16.44, "low": 15.73, "close": 16.04}, {"time": "2026-09-30", "open": 15.93, "high": 16.61, "low": 15.62, "close": 16.34}, {"time": "2026-10-01", "open": 16.33, "high": 17.59, "low": 16.21, "close": 16.39}, {"time": "2026-10-02", "open": 16.15, "high": 16.24, "low": 15.3, "close": 15.31}, {"time": "2026-10-05", "open": 16.24, "high": 16.38, "low": 15.48, "close": 15.52}, {"time": "2026-10-06", "open": 15.5, "high": 15.54, "low": 14.96, "close": 15.01}, {"time": "2026-10-07", "open": 15.21, "high": 16.01, "low": 14.97, "close": 15.08}, {"time": "2026-10-08", "open": 15.68, "high": 16.46, "low": 15.15, "close": 15.41}, {"time": "2026-10-09", "open": 15.34, "high": 15.34, "low": 14.77, "close": 14.84}, {"time": "2026-10-12", "open": 15.39, "high": 15.53, "low": 15.11, "close": 15.21}, {"time": "2026-10-13", "open": 15.61, "high": 15.61, "low": 15.17, "close": 15.27}], "usdkrw": [{"time": "2026-09-25", "open": 1366.0, "high": 1369.0, "low": 1352.0, "close": 1367.0}, {"time": "2026-09-28", "open": 1356.0, "high": 1365.0, "low": 1355.0, "close": 1355.0}, {"time": "2026-09-29", "open": 1359.0, "high": 1361.0, "low": 1352.0, "close": 1360.0}, {"time": "2026-09-30", "open": 1351.0, "high": 1359.0, "low": 1349.0, "close": 1350.0}, {"time": "2026-10-01", "open": 1359.0, "high": 1367.0, "low": 1356.0, "close": 1357.0}, {"time": "2026-10-02", "open": 1360.0, "high": 1366.0, "low": 1342.0, "close": 1361.0}, {"time": "2026-10-05", "open": 1343.0, "high": 1349.0, "low": 1339.0, "close": 1343.0}, {"time": "2026-10-06", "open": 1344.0, "high": 1346.0, "low": 1336.0, "close": 1344.0}, {"time": "2026-10-07", "open": 1341.0, "high": 1341.0, "low": 1335.0, "close": 1340.0}, {"time": "2026-10-08", "open": 1339.0, "high": 1345.0, "low": 1335.0, "close": 1339.0}, {"time": "2026-10-09", "open": 1342.0, "high": 1346.0, "low": 1339.0, "close": 1343.0}, {"time": "2026-10-12", "open": 1340.0, "high": 1340.0, "low": 1329.0, "close": 1341.0}, {"time": "2026-10-13", "open": 1335.0, "high": 1345.0, "low": 1333.0, "close": 1334.0}, {"time": "2026-10-14", "open": 1340.0, "high": 1342.0, "low": 1337.0, "close": 1338.0}], "brent": [{"time": "2026-09-24", "open": 103.4, "high": 108.2, "low": 101.8, "close": 106.6}, {"time": "2026-09-25", "open": 106.5, "high": 106.8, "low": 103.1, "close": 104.3}, {"time": "2026-09-28", "open": 105.8, "high": 108.8, "low": 103.8, "close": 105.3}, {"time": "2026-09-29", "open": 106.1, "high": 107.6, "low": 102.3, "close": 102.6}, {"time": "2026-09-30", "open": 103.6, "high": 104.0, "low": 102.2, "close": 103.5}, {"time": "2026-10-01", "open": 98.0, "high": 103.0, "low": 96.6, "close": 102.3}, {"time": "2026-10-02", "open": 102.8, "high": 103.1, "low": 98.4, "close": 102.2}, {"time": "2026-10-05", "open": 103.0, "high": 103.6, "low": 99.8, "close": 100.3}, {"time": "2026-10-06", "open": 100.3, "high": 101.3, "low": 97.1, "close": 100.6}, {"time": "2026-10-07", "open": 101.0, "high": 102.6, "low": 99.6, "close": 100.2}, {"time": "2026-10-08", "open": 101.1, "high": 105.9, "low": 100.8, "close": 104.3}, {"time": "2026-10-09", "open": 103.9, "high": 105.1, "low": 102.4, "close": 104.7}, {"time": "2026-10-12", "open": 104.6, "high": 107.3, "low": 102.3, "close": 106.7}, {"time": "2026-10-13", "open": 106.3, "high": 106.4, "low": 106.1, "close": 106.4}], "wti": [{"time": "2026-09-24", "open": 92.7, "high": 96.8, "low": 91.2, "close": 94.6}, {"time": "2026-09-25", "open": 94.8, "high": 94.8, "low": 91.5, "close": 92.4}, {"time": "2026-09-28", "open": 93.6, "high": 96.5, "low": 91.2, "close": 92.6}, {"time": "2026-09-29", "open": 93.5, "high": 94.7, "low": 88.8, "close": 89.4}, {"time": "2026-09-30", "open": 89.0, "high": 92.0, "low": 88.6, "close": 90.4}, {"time": "2026-10-01", "open": 90.4, "high": 93.7, "low": 88.8, "close": 92.9}, {"time": "2026-10-02", "open": 93.5, "high": 93.5, "low": 88.1, "close": 91.1}, {"time": "2026-10-05", "open": 91.8, "high": 91.9, "low": 88.7, "close": 89.4}, {"time": "2026-10-06", "open": 89.3, "high": 90.1, "low": 86.9, "close": 89.4}, {"time": "2026-10-07", "open": 90.0, "high": 91.0, "low": 88.0, "close": 88.3}, {"time": "2026-10-08", "open": 89.0, "high": 93.2, "low": 88.8, "close": 91.5}, {"time": "2026-10-09", "open": 91.3, "high": 92.2, "low": 90.0, "close": 91.8}, {"time": "2026-10-12", "open": 91.8, "high": 94.4, "low": 89.6, "close": 93.7}, {"time": "2026-10-13", "open": 94.8, "high": 94.9, "low": 94.5, "close": 94.8}], "tnx": [{"time": "2026-09-24", "open": 5.12, "high": 5.18, "low": 5.09, "close": 5.16}, {"time": "2026-09-25", "open": 5.19, "high": 5.23, "low": 5.16, "close": 5.18}, {"time": "2026-09-28", "open": 5.21, "high": 5.27, "low": 5.2, "close": 5.24}, {"time": "2026-09-29", "open": 5.21, "high": 5.29, "low": 5.21, "close": 5.26}, {"time": "2026-09-30", "open": 5.24, "high": 5.31, "low": 5.2, "close": 5.29}, {"time": "2026-10-01", "open": 5.28, "high": 5.34, "low": 5.21, "close": 5.24}, {"time": "2026-10-02", "open": 5.22, "high": 5.3, "low": 5.16, "close": 5.28}, {"time": "2026-10-05", "open": 5.27, "high": 5.35, "low": 5.26, "close": 5.31}, {"time": "2026-10-06", "open": 5.27, "high": 5.3, "low": 5.26, "close": 5.27}, {"time": "2026-10-07", "open": 5.34, "high": 5.36, "low": 5.27, "close": 5.28}, {"time": "2026-10-08", "open": 5.32, "high": 5.33, "low": 5.22, "close": 5.23}, {"time": "2026-10-09", "open": 5.24, "high": 5.28, "low": 5.23, "close": 5.24}, {"time": "2026-10-12", "open": 5.24, "high": 5.24, "low": 5.24, "close": 5.24}, {"time": "2026-10-13", "open": 5.19, "high": 5.24, "low": 5.18, "close": 5.22}], "gold": [{"time": "2026-09-24", "open": 4324.0, "high": 4338.0, "low": 4278.0, "close": 4298.0}, {"time": "2026-09-25", "open": 4310.0, "high": 4352.0, "low": 4289.0, "close": 4321.0}, {"time": "2026-09-28", "open": 4315.0, "high": 4316.0, "low": 4143.0, "close": 4168.0}, {"time": "2026-09-29", "open": 4150.0, "high": 4218.0, "low": 4145.0, "close": 4180.0}, {"time": "2026-09-30", "open": 4216.0, "high": 4251.0, "low": 4178.0, "close": 4187.0}, {"time": "2026-10-01", "open": 4190.0, "high": 4223.0, "low": 4169.0, "close": 4202.0}, {"time": "2026-10-02", "open": 4205.0, "high": 4259.0, "low": 4154.0, "close": 4162.0}, {"time": "2026-10-05", "open": 4169.0, "high": 4199.0, "low": 4150.0, "close": 4157.0}, {"time": "2026-10-06", "open": 4169.0, "high": 4212.0, "low": 4131.0, "close": 4187.0}, {"time": "2026-10-07", "open": 4195.0, "high": 4198.0, "low": 4091.0, "close": 4141.0}, {"time": "2026-10-08", "open": 4140.0, "high": 4171.0, "low": 4128.0, "close": 4157.0}, {"time": "2026-10-09", "open": 4160.0, "high": 4234.0, "low": 4156.0, "close": 4216.0}, {"time": "2026-10-12", "open": 4221.0, "high": 4242.0, "low": 4178.0, "close": 4191.0}, {"time": "2026-10-13", "open": 4184.0, "high": 4186.0, "low": 4177.0, "close": 4185.0}], "dxy": [{"time": "2026-09-24", "open": 101.11, "high": 101.4, "low": 101.0, "close": 101.29}, {"time": "2026-09-25", "open": 101.27, "high": 101.31, "low": 100.87, "close": 100.97}, {"time": "2026-09-28", "open": 101.1, "high": 101.31, "low": 100.98, "close": 101.2}, {"time": "2026-09-29", "open": 101.19, "high": 101.61, "low": 101.18, "close": 101.37}, {"time": "2026-09-30", "open": 101.41, "high": 101.53, "low": 101.03, "close": 101.45}, {"time": "2026-10-01", "open": 101.47, "high": 102.21, "low": 101.46, "close": 102.1}, {"time": "2026-10-02", "open": 102.02, "high": 102.13, "low": 101.67, "close": 101.93}, {"time": "2026-10-05", "open": 101.92, "high": 102.54, "low": 101.86, "close": 102.17}, {"time": "2026-10-06", "open": 102.14, "high": 102.29, "low": 101.75, "close": 101.83}, {"time": "2026-10-07", "open": 101.89, "high": 102.5, "low": 101.89, "close": 102.24}, {"time": "2026-10-08", "open": 102.23, "high": 102.47, "low": 102.03, "close": 102.14}, {"time": "2026-10-09", "open": 102.13, "high": 102.34, "low": 101.92, "close": 102.21}, {"time": "2026-10-12", "open": 102.3, "high": 102.61, "low": 102.1, "close": 102.58}, {"time": "2026-10-13", "open": 102.21, "high": 102.21, "low": 102.16, "close": 102.17}], "btc": [{"time": "2026-09-30", "open": 83621.0, "high": 85600.0, "low": 82928.0, "close": 83554.0}, {"time": "2026-10-01", "open": 83554.0, "high": 85224.0, "low": 83133.0, "close": 84853.0}, {"time": "2026-10-02", "open": 84856.0, "high": 87146.0, "low": 83853.0, "close": 84497.0}, {"time": "2026-10-03", "open": 84503.0, "high": 85019.0, "low": 84430.0, "close": 84764.0}, {"time": "2026-10-04", "open": 84766.0, "high": 86766.0, "low": 84707.0, "close": 86480.0}, {"time": "2026-10-05", "open": 86480.0, "high": 86972.0, "low": 84972.0, "close": 85787.0}, {"time": "2026-10-06", "open": 85786.0, "high": 86665.0, "low": 85120.0, "close": 85558.0}, {"time": "2026-10-07", "open": 85555.0, "high": 85595.0, "low": 82772.0, "close": 83276.0}, {"time": "2026-10-08", "open": 83281.0, "high": 83475.0, "low": 80337.0, "close": 81676.0}, {"time": "2026-10-09", "open": 81676.0, "high": 83418.0, "low": 81558.0, "close": 82546.0}, {"time": "2026-10-10", "open": 82546.0, "high": 83092.0, "low": 82473.0, "close": 82912.0}, {"time": "2026-10-11", "open": 82912.0, "high": 84104.0, "low": 82722.0, "close": 83679.0}, {"time": "2026-10-12", "open": 83679.0, "high": 84249.0, "low": 81682.0, "close": 81763.0}, {"time": "2026-10-14", "open": 83093.0, "high": 83360.0, "low": 83093.0, "close": 83353.0}]};
+var MACRO_HIST={"kospi": [{"time": "2026-09-21", "open": 6938.34, "high": 7027.58, "low": 6938.34, "close": 7007.72}, {"time": "2026-09-22", "open": 7161.61, "high": 7171.44, "low": 6986.27, "close": 7017.91}, {"time": "2026-09-23", "open": 7153.99, "high": 7153.99, "low": 7014.98, "close": 7080.92}, {"time": "2026-09-28", "open": 7057.86, "high": 7065.9, "low": 6889.68, "close": 6889.74}, {"time": "2026-09-29", "open": 6844.41, "high": 6898.36, "low": 6782.99, "close": 6870.81}, {"time": "2026-09-30", "open": 6943.47, "high": 6965.64, "low": 6818.39, "close": 6838.04}, {"time": "2026-10-01", "open": 6814.49, "high": 6971.36, "low": 6765.06, "close": 6971.35}, {"time": "2026-10-02", "open": 6938.27, "high": 7011.04, "low": 6927.88, "close": 7003.74}, {"time": "2026-10-06", "open": 7044.67, "high": 7044.67, "low": 6897.38, "close": 6941.39}, {"time": "2026-10-07", "open": 6864.25, "high": 6977.77, "low": 6803.81, "close": 6803.9}, {"time": "2026-10-08", "open": 6808.68, "high": 6810.83, "low": 6625.93, "close": 6625.93}, {"time": "2026-10-12", "open": 6578.17, "high": 6589.69, "low": 6368.49, "close": 6384.24}, {"time": "2026-10-13", "open": 6186.08, "high": 6198.46, "low": 5911.11, "close": 6035.35}, {"time": "2026-10-14", "open": 6062.08, "high": 6190.65, "low": 5944.65, "close": 6008.81}], "kosdaq": [{"time": "2026-09-21", "open": 830.71, "high": 838.32, "low": 822.41, "close": 836.27}, {"time": "2026-09-22", "open": 846.14, "high": 847.1, "low": 831.13, "close": 834.38}, {"time": "2026-09-23", "open": 841.73, "high": 847.35, "low": 835.46, "close": 844.48}, {"time": "2026-09-28", "open": 845.48, "high": 861.15, "low": 841.23, "close": 846.58}, {"time": "2026-09-29", "open": 843.87, "high": 849.82, "low": 833.62, "close": 849.8}, {"time": "2026-09-30", "open": 854.78, "high": 862.5, "low": 852.1, "close": 855.91}, {"time": "2026-10-01", "open": 853.96, "high": 894.29, "low": 851.92, "close": 894.29}, {"time": "2026-10-02", "open": 893.22, "high": 903.88, "low": 885.65, "close": 893.29}, {"time": "2026-10-06", "open": 902.16, "high": 919.92, "low": 901.46, "close": 919.92}, {"time": "2026-10-07", "open": 917.45, "high": 921.73, "low": 898.25, "close": 898.43}, {"time": "2026-10-08", "open": 898.19, "high": 903.12, "low": 883.85, "close": 892.27}, {"time": "2026-10-12", "open": 885.53, "high": 891.79, "low": 849.07, "close": 849.19}, {"time": "2026-10-13", "open": 823.69, "high": 839.94, "low": 802.91, "close": 837.03}, {"time": "2026-10-14", "open": 835.9, "high": 846.95, "low": 813.49, "close": 823.88}], "sp500": [{"time": "2026-09-24", "open": 7666.99, "high": 7719.01, "low": 7662.57, "close": 7704.13}, {"time": "2026-09-25", "open": 7709.86, "high": 7752.07, "low": 7693.08, "close": 7743.41}, {"time": "2026-09-28", "open": 7721.7, "high": 7724.15, "low": 7666.6, "close": 7683.69}, {"time": "2026-09-29", "open": 7699.6, "high": 7699.6, "low": 7653.55, "close": 7670.84}, {"time": "2026-09-30", "open": 7688.99, "high": 7722.88, "low": 7651.54, "close": 7651.54}, {"time": "2026-10-01", "open": 7666.47, "high": 7684.75, "low": 7616.78, "close": 7666.45}, {"time": "2026-10-02", "open": 7726.24, "high": 7754.67, "low": 7700.51, "close": 7722.72}, {"time": "2026-10-05", "open": 7730.86, "high": 7794.35, "low": 7727.59, "close": 7773.95}, {"time": "2026-10-06", "open": 7805.96, "high": 7844.52, "low": 7805.96, "close": 7818.93}, {"time": "2026-10-07", "open": 7792.98, "high": 7807.02, "low": 7763.34, "close": 7801.77}, {"time": "2026-10-08", "open": 7778.45, "high": 7797.79, "low": 7731.26, "close": 7765.36}, {"time": "2026-10-09", "open": 7786.36, "high": 7820.57, "low": 7779.34, "close": 7811.54}, {"time": "2026-10-12", "open": 7813.04, "high": 7821.67, "low": 7796.94, "close": 7807.24}, {"time": "2026-10-13", "open": 7795.27, "high": 7814.15, "low": 7786.11, "close": 7805.45}], "nasdaq": [{"time": "2026-09-24", "open": 30225.19, "high": 30529.35, "low": 30204.16, "close": 30478.86}, {"time": "2026-09-25", "open": 30517.46, "high": 30667.56, "low": 30413.59, "close": 30608.13}, {"time": "2026-09-28", "open": 30426.63, "high": 30480.4, "low": 30081.06, "close": 30276.81}, {"time": "2026-09-29", "open": 30412.29, "high": 30429.97, "low": 30235.66, "close": 30339.33}, {"time": "2026-09-30", "open": 30421.68, "high": 30630.45, "low": 30408.5, "close": 30408.5}, {"time": "2026-10-01", "open": 30533.6, "high": 30616.24, "low": 30274.65, "close": 30501.56}, {"time": "2026-10-02", "open": 30869.14, "high": 31017.53, "low": 30737.07, "close": 30807.93}, {"time": "2026-10-05", "open": 30812.76, "high": 31117.36, "low": 30798.42, "close": 31076.44}, {"time": "2026-10-06", "open": 31255.4, "high": 31361.37, "low": 31208.2, "close": 31224.47}, {"time": "2026-10-07", "open": 30976.25, "high": 31170.12, "low": 30904.46, "close": 31160.08}, {"time": "2026-10-08", "open": 30985.23, "high": 31125.13, "low": 30556.4, "close": 30725.81}, {"time": "2026-10-09", "open": 30900.06, "high": 30946.74, "low": 30770.05, "close": 30883.15}, {"time": "2026-10-12", "open": 30796.04, "high": 30813.96, "low": 30618.64, "close": 30664.7}, {"time": "2026-10-13", "open": 30404.2, "high": 30595.8, "low": 30372.3, "close": 30569.48}], "dow": [{"time": "2026-09-24", "open": 51415.75, "high": 51485.97, "low": 51124.02, "close": 51349.98}, {"time": "2026-09-25", "open": 51359.7, "high": 51874.94, "low": 51339.24, "close": 51828.62}, {"time": "2026-09-28", "open": 51648.48, "high": 51780.5, "low": 51409.65, "close": 51481.51}, {"time": "2026-09-29", "open": 51416.96, "high": 51505.19, "low": 51129.18, "close": 51349.92}, {"time": "2026-09-30", "open": 51424.84, "high": 51473.93, "low": 50906.05, "close": 50906.05}, {"time": "2026-10-01", "open": 51008.36, "high": 51179.78, "low": 50546.54, "close": 50926.56}, {"time": "2026-10-02", "open": 51241.18, "high": 51382.88, "low": 50950.61, "close": 51176.96}, {"time": "2026-10-05", "open": 51199.25, "high": 51404.86, "low": 50862.85, "close": 51267.9}, {"time": "2026-10-06", "open": 51444.1, "high": 51672.25, "low": 51422.9, "close": 51521.28}, {"time": "2026-10-07", "open": 51406.44, "high": 51406.44, "low": 50917.42, "close": 51179.87}, {"time": "2026-10-08", "open": 51105.04, "high": 51245.28, "low": 50939.0, "close": 51231.64}, {"time": "2026-10-09", "open": 51258.95, "high": 51765.11, "low": 51258.95, "close": 51654.95}, {"time": "2026-10-12", "open": 51765.35, "high": 51928.1, "low": 51718.6, "close": 51850.55}, {"time": "2026-10-13", "open": 52092.99, "high": 52317.32, "low": 51587.67, "close": 51670.1}], "vix": [{"time": "2026-09-25", "open": 15.61, "high": 15.94, "low": 14.68, "close": 14.87}, {"time": "2026-09-28", "open": 16.16, "high": 16.62, "low": 15.68, "close": 16.07}, {"time": "2026-09-29", "open": 16.17, "high": 16.44, "low": 15.73, "close": 16.04}, {"time": "2026-09-30", "open": 15.93, "high": 16.61, "low": 15.62, "close": 16.34}, {"time": "2026-10-01", "open": 16.33, "high": 17.59, "low": 16.21, "close": 16.39}, {"time": "2026-10-02", "open": 16.15, "high": 16.24, "low": 15.3, "close": 15.31}, {"time": "2026-10-05", "open": 16.24, "high": 16.38, "low": 15.48, "close": 15.52}, {"time": "2026-10-06", "open": 15.5, "high": 15.54, "low": 14.96, "close": 15.01}, {"time": "2026-10-07", "open": 15.21, "high": 16.01, "low": 14.97, "close": 15.08}, {"time": "2026-10-08", "open": 15.68, "high": 16.46, "low": 15.15, "close": 15.41}, {"time": "2026-10-09", "open": 15.34, "high": 15.34, "low": 14.77, "close": 14.84}, {"time": "2026-10-12", "open": 15.39, "high": 15.53, "low": 15.11, "close": 15.21}, {"time": "2026-10-13", "open": 15.61, "high": 15.61, "low": 15.17, "close": 15.27}, {"time": "2026-10-14", "open": 15.17, "high": 15.79, "low": 14.98, "close": 15.78}], "usdkrw": [{"time": "2026-09-25", "open": 1366.0, "high": 1369.0, "low": 1352.0, "close": 1367.0}, {"time": "2026-09-28", "open": 1356.0, "high": 1365.0, "low": 1355.0, "close": 1355.0}, {"time": "2026-09-29", "open": 1359.0, "high": 1361.0, "low": 1352.0, "close": 1360.0}, {"time": "2026-09-30", "open": 1351.0, "high": 1359.0, "low": 1349.0, "close": 1350.0}, {"time": "2026-10-01", "open": 1359.0, "high": 1367.0, "low": 1356.0, "close": 1357.0}, {"time": "2026-10-02", "open": 1360.0, "high": 1366.0, "low": 1342.0, "close": 1361.0}, {"time": "2026-10-05", "open": 1343.0, "high": 1349.0, "low": 1339.0, "close": 1343.0}, {"time": "2026-10-06", "open": 1344.0, "high": 1346.0, "low": 1336.0, "close": 1344.0}, {"time": "2026-10-07", "open": 1341.0, "high": 1341.0, "low": 1335.0, "close": 1340.0}, {"time": "2026-10-08", "open": 1339.0, "high": 1345.0, "low": 1335.0, "close": 1339.0}, {"time": "2026-10-09", "open": 1342.0, "high": 1346.0, "low": 1339.0, "close": 1343.0}, {"time": "2026-10-12", "open": 1340.0, "high": 1340.0, "low": 1329.0, "close": 1341.0}, {"time": "2026-10-13", "open": 1335.0, "high": 1345.0, "low": 1333.0, "close": 1334.0}, {"time": "2026-10-14", "open": 1340.0, "high": 1342.0, "low": 1334.0, "close": 1339.0}], "brent": [{"time": "2026-09-25", "open": 106.5, "high": 106.8, "low": 103.1, "close": 104.3}, {"time": "2026-09-28", "open": 105.8, "high": 108.8, "low": 103.8, "close": 105.3}, {"time": "2026-09-29", "open": 106.1, "high": 107.6, "low": 102.3, "close": 102.6}, {"time": "2026-09-30", "open": 103.6, "high": 104.0, "low": 102.2, "close": 103.5}, {"time": "2026-10-01", "open": 98.0, "high": 103.0, "low": 96.6, "close": 102.3}, {"time": "2026-10-02", "open": 102.8, "high": 103.1, "low": 98.4, "close": 102.2}, {"time": "2026-10-05", "open": 103.0, "high": 103.6, "low": 99.8, "close": 100.3}, {"time": "2026-10-06", "open": 100.3, "high": 101.3, "low": 97.1, "close": 100.6}, {"time": "2026-10-07", "open": 101.0, "high": 102.6, "low": 99.6, "close": 100.2}, {"time": "2026-10-08", "open": 101.1, "high": 105.9, "low": 100.8, "close": 104.3}, {"time": "2026-10-09", "open": 103.9, "high": 105.1, "low": 102.4, "close": 104.7}, {"time": "2026-10-12", "open": 104.6, "high": 107.3, "low": 102.3, "close": 106.7}, {"time": "2026-10-13", "open": 106.1, "high": 106.7, "low": 104.4, "close": 105.7}, {"time": "2026-10-14", "open": 106.3, "high": 107.1, "low": 105.2, "close": 105.8}], "wti": [{"time": "2026-09-25", "open": 94.8, "high": 94.8, "low": 91.5, "close": 92.4}, {"time": "2026-09-28", "open": 93.6, "high": 96.5, "low": 91.2, "close": 92.6}, {"time": "2026-09-29", "open": 93.5, "high": 94.7, "low": 88.8, "close": 89.4}, {"time": "2026-09-30", "open": 89.0, "high": 92.0, "low": 88.6, "close": 90.4}, {"time": "2026-10-01", "open": 90.4, "high": 93.7, "low": 88.8, "close": 92.9}, {"time": "2026-10-02", "open": 93.5, "high": 93.5, "low": 88.1, "close": 91.1}, {"time": "2026-10-05", "open": 91.8, "high": 91.9, "low": 88.7, "close": 89.4}, {"time": "2026-10-06", "open": 89.3, "high": 90.1, "low": 86.9, "close": 89.4}, {"time": "2026-10-07", "open": 90.0, "high": 91.0, "low": 88.0, "close": 88.3}, {"time": "2026-10-08", "open": 89.0, "high": 93.2, "low": 88.8, "close": 91.5}, {"time": "2026-10-09", "open": 91.3, "high": 92.2, "low": 90.0, "close": 91.8}, {"time": "2026-10-12", "open": 91.8, "high": 94.4, "low": 89.6, "close": 93.7}, {"time": "2026-10-13", "open": 93.2, "high": 95.1, "low": 91.7, "close": 94.1}, {"time": "2026-10-14", "open": 94.8, "high": 96.0, "low": 94.0, "close": 95.7}], "tnx": [{"time": "2026-09-25", "open": 5.19, "high": 5.23, "low": 5.16, "close": 5.18}, {"time": "2026-09-28", "open": 5.21, "high": 5.27, "low": 5.2, "close": 5.24}, {"time": "2026-09-29", "open": 5.21, "high": 5.29, "low": 5.21, "close": 5.26}, {"time": "2026-09-30", "open": 5.24, "high": 5.31, "low": 5.2, "close": 5.29}, {"time": "2026-10-01", "open": 5.28, "high": 5.34, "low": 5.21, "close": 5.24}, {"time": "2026-10-02", "open": 5.22, "high": 5.3, "low": 5.16, "close": 5.28}, {"time": "2026-10-05", "open": 5.27, "high": 5.35, "low": 5.26, "close": 5.31}, {"time": "2026-10-06", "open": 5.27, "high": 5.3, "low": 5.26, "close": 5.27}, {"time": "2026-10-07", "open": 5.34, "high": 5.36, "low": 5.27, "close": 5.28}, {"time": "2026-10-08", "open": 5.32, "high": 5.33, "low": 5.22, "close": 5.23}, {"time": "2026-10-09", "open": 5.24, "high": 5.28, "low": 5.23, "close": 5.24}, {"time": "2026-10-12", "open": 5.24, "high": 5.24, "low": 5.24, "close": 5.24}, {"time": "2026-10-13", "open": 5.19, "high": 5.24, "low": 5.18, "close": 5.22}, {"time": "2026-10-14", "open": 5.2, "high": 5.31, "low": 5.18, "close": 5.31}], "gold": [{"time": "2026-09-25", "open": 4310.0, "high": 4352.0, "low": 4289.0, "close": 4321.0}, {"time": "2026-09-28", "open": 4315.0, "high": 4316.0, "low": 4143.0, "close": 4168.0}, {"time": "2026-09-29", "open": 4150.0, "high": 4218.0, "low": 4145.0, "close": 4180.0}, {"time": "2026-09-30", "open": 4216.0, "high": 4251.0, "low": 4178.0, "close": 4187.0}, {"time": "2026-10-01", "open": 4190.0, "high": 4223.0, "low": 4169.0, "close": 4202.0}, {"time": "2026-10-02", "open": 4205.0, "high": 4259.0, "low": 4154.0, "close": 4162.0}, {"time": "2026-10-05", "open": 4169.0, "high": 4199.0, "low": 4150.0, "close": 4157.0}, {"time": "2026-10-06", "open": 4169.0, "high": 4212.0, "low": 4131.0, "close": 4187.0}, {"time": "2026-10-07", "open": 4195.0, "high": 4198.0, "low": 4091.0, "close": 4141.0}, {"time": "2026-10-08", "open": 4140.0, "high": 4171.0, "low": 4128.0, "close": 4157.0}, {"time": "2026-10-09", "open": 4160.0, "high": 4234.0, "low": 4156.0, "close": 4216.0}, {"time": "2026-10-12", "open": 4221.0, "high": 4242.0, "low": 4178.0, "close": 4191.0}, {"time": "2026-10-13", "open": 4196.0, "high": 4225.0, "low": 4170.0, "close": 4177.0}, {"time": "2026-10-14", "open": 4184.0, "high": 4194.0, "low": 4107.0, "close": 4117.0}], "dxy": [{"time": "2026-09-25", "open": 101.27, "high": 101.31, "low": 100.87, "close": 100.97}, {"time": "2026-09-28", "open": 101.1, "high": 101.31, "low": 100.98, "close": 101.2}, {"time": "2026-09-29", "open": 101.19, "high": 101.61, "low": 101.18, "close": 101.37}, {"time": "2026-09-30", "open": 101.41, "high": 101.53, "low": 101.03, "close": 101.45}, {"time": "2026-10-01", "open": 101.47, "high": 102.21, "low": 101.46, "close": 102.1}, {"time": "2026-10-02", "open": 102.02, "high": 102.13, "low": 101.67, "close": 101.93}, {"time": "2026-10-05", "open": 101.92, "high": 102.54, "low": 101.86, "close": 102.17}, {"time": "2026-10-06", "open": 102.14, "high": 102.29, "low": 101.75, "close": 101.83}, {"time": "2026-10-07", "open": 101.89, "high": 102.5, "low": 101.89, "close": 102.24}, {"time": "2026-10-08", "open": 102.23, "high": 102.47, "low": 102.03, "close": 102.14}, {"time": "2026-10-09", "open": 102.13, "high": 102.34, "low": 101.92, "close": 102.21}, {"time": "2026-10-12", "open": 102.3, "high": 102.61, "low": 102.1, "close": 102.58}, {"time": "2026-10-13", "open": 102.57, "high": 102.57, "low": 102.16, "close": 102.18}, {"time": "2026-10-14", "open": 102.21, "high": 102.72, "low": 102.07, "close": 102.67}], "btc": [{"time": "2026-10-01", "open": 83554.0, "high": 85224.0, "low": 83133.0, "close": 84853.0}, {"time": "2026-10-02", "open": 84856.0, "high": 87146.0, "low": 83853.0, "close": 84497.0}, {"time": "2026-10-03", "open": 84503.0, "high": 85019.0, "low": 84430.0, "close": 84764.0}, {"time": "2026-10-04", "open": 84766.0, "high": 86766.0, "low": 84707.0, "close": 86480.0}, {"time": "2026-10-05", "open": 86480.0, "high": 86972.0, "low": 84972.0, "close": 85787.0}, {"time": "2026-10-06", "open": 85786.0, "high": 86665.0, "low": 85120.0, "close": 85558.0}, {"time": "2026-10-07", "open": 85555.0, "high": 85595.0, "low": 82772.0, "close": 83276.0}, {"time": "2026-10-08", "open": 83281.0, "high": 83475.0, "low": 80337.0, "close": 81676.0}, {"time": "2026-10-09", "open": 81676.0, "high": 83418.0, "low": 81558.0, "close": 82546.0}, {"time": "2026-10-10", "open": 82546.0, "high": 83092.0, "low": 82473.0, "close": 82912.0}, {"time": "2026-10-11", "open": 82912.0, "high": 84104.0, "low": 82722.0, "close": 83679.0}, {"time": "2026-10-12", "open": 83679.0, "high": 84249.0, "low": 81682.0, "close": 81763.0}, {"time": "2026-10-13", "open": 81763.0, "high": 84061.0, "low": 80963.0, "close": 83095.0}, {"time": "2026-10-14", "open": 83093.0, "high": 84006.0, "low": 82752.0, "close": 82753.0}]};
 function showMacroChart(k){
   var m=MACRO_META[k],vals=MACRO_HIST[k]||[];
   if(!m)return;
@@ -1630,7 +1709,7 @@ function closeMacroChart(){
 }
 var _tabTitles={dom:'📈 국내 주식',us:'🌐 해외',re:'🏠 부동산',hot:'🔥 핫이슈',cal:'📅 주요 일정',watch:'📊 관심 종목',etf:'📦 ETF',ai:'💡 AI 투자 아이디어',sub:'📝 영상분석',tech:'📉 기술적 분석'};
 var _WORKER='https://dashboard-trigger.mamibj112.workers.dev';
-var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": NaN, "change": NaN, "change_pct": NaN, "currency": "USD", "market_cap": "$214.2B", "ev": "$212.5B", "pe": 20.1, "forward_pe": 5.57, "pb": 14.04, "ps": 10.58, "peg": null, "ev_ebitda": 16.84, "eps": 73.76, "shares_out": "$145M", "float_shares": "$145M", "revenue": "$20.2B", "net_income": "$11.4B", "op_margin": 78.47, "profit_margin": 56.46, "gross_margin": 71.47, "roe": 91.64, "roa": 43.91, "roic": null, "rev_growth": 371.6, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 2.29, "quick_ratio": 1.71, "debt_equity": 1.28, "total_debt": "$201M", "total_cash": "$4.8B", "fcf": "$7.7B", "div_yield": 0.0, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 2354.39, "low52": 120.96, "target": 2173.0, "ret_1w": NaN, "ret_1m": NaN, "ret_3m": NaN, "ret_6m": NaN, "ret_ytd": NaN, "ret_1y": NaN, "ret_3y": null, "ret_5y": null, "rsi": 38, "beta": null, "sma20_gap": NaN, "sma50_gap": NaN, "sma200_gap": NaN, "atr": NaN, "vol_weekly": 45.04, "vol_monthly": 115.24, "volume": 8297270, "avg_volume": 12664431, "rel_volume": 0.66, "exchange": "NMS", "inst_pct": null, "insider_pct": 1.08, "short_float": 5.28, "sector": "Technology", "industry": "Computer Hardware", "employees": 11100, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the Americas, Europe, the Middle East, Africa, Asia, and internationally. The company provides solid state drives for desktop and ", "news": []}];
+var WATCHLIST=[{"ticker": "SNDK", "name": "샌디스크", "market": "US", "price": 1482.33, "change": -5.0, "change_pct": -0.34, "currency": "USD", "market_cap": "$214.2B", "ev": "$212.5B", "pe": 20.1, "forward_pe": 5.57, "pb": 14.04, "ps": 10.58, "peg": null, "ev_ebitda": 16.84, "eps": 73.76, "shares_out": "$145M", "float_shares": "$145M", "revenue": "$20.2B", "net_income": "$11.4B", "op_margin": 78.47, "profit_margin": 56.46, "gross_margin": 71.47, "roe": 91.64, "roa": 43.91, "roic": null, "rev_growth": 371.6, "earn_growth": null, "rev_q_growth": null, "earn_q_growth": null, "current_ratio": 2.29, "quick_ratio": 1.71, "debt_equity": 1.28, "total_debt": "$201M", "total_cash": "$4.8B", "fcf": "$7.7B", "div_yield": 0.0, "div_rate": null, "payout_ratio": 0.0, "ex_div_date": null, "high52": 2354.39, "low52": 130.5, "target": 2173.0, "ret_1w": -10.73, "ret_1m": -4.49, "ret_3m": -8.21, "ret_6m": 56.95, "ret_ytd": 438.56, "ret_1y": 1167.92, "ret_3y": null, "ret_5y": null, "rsi": 38, "beta": null, "sma20_gap": -12.38, "sma50_gap": -6.88, "sma200_gap": 24.16, "atr": 82.87, "vol_weekly": 37.08, "vol_monthly": 114.71, "volume": 8297270, "avg_volume": 12645904, "rel_volume": 0.66, "exchange": "NMS", "inst_pct": null, "insider_pct": 1.08, "short_float": 5.28, "sector": "Technology", "industry": "Computer Hardware", "employees": 11100, "country": "United States", "ipo_date": null, "website": "https://www.sandisk.com", "desc": "Sandisk Corporation develops, manufactures, and sells data storage devices and solutions using NAND flash technology in the Americas, Europe, the Middle East, Africa, Asia, and internationally. The company provides solid state drives for desktop and ", "news": []}];
 function _fmt(v,dec,suf){if(v===null||v===undefined)return'N/A';return(dec!==undefined?v.toFixed(dec):v)+(suf||'');}
 function _pctColor(v){
   if(v===null||v===undefined)return'<span style="color:var(--t3)">N/A</span>';
