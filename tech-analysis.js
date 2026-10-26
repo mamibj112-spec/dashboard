@@ -143,8 +143,8 @@
         '<div class="tp-v ' + cls + '">' + (f.avgPct >= 0 ? '+' : '') + f.avgPct + '%</div>' +
         '<div class="tp-n">n=' + f.n + ' · 승률' + f.winRatePct + '%' + warn + '</div></div>';
     }).join('');
-    var badge = p.current ? '<span style="background:var(--blue);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px">지금 이 상태</span>' : '';
-    var rowStyle = p.current ? ' style="background:rgba(77,166,255,.06);border-radius:8px;padding:10px 8px;margin:2px 0"' : '';
+    var badge = p.current ? '<span style="background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px">지금 이 상태</span>' : '';
+    var rowStyle = p.current ? ' style="background:var(--accent-wash);border-radius:8px;padding:10px 8px;margin:2px 0"' : '';
     return '<div class="tp-row"' + rowStyle + '><div class="tp-label">' + p.label + badge + '</div><div class="tp-cells">' + cells + '</div></div>';
   }
 
@@ -243,7 +243,7 @@
       document.getElementById('tech-chart').innerHTML =
         '<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--t3);font-size:12.5px;text-align:center;padding:0 20px">' +
           '<div>국내 종목은 TradingView 무료 차트가 지원되지 않아요.</div>' +
-          '<button onclick="window.open(\'' + naverUrl + '\',\'_blank\')" style="background:var(--blue);border:none;border-radius:8px;padding:10px 16px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">네이버 금융에서 차트 보기</button>' +
+          '<button onclick="window.open(\'' + naverUrl + '\',\'_blank\')" style="background:var(--accent);border:none;border-radius:8px;padding:10px 16px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">네이버 금융에서 차트 보기</button>' +
         '</div>';
     } else {
       loadWidget('tech-chart', 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js', {
@@ -251,11 +251,11 @@
         symbol: symbol,
         interval: 'D',
         timezone: 'Asia/Seoul',
-        theme: 'dark',
+        theme: 'light',
         style: '1',
         locale: 'kr',
-        backgroundColor: 'rgba(15, 19, 24, 1)',
-        gridColor: 'rgba(255, 255, 255, 0.06)',
+        backgroundColor: 'rgba(244, 238, 218, 1)',
+        gridColor: 'rgba(70, 80, 120, 0.12)',
         studies: [
           { id: 'MASimple@tv-basicstudies', inputs: { length: 5 } },
           { id: 'MASimple@tv-basicstudies', inputs: { length: 10 } },
@@ -279,7 +279,7 @@
       width: '100%',
       height: '100%',
       locale: 'kr',
-      colorTheme: 'dark',
+      colorTheme: 'light',
       isTransparent: true,
       interval: '1D',
       showIntervalTabs: true

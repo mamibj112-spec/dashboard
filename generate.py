@@ -573,7 +573,7 @@ def fear_greed_html(value=62):
     elif value <= 45:
         color = '#60a5fa'; label = '공포'
     elif value <= 55:
-        color = '#a3a3a3'; label = '중립'
+        color = T.NEUTRAL; label = '중립'
     elif value <= 75:
         color = '#f97316'; label = '탐욕'
     else:
@@ -581,16 +581,16 @@ def fear_greed_html(value=62):
     angle = math.pi * (1 - value / 100)
     nx = round(60 + 50 * math.cos(angle), 1)
     ny = round(60 - 50 * math.sin(angle), 1)
-    return f'''<div style="background:var(--card);border-radius:10px;padding:10px 12px;">
+    return f'''<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.06);">
       <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">국내 공포/탐욕</div>
       <svg viewBox="0 0 120 65" style="width:100%;display:block;overflow:visible;">
         <path d="M 10 60 A 50 50 0 0 1 24.6 24.6" fill="none" stroke="#3b82f6" stroke-width="10" stroke-linecap="butt"/>
         <path d="M 24.6 24.6 A 50 50 0 0 1 52.2 10.6" fill="none" stroke="#60a5fa" stroke-width="10" stroke-linecap="butt"/>
-        <path d="M 52.2 10.6 A 50 50 0 0 1 67.8 10.6" fill="none" stroke="#a3a3a3" stroke-width="10" stroke-linecap="butt"/>
+        <path d="M 52.2 10.6 A 50 50 0 0 1 67.8 10.6" fill="none" stroke="{T.NEUTRAL}" stroke-width="10" stroke-linecap="butt"/>
         <path d="M 67.8 10.6 A 50 50 0 0 1 95.4 24.6" fill="none" stroke="#f97316" stroke-width="10" stroke-linecap="butt"/>
         <path d="M 95.4 24.6 A 50 50 0 0 1 110 60" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="butt"/>
-        <line x1="60" y1="60" x2="{nx}" y2="{ny}" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="60" cy="60" r="3.5" fill="#fff"/>
+        <line x1="60" y1="60" x2="{nx}" y2="{ny}" stroke="{T.INK}" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="60" cy="60" r="3.5" fill="{T.INK}"/>
       </svg>
       <div style="text-align:center;margin-top:2px;">
         <span style="font-size:18px;font-weight:700;color:{color};">{value}</span>
@@ -2544,279 +2544,9 @@ def news_html(items, badge_cls='nb-blue', badge_txt='뉴스', border=None):
     return out
 
 # ── CSS ───────────────────────────────────────────────────────────────────────
-
-CSS = """
-:root{--bg:#080b10;--card:#0f1318;--card2:#151a22;--border:rgba(255,255,255,.08);
---up:#00e896;--dn:#ff4060;--blue:#4da6ff;--gold:#ffc940;--orange:#ff8c3a;
---purple:#a78bfa;--t1:#f0f4ff;--t2:#b8ccee;--t3:#6a80aa}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--t1);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-font-size:13px;max-width:480px;margin:0 auto;padding-bottom:32px}
-a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
-.header{padding:16px 16px 0;display:flex;justify-content:space-between;align-items:flex-end}
-.header-title{font-size:11px;color:var(--t3);letter-spacing:.5px;text-transform:uppercase}
-.header-date{font-size:16px;font-weight:700}
-.header-day{font-size:11px;color:var(--t3);margin-top:2px}
-.header-right{text-align:right;font-size:11px;color:var(--t3)}
-.update-btn{{display:inline-block;margin-top:5px;padding:4px 10px;font-size:10px;color:var(--blue);border:1px solid var(--blue);border-radius:6px;background:none;cursor:pointer;opacity:.8}}
-.update-btn:hover{{opacity:1}}
-.update-btn:disabled{{opacity:.4;cursor:not-allowed}}
-.update-status{{font-size:10px;color:var(--t3);display:block;text-align:right;margin-top:2px;min-height:14px}}
-
-.tab-nav{display:flex;flex-wrap:wrap;margin:12px 0 0;border-bottom:1px solid var(--border);
-position:sticky;top:0;background:var(--bg);z-index:10;padding:0 4px}
-.tab-btn{flex:1 1 20%;padding:8px 2px;background:none;border:none;border-bottom:2px solid transparent;
-color:var(--t3);font-size:11px;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center}
-.tab-btn.active{color:var(--t1);border-bottom-color:var(--blue);font-weight:600}
-.tab-panel{display:none;padding:0 12px}.tab-panel.active{display:block}
-.section{margin-top:16px}
-.section-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-left:2px}
-.banner{padding:12px 14px;border-radius:10px;border-left:3px solid;margin-top:12px;line-height:1.5;font-size:12.5px}
-.banner.up{background:rgba(0,232,150,.08);border-color:var(--up)}
-.banner.dn{background:rgba(255,64,96,.09);border-color:var(--dn)}
-.banner.orange{background:rgba(255,140,58,.08);border-color:var(--orange)}
-.banner.blue{background:rgba(77,166,255,.08);border-color:var(--blue)}
-.banner.hot{background:rgba(255,64,96,.09);border-color:var(--gold)}
-.banner strong{font-weight:700}
-.index-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.idx-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px}
-.idx-name{font-size:11px;color:var(--t3);margin-bottom:4px}
-.idx-val{font-size:20px;font-weight:700}.idx-chg{font-size:12px;margin-top:3px}
-.up-txt{color:var(--up)}.dn-txt{color:var(--dn)}.neu-txt{color:var(--t2)}
-.macro-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.macro-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 10px}
-.macro-name{font-size:9.5px;color:var(--t3);margin-bottom:2px}
-.macro-val{font-size:13px;font-weight:700}.macro-chg{font-size:10px;margin-top:2px}
-.news-item{background:var(--card);border-radius:10px;padding:13px 14px;margin-bottom:8px;border-left:3px solid var(--border)}
-.news-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:3px;margin-bottom:5px;font-weight:600}
-.nb-red{background:rgba(255,64,96,.15);color:#ff6080}.nb-blue{background:rgba(77,166,255,.15);color:var(--blue)}
-.nb-green{background:rgba(0,232,150,.15);color:var(--up)}.nb-gold{background:rgba(255,201,64,.15);color:var(--gold)}
-.nb-orange{background:rgba(255,140,58,.15);color:var(--orange)}.nb-purple{background:rgba(167,139,250,.15);color:var(--purple)}
-.news-title{font-size:14px;font-weight:700;line-height:1.45}
-.news-title a{color:var(--t1)}.news-title a:hover{color:var(--blue);text-decoration:none}
-.news-summary{font-size:11.5px;color:var(--t2);line-height:1.5;margin-top:5px}
-.news-meta{font-size:10px;color:var(--t3);margin-top:5px}
-.news-orig{font-size:10px;color:var(--t3);margin-top:3px;font-style:italic;opacity:.7}
-.apt-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px}
-.apt-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.apt-name{font-size:15px;font-weight:700}.apt-info{font-size:10px;color:var(--t3);margin-top:3px}
-.apt-status{font-size:9px;padding:3px 7px;border-radius:4px;font-weight:600;flex-shrink:0}
-.status-remodel{background:rgba(167,139,250,.15);color:var(--purple)}
-.status-normal{background:rgba(77,166,255,.12);color:var(--blue)}
-.apt-table{width:100%;border-collapse:collapse}
-.apt-table th{font-size:10px;color:var(--t3);font-weight:400;padding:5px 6px;text-align:right;border-bottom:1px solid var(--border)}
-.apt-table th:first-child{text-align:left}
-.apt-table td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
-.apt-table td:not(:first-child){text-align:right}
-.apt-table tr:last-child td{border-bottom:none}
-.remodel-steps{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
-.remodel-label{font-size:10px;color:var(--t3);margin-bottom:6px}
-.step-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px}
-.step-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.step-text{font-size:11px;line-height:1.4}
-.step-done .step-dot{background:var(--up)}.step-done .step-text{color:var(--t3)}
-.step-current .step-dot{background:var(--gold)}.step-current .step-text{color:var(--gold);font-weight:600}
-.step-todo .step-dot{background:var(--border)}.step-todo .step-text{color:var(--t3)}
-.invest-point{margin-top:10px;padding:8px 10px;background:var(--card2);border-radius:6px;font-size:11px;color:var(--t2);line-height:1.5}
-.warn{color:var(--gold);font-size:10px}
-.footer-note{font-size:10px;color:var(--t3);text-align:center;padding:16px 0 4px;line-height:1.6}
-.idea-headline{font-size:15px;font-weight:800;color:var(--t1);text-align:center;padding:14px 0 6px;letter-spacing:-.3px;line-height:1.4}
-.idea-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
-.idea-card-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.idea-sector{font-size:13px;font-weight:700;color:var(--t1)}
-.idea-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
-.idea-badge.up{background:rgba(0,232,150,.15);color:var(--up)}
-.idea-badge.dn{background:rgba(255,64,96,.15);color:var(--dn)}
-.idea-badge.warn{background:rgba(255,201,64,.15);color:var(--gold)}
-.idea-body{font-size:12px;color:var(--t2);line-height:1.6}
-.idea-meta{font-size:10.5px;margin-top:6px;display:flex;flex-direction:column;gap:3px}
-.idea-meta span{display:flex;gap:5px}
-.idea-meta-label{color:var(--t3);font-weight:600;flex-shrink:0}
-.idea-theme{background:linear-gradient(135deg,rgba(167,139,250,.1),rgba(77,166,255,.08));border:1px solid rgba(167,139,250,.25);border-radius:12px;padding:14px;margin-bottom:10px}
-.idea-theme-title{font-size:11px;color:var(--purple);font-weight:700;letter-spacing:.5px;margin-bottom:8px}
-.risk-row{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;color:var(--t2);line-height:1.5}
-.risk-row:last-child{border-bottom:none}
-.risk-num{color:var(--dn);font-weight:700;flex-shrink:0}
-.stock-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:var(--card);border-radius:6px;margin-bottom:4px}
-.stock-name{font-size:11px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px}
-.etf-name{font-size:11px;font-weight:600;color:var(--t1);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:6px}
-.stock-right{display:flex;align-items:center;gap:5px;font-size:11px;flex-shrink:0}
-.stock-amt{color:var(--t3);font-size:9.5px}
-.breadth-wrap{background:var(--card);border-radius:10px;padding:12px 14px}
-.breadth-bar{height:8px;background:rgba(255,64,96,.3);border-radius:4px;overflow:hidden;margin-bottom:8px}
-.breadth-up{height:100%;background:var(--up);border-radius:4px}
-.breadth-label{font-size:12px;display:flex;align-items:center}
-.wk-cal-table{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-.wk-cal-row{display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border)}
-.wk-cal-row:last-child{border-bottom:none}
-.wk-cal-date{flex:0 0 64px;font-size:12.5px;font-weight:700;color:var(--t2)}
-.wk-cal-date.today{color:var(--gold)}
-.wk-cal-items{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
-.wk-cal-item{font-size:12px;color:var(--t2);line-height:1.5}
-.wk-cal-item.hl{color:var(--t1);font-weight:600;background:rgba(255,201,64,.12);border-radius:6px;padding:2px 6px;margin:-2px -6px}
-.wk-cal-item.empty{color:var(--t3)}
-.ai-brief-wrap{background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(77,166,255,.08));border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:14px}
-.ai-brief-title{font-size:10px;color:var(--purple);font-weight:700;letter-spacing:.5px;margin-bottom:8px}
-.ai-lines{margin-bottom:8px}
-.ai-line{font-size:12.5px;color:var(--t1);line-height:1.7;font-weight:500}
-.ai-tags{margin-bottom:6px}
-.ai-tag{display:inline-block;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:600}
-.ai-tag.hot{background:rgba(255,201,64,.15);color:var(--gold);border:1px solid rgba(255,201,64,.3)}
-.ai-supply{font-size:11px;color:var(--t2);padding-top:6px;border-top:1px solid rgba(255,255,255,.06)}
-.macro-card{cursor:pointer;transition:opacity .15s}
-.macro-card:active{opacity:.6}
-.stock-story-wrap{display:flex;gap:10px;align-items:flex-start}
-.stock-list-col{flex:0 0 44%;min-width:0}
-.stock-story-col{flex:1;min-width:0}
-.ss-sub-label{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;padding-left:2px}
-.ss-wrap{background:linear-gradient(135deg,rgba(255,201,64,.07),rgba(249,115,22,.05));border:1px solid rgba(255,201,64,.2);border-radius:12px;padding:12px;height:100%;box-sizing:border-box}
-.ss-tone{font-size:11.5px;font-weight:700;color:var(--gold);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);line-height:1.4}
-.ss-block{margin-bottom:9px}.ss-block:last-child{margin-bottom:0}
-.ss-label{font-size:9px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:4px}
-.ss-theme{font-size:11px;font-weight:600;color:var(--t1);margin-bottom:3px}
-.ss-text{font-size:10.5px;color:var(--t2);line-height:1.7}
-.story-wrap{background:linear-gradient(135deg,rgba(77,166,255,.08),rgba(167,139,250,.06));border:1px solid rgba(77,166,255,.2);border-radius:12px;padding:14px}
-.story-block{margin-bottom:10px}
-.story-block:last-child{margin-bottom:0}
-.story-label{font-size:10px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:5px}
-.story-text{font-size:12px;color:var(--t2);line-height:1.75}
-.mkt-sec-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.mkt-sec-icon{font-size:15px}
-.mkt-sec-title{font-size:14px;font-weight:700;color:var(--t1);flex:1}
-.mkt-sec-num{font-size:10px;color:var(--t3);font-weight:700;background:var(--card2);padding:2px 7px;border-radius:6px}
-.hashtag-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.hashtag-pill{font-size:10.5px;color:var(--blue);background:rgba(77,166,255,.12);border:1px solid rgba(77,166,255,.25);border-radius:20px;padding:4px 10px;font-weight:600}
-.highlight-list{margin-bottom:12px}
-.highlight-item{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.highlight-item:last-child{border-bottom:none}
-.highlight-dot{color:var(--blue);font-size:13px;line-height:1.6;font-weight:700}
-.highlight-title{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:2px}
-.highlight-desc{font-size:11px;color:var(--t2);line-height:1.6}
-.asset-group-label{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:.5px;margin:12px 0 6px}
-.asset-group-label:first-of-type{margin-top:0}
-.asset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.asset-grid.cols-3{grid-template-columns:repeat(3,1fr)}
-.asset-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center}
-.asset-ticker{font-size:10.5px;font-weight:700;color:var(--t2)}
-.asset-sub{font-size:8.5px;color:var(--t3);margin-top:1px}
-.asset-pct{font-size:12px;font-weight:700;margin-top:4px}
-.asset-pct.up{color:var(--up)}
-.asset-pct.dn{color:var(--dn)}
-.ticker-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:9.5px;font-weight:700;color:#fff;flex-shrink:0;background:linear-gradient(135deg,var(--blue),var(--purple))}
-.mover-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.mover-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:10px}
-.mover-card.up-side{border-color:rgba(0,232,150,.2)}
-.mover-card.dn-side{border-color:rgba(255,64,96,.2)}
-.mover-head{font-size:10px;font-weight:700;margin-bottom:7px}
-.mover-head.up{color:var(--up)}
-.mover-head.dn{color:var(--dn)}
-.mover-row{display:flex;align-items:center;gap:7px;padding:4px 0}
-.mover-ticker{font-size:11px;font-weight:700;color:var(--t1);flex:1}
-.mover-pct{font-size:11px;font-weight:700}
-.earn-list{margin-bottom:10px}
-.earn-item{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.earn-item:last-child{border-bottom:none}
-.earn-item.is-extra{display:none}
-.earn-item.is-extra.show{display:flex}
-.earn-body{flex:1;min-width:0}
-.earn-head{font-size:11.5px;font-weight:700;color:var(--t1);margin-bottom:2px;line-height:1.5}
-.earn-period{color:var(--t3);font-weight:600}
-.earn-summary{font-size:10.5px;color:var(--t2);line-height:1.6}
-.earn-more-btn{display:block;width:100%;text-align:center;font-size:10.5px;font-weight:700;color:var(--blue);background:rgba(77,166,255,.1);border:1px solid rgba(77,166,255,.2);border-radius:8px;padding:7px;margin-bottom:12px;cursor:pointer}
-.report-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px}
-.report-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.report-stock{font-size:13px;font-weight:700;color:var(--t1)}
-.report-firm{font-size:10px;color:var(--purple);background:rgba(167,139,250,.12);padding:2px 7px;border-radius:10px}
-.report-title{font-size:11.5px;color:var(--t2);margin-bottom:7px;line-height:1.5}
-.report-points{border-top:1px solid var(--border);padding-top:7px}
-.report-point{font-size:11px;color:var(--t2);line-height:1.7}
-#macroOverlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99;display:none;opacity:0;transition:opacity .25s}
-#macroOverlay.open{opacity:1}
-#macroModal{position:fixed;bottom:20px;left:8px;right:8px;max-width:480px;margin:0 auto;
-background:var(--card2);border-radius:16px;padding:16px 16px 24px;z-index:100;
-box-shadow:0 -4px 24px rgba(0,0,0,.6);transform:translateY(calc(100% + 28px));
-transition:transform .28s cubic-bezier(.4,0,.2,1)}
-#macroModal.open{transform:translateY(0)}
-.us-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:4px 0 12px}
-.us-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
-.us-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.us-name-wrap{display:flex;flex-direction:column}
-.us-name{font-size:10px;color:var(--t3);font-weight:600}
-.us-ticker-badge{font-size:8px;background:var(--card2);padding:1px 4px;border-radius:3px;color:var(--t3);margin-top:2px;align-self:flex-start}
-.us-val-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.us-val{font-size:16px;font-weight:700;color:var(--t1)}
-.us-pct-box{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700}
-.us-pct-box.up{background:rgba(0,232,150,.12);color:var(--up)}
-.us-pct-box.dn{background:rgba(255,64,96,.15);color:var(--dn)}
-.rsi-wrap{margin-top:8px}
-.rsi-head{font-size:9px;color:var(--t3);display:flex;justify-content:space-between;margin-bottom:4px}
-.rsi-bg{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
-.rsi-fill{height:100%;background:var(--blue);border-radius:2px}
-.fg-card-mini{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.fg-emoji{font-size:24px}
-.fg-info{display:flex;flex-direction:column}
-.fg-label{font-size:10px;color:var(--t3);margin-bottom:2px}
-.fg-val-txt{font-size:18px;font-weight:800}
-.us-fg-banner{border-radius:12px;padding:14px 16px;margin-top:12px;display:flex;align-items:center;gap:14px}
-.us-fg-big{font-size:36px;line-height:1}
-.us-fg-right{flex:1}
-.us-fg-label{font-size:11px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;font-weight:600}
-.us-fg-score{font-size:28px;font-weight:800;line-height:1.1}
-.us-fg-desc{font-size:11px;margin-top:4px;opacity:.8}
-.tech-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.tech-row:last-child{border-bottom:none}
-.tech-name{font-size:11.5px;color:var(--t2)}
-.tech-val{font-size:11px;font-weight:600}
-.tech-sig{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700;margin-left:6px}
-.wl-search{width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--t1);outline:none;margin-bottom:2px}
-.wl-search:focus{border-color:var(--blue)}
-.wl-grid{display:flex;flex-direction:column;gap:8px}
-.wl-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;transition:border-color .15s}
-.wl-card:active{border-color:var(--blue)}
-.wl-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.wl-name{font-size:13px;font-weight:700;color:var(--t1)}
-.wl-ticker{font-size:10.5px;color:var(--t3);margin-top:2px}
-.wl-mkt-badge{background:rgba(77,166,255,.15);color:var(--blue);font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700}
-.wl-price{font-size:16px;font-weight:700}
-.wl-pct{font-size:11px;font-weight:600;text-align:right}
-.wl-card-bot{display:flex;gap:12px;font-size:10.5px;color:var(--t3)}
-.tech-pick{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:12.5px}
-.tech-pick:active{background:var(--card)}
-.tech-pick.tech-pick-active{background:var(--card);border:1px solid var(--blue)}
-.tech-pick-ticker{color:var(--t3);font-size:10.5px}
-.tech-chart-box{height:70vh;min-height:420px;background:var(--card2);border-radius:12px;overflow:hidden}
-.tech-signal-box{height:450px;background:var(--card2);border-radius:12px;overflow:hidden}
-.tech-insight-box{background:var(--card2);border-radius:12px;padding:14px;min-height:20px}
-.tech-patterns-box{background:var(--card2);border-radius:12px;padding:14px;min-height:20px}
-.tech-candles-box{background:var(--card2);border-radius:12px;padding:14px;min-height:20px}
-.tc-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
-.tc-item:last-child{border-bottom:none}
-.tc-date{color:var(--t3);font-size:10.5px}
-.tc-tag{font-weight:600}
-.tp-row{padding:10px 0;border-bottom:1px solid var(--border)}
-.tp-row:last-child{border-bottom:none}
-.tp-label{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:8px}
-.tp-cells{display:flex;gap:8px}
-.tp-cell{flex:1;background:var(--card);border-radius:8px;padding:8px;text-align:center}
-.tp-h{font-size:9.5px;color:var(--t3);text-transform:uppercase}
-.tp-v{font-size:14px;font-weight:700;margin-top:2px}
-.tp-n{font-size:9.5px;color:var(--t3);margin-top:2px}
-.tradingview-widget-container,.tradingview-widget-container__widget{height:100%;width:100%}
-#stockOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;transition:opacity .2s;opacity:0}
-#stockOverlay.open{opacity:1}
-#stockModal{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px;z-index:301;max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .25s ease}
-#stockModal.open{transform:translateY(0)}
-.sk-price{font-size:24px;font-weight:800}
-.sk-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
-.sk-row:last-child{border-bottom:none}
-.sk-label{color:var(--t3)}
-.sk-val{font-weight:600;color:var(--t1)}
-.sk-sec{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin:12px 0 4px;padding-left:2px}
-.perf-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:4px}
-.perf-cell{background:var(--bg);border-radius:7px;padding:6px 4px;text-align:center}
-.perf-period{font-size:9px;color:var(--t3);margin-bottom:2px}
-.perf-val{font-size:11px;font-weight:700}
-"""
+# 테마(색/폰트/CSS)는 modules/theme.py로 분리 - 영어공부 대시보드 톤(2026-10-26)
+from modules import theme as T  # noqa: E402
+from modules.theme import CSS, FONT_LINKS  # noqa: E402
 
 # ── HTML 생성 ──────────────────────────────────────────────────────────────────
 
@@ -2911,9 +2641,9 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
       scales:{{
         x:{{display:false}},
         y:{{
-          grid:{{color:'rgba(255,255,255,0.06)'}},
-          ticks:{{color:'#6a80aa',font:{{size:9}},callback:function(x){{return x.toLocaleString();}}}},
-          border:{{color:'rgba(255,255,255,0.08)'}}
+          grid:{{color:'{T.GRID}'}},
+          ticks:{{color:'{T.MUTED}',font:{{size:9}},callback:function(x){{return x.toLocaleString();}}}},
+          border:{{color:'{T.AXIS}'}}
         }}
       }}
     }}
@@ -2929,17 +2659,17 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     macro_meta = {
         'kospi':  {'name':'코스피',      'color':'#ef4444','rgb':'239,68,68',   'pre':'',  'suf':'', 'dec':2},
         'kosdaq': {'name':'코스닥',      'color':'#3b82f6','rgb':'59,130,246',  'pre':'',  'suf':'', 'dec':2},
-        'sp500':  {'name':'S&P 500',    'color':'#00e896','rgb':'0,232,150',   'pre':'',  'suf':'', 'dec':2},
-        'nasdaq': {'name':'나스닥 100', 'color':'#4da6ff','rgb':'77,166,255',  'pre':'',  'suf':'', 'dec':2},
-        'dow':    {'name':'다우존스',   'color':'#a78bfa','rgb':'167,139,250', 'pre':'',  'suf':'', 'dec':2},
-        'vix':    {'name':'VIX',        'color':'#ffc940','rgb':'255,201,64',  'pre':'',  'suf':'', 'dec':2},
+        'sp500':  {'name':'S&P 500',    'color':T.UP,'rgb':T.rgb(T.UP), 'pre':'',  'suf':'', 'dec':2},
+        'nasdaq': {'name':'나스닥 100', 'color':T.BLUE,'rgb':T.rgb(T.BLUE), 'pre':'',  'suf':'', 'dec':2},
+        'dow':    {'name':'다우존스',   'color':T.PURPLE,'rgb':T.rgb(T.PURPLE), 'pre':'',  'suf':'', 'dec':2},
+        'vix':    {'name':'VIX',        'color':T.GOLD,'rgb':T.rgb(T.GOLD), 'pre':'',  'suf':'', 'dec':2},
         'usdkrw': {'name':'USD/KRW',    'color':'#ef4444','rgb':'239,68,68',   'pre':'',  'suf':'원','dec':0},
         'brent':  {'name':'브렌트유',    'color':'#f97316','rgb':'249,115,22',  'pre':'$', 'suf':'', 'dec':1},
         'wti':    {'name':'WTI',         'color':'#f97316','rgb':'249,115,22',  'pre':'$', 'suf':'', 'dec':1},
-        'tnx':    {'name':'미 10년물',   'color':'#4da6ff','rgb':'77,166,255',  'pre':'',  'suf':'%','dec':2},
-        'gold':   {'name':'금 선물',     'color':'#ffc940','rgb':'255,201,64',  'pre':'$', 'suf':'', 'dec':0},
-        'dxy':    {'name':'달러 인덱스', 'color':'#a78bfa','rgb':'167,139,250', 'pre':'',  'suf':'', 'dec':2},
-        'btc':    {'name':'비트코인',    'color':'#f59e0b','rgb':'245,158,11',  'pre':'$', 'suf':'', 'dec':0},
+        'tnx':    {'name':'미 10년물',   'color':T.BLUE,'rgb':T.rgb(T.BLUE), 'pre':'',  'suf':'%','dec':2},
+        'gold':   {'name':'금 선물',     'color':T.GOLD,'rgb':T.rgb(T.GOLD), 'pre':'$', 'suf':'', 'dec':0},
+        'dxy':    {'name':'달러 인덱스', 'color':T.PURPLE,'rgb':T.rgb(T.PURPLE), 'pre':'',  'suf':'', 'dec':2},
+        'btc':    {'name':'비트코인',    'color':T.AMBER,'rgb':T.rgb(T.AMBER), 'pre':'$', 'suf':'', 'dec':0},
     }
     macro_meta_json = _json2.dumps(macro_meta, ensure_ascii=False)
     macro_hist_json = _json2.dumps(macro_hist or {})
@@ -3289,7 +3019,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     elif us_fg <= 45:
         us_fg_emoji, us_fg_label, us_fg_color = '😨', '공포', '#60a5fa'
     elif us_fg <= 55:
-        us_fg_emoji, us_fg_label, us_fg_color = '😐', '중립', '#a3a3a3'
+        us_fg_emoji, us_fg_label, us_fg_color = '😐', '중립', T.NEUTRAL
     elif us_fg <= 75:
         us_fg_emoji, us_fg_label, us_fg_color = '😊', '탐욕', '#f97316'
     else:
@@ -3415,16 +3145,16 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
     # 기술적 신호
     def _rsi_signal(rsi):
-        if rsi >= 70:   return '과매수', '#ff4060', 'rgba(255,64,96,.15)'
-        elif rsi <= 30: return '과매도', '#00e896', 'rgba(0,232,150,.15)'
-        elif rsi >= 60: return '강세',   '#00e896', 'rgba(0,232,150,.12)'
-        elif rsi <= 40: return '약세',   '#ff8c3a', 'rgba(255,140,58,.15)'
-        else:           return '중립',   '#a3a3a3', 'rgba(163,163,163,.12)'
+        if rsi >= 70:   return '과매수', T.DN, T.tint(T.DN, .12)
+        elif rsi <= 30: return '과매도', T.UP, T.tint(T.UP, .12)
+        elif rsi >= 60: return '강세',   T.UP, T.tint(T.UP, .10)
+        elif rsi <= 40: return '약세',   T.ORANGE, T.tint(T.ORANGE, .12)
+        else:           return '중립',   T.NEUTRAL, T.tint(T.NEUTRAL, .12)
 
     def _macd_signal(pct):
-        if pct > 0.5:    return '골든크로스', '#00e896', 'rgba(0,232,150,.15)'
-        elif pct < -0.5: return '데드크로스', '#ff4060', 'rgba(255,64,96,.15)'
-        else:            return '수렴',       '#a3a3a3', 'rgba(163,163,163,.12)'
+        if pct > 0.5:    return '골든크로스', T.UP, T.tint(T.UP, .12)
+        elif pct < -0.5: return '데드크로스', T.DN, T.tint(T.DN, .12)
+        else:            return '수렴',       T.NEUTRAL, T.tint(T.NEUTRAL, .12)
 
     sp_rsi = d(market,'sp500').get('rsi', 50)
     nd_rsi = d(market,'nasdaq').get('rsi', 50)
@@ -3439,9 +3169,9 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 
     # BB 신호: VIX 기반
     vix_val = d(market,'vix').get('val') or 20
-    if vix_val > 30:   bb_lbl, bb_col, bb_bg = '하단밴드 이탈', '#ff4060', 'rgba(255,64,96,.15)'
-    elif vix_val < 15: bb_lbl, bb_col, bb_bg = '상단밴드 근접', '#f97316', 'rgba(255,140,58,.15)'
-    else:              bb_lbl, bb_col, bb_bg = '밴드 내 정상',  '#a3a3a3', 'rgba(163,163,163,.12)'
+    if vix_val > 30:   bb_lbl, bb_col, bb_bg = '하단밴드 이탈', T.DN, T.tint(T.DN, .12)
+    elif vix_val < 15: bb_lbl, bb_col, bb_bg = '상단밴드 근접', T.ORANGE, T.tint(T.ORANGE, .12)
+    else:              bb_lbl, bb_col, bb_bg = '밴드 내 정상',  T.NEUTRAL, T.tint(T.NEUTRAL, .12)
 
     us_tech_html = f'''<div class="tech-row">
   <div class="tech-name">S&amp;P 500 RSI ({sp_rsi})</div>
@@ -3483,7 +3213,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     elif us_fg <= 45:
         fg_bg = 'rgba(96,165,250,.1)';  fg_border = '#60a5fa'; fg_label = '공포'
     elif us_fg <= 55:
-        fg_bg = 'rgba(163,163,163,.1)'; fg_border = '#a3a3a3'; fg_label = '중립'
+        fg_bg = T.tint(T.NEUTRAL, .1); fg_border = T.NEUTRAL; fg_label = '중립'
     elif us_fg <= 75:
         fg_bg = 'rgba(249,115,22,.1)';  fg_border = '#f97316'; fg_label = '탐욕'
     else:
@@ -3503,13 +3233,14 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
-<meta name="theme-color" content="#080b10">
+<meta name="theme-color" content="{T.BG}">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="국장 대시보드">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>국장 대시보드 · {dt.month}월 {dt.day}일</title>
+{FONT_LINKS}
 <style>{CSS}</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -4062,7 +3793,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
         style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--t1);font-size:13px;outline:none;font-family:inherit;min-width:0"
         onkeydown="if(event.key==='Enter')fetchTranscript()">
       <button onclick="fetchTranscript()" id="subBtn"
-        style="background:var(--blue);border:none;border-radius:8px;padding:10px 14px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">
+        style="background:var(--accent);border:none;border-radius:8px;padding:10px 14px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">
         분석
       </button>
     </div>
@@ -4079,7 +3810,7 @@ def generate_html(market, news, stocks, ai_brief, dt, usdkrw_week=None, macro_hi
     <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 0 2px">
       <div id="subTitle" style="font-size:14px;font-weight:700;color:var(--t1);line-height:1.4;flex:1;margin-right:8px"></div>
       <button onclick="sendToNotion()" id="notionBtn"
-        style="background:#191919;border:1px solid #444;border-radius:8px;padding:7px 12px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px">
+        style="background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:7px 12px;color:var(--t1);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px">
         <span style="font-size:13px">N</span> Notion으로 보내기
       </button>
     </div>
@@ -4175,16 +3906,16 @@ function showMacroChart(k){{
   }}
   var chart=LightweightCharts.createChart(ct,{{
     width:ct.offsetWidth,height:240,
-    layout:{{background:{{type:'solid',color:'transparent'}},textColor:'#6a80aa'}},
-    grid:{{vertLines:{{color:'rgba(255,255,255,0.05)'}},horzLines:{{color:'rgba(255,255,255,0.05)'}}}},
-    rightPriceScale:{{borderColor:'rgba(255,255,255,0.1)'}},
-    timeScale:{{borderColor:'rgba(255,255,255,0.1)',timeVisible:true,minBarSpacing:18,tickMarkFormatter:function(t){{var p=t.split('-');return(p[1]|0)+'/'+(p[2]|0);}}}},
+    layout:{{background:{{type:'solid',color:'transparent'}},textColor:'{T.MUTED}',fontFamily:'IBM Plex Sans KR'}},
+    grid:{{vertLines:{{color:'{T.GRID}'}},horzLines:{{color:'{T.GRID}'}}}},
+    rightPriceScale:{{borderColor:'{T.AXIS}'}},
+    timeScale:{{borderColor:'{T.AXIS}',timeVisible:true,minBarSpacing:18,tickMarkFormatter:function(t){{var p=t.split('-');return(p[1]|0)+'/'+(p[2]|0);}}}},
     crosshair:{{mode:1}},
   }});
   var series=chart.addCandlestickSeries({{
-    upColor:'#00e896',downColor:'#ff4060',
-    borderUpColor:'#00e896',borderDownColor:'#ff4060',
-    wickUpColor:'#00e896',wickDownColor:'#ff4060',
+    upColor:'{T.UP}',downColor:'{T.DN}',
+    borderUpColor:'{T.UP}',borderDownColor:'{T.DN}',
+    wickUpColor:'{T.UP}',wickDownColor:'{T.DN}',
   }});
   series.setData(data);
   chart.timeScale().fitContent();
@@ -4362,7 +4093,7 @@ function showStock(ticker){{
     (s.news&&s.news.length?
       sec('📰 관련 뉴스')+
       s.news.map(function(n){{
-        return'<a href="'+n.link+'" target="_blank" style="display:block;text-decoration:none;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);">'+
+        return'<a href="'+n.link+'" target="_blank" style="display:block;text-decoration:none;padding:8px 0;border-bottom:1px solid var(--border);">'+
           '<div style="font-size:12px;color:var(--t1);line-height:1.5;margin-bottom:3px;">'+n.title+'</div>'+
           '<div style="font-size:10px;color:var(--t3);">'+n.publisher+(n.date?' · '+n.date:'')+'</div>'+
         '</a>';
